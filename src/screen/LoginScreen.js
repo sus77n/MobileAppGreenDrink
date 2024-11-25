@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#eeefab",
   },
-
   // Main Login Form
   main: {
     backgroundColor: "white",
@@ -101,14 +100,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-
   textLogin: {
     color: "#568f56",
     fontWeight: "500",
     fontSize: 27,
     marginBottom: 20,
   },
-
   textInput: {
     height: 50,
     borderBottomWidth: 1,
@@ -117,21 +114,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
-
   loginButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     height: 80,
   },
-
   forgotPassword: {
     color: "#568f56",
     fontSize: 14,
     marginBottom: 15,
     justifyContent: "center",
   },
-
   buttonLogin: {
     backgroundColor: "#568f56",
     paddingVertical: 15,
@@ -140,18 +134,15 @@ const styles = StyleSheet.create({
     width: 100,
     height: 50,
   },
-
   textButtonLogin: {
     color: "#FFF",
     fontWeight: "600",
     fontSize: 16,
   },
-
   signUpContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-
   buttonSignUp: {
     width: 100,
     height: 50,
@@ -161,15 +152,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   textButtonSignUp: {
     color: "#568f56",
     fontWeight: "600",
     fontSize: 16,
   },
-
   buttonGoogle: {
-
     width: 240,
     height: 50,
     borderWidth: 1,
@@ -178,7 +166,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   textButtonGg: {
     color: "#568f56",
     fontWeight: "600",

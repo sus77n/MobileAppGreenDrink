@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 const ProfileNavigation = () => {
     return(
         <Stack.Navigator>
-            <Stack.Screen name='Profile' component={ProfileScreen}/>
+            <Stack.Screen name='Profile' component={ProfileScreen} options={{headerShown: false}}/>
             <Stack.Screen name='ProfileDetail' component={ProfileDetail}/>
             <Stack.Screen name='Transaction' component={TransactionScreen}/>
             <Stack.Screen name='MembershipDetail' component={MembershipDetail}/> 

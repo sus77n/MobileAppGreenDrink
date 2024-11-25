@@ -8,8 +8,9 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -23,13 +24,20 @@ const HomeScreen = () => {
 
         {/* Balance and Stars Section */}
         <View style={styles.balanceStarsSection}>
-          <View style={styles.balanceCard}>
-            <Text style={styles.balanceTitle}>BALANCE</Text>
-            <Text style={styles.balanceAmount}>₫20,000</Text>
-            <TouchableOpacity style={styles.addButton}>
-              <Text style={styles.addButtonText}>Add money</Text>
+          <View style={styles.balanceCardWrapper}>
+            <View style={styles.balanceCard}>
+              <Text style={styles.balanceTitle}>BALANCE</Text>
+              <Text style={styles.balanceAmount}>₫20,000</Text>
+              <TouchableOpacity style={styles.addButton}>
+                <Text style={styles.addButtonText}>Add money</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={()=>navigation.navigate('Card')}>
+              <Icon name='angle-right' style={styles.iconArrow} size={50} color={'white'}/>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.starsCardWrapper}>
           <View style={styles.starsCard}>
             <Text style={styles.starsTitle}>STARS</Text>
             <Text style={styles.starsAmount}>7</Text>
@@ -37,13 +45,24 @@ const HomeScreen = () => {
               13 star(s) until next reward
             </Text>
           </View>
+          <TouchableOpacity>
+              <Icon name='angle-right' style={styles.iconArrow} size={50} color={'white'}/>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Vouchers Section */}
         <View style={styles.voucherSection}>
+          <Image
+            style={styles.iconGift}
+            source={require('../../assets/img/iconGift.png')}
+          />
           <Text style={styles.voucherText}>
-            🎁 You have 1 available voucher(s)
+            You have 1 available voucher(s)
           </Text>
+          <TouchableOpacity>
+              <Icon name='angle-right' style={styles.iconArrow} size={50} color={'white'}/>
+            </TouchableOpacity>
         </View>
 
         {/* Order Again Section */}
@@ -127,19 +146,31 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
-  balanceCard: {
+
+  balanceCardWrapper: {
     flex: 1,
     backgroundColor: '#7ec479',
     padding: 15,
     marginRight: 5,
+    flexDirection:'row',
   },
+  balanceCard: {
+
+  },
+
+  iconArrow: {
+    marginLeft: 20,
+    marginTop: 'auto',
+    marginBottom:'auto',
+  },
+
   balanceTitle: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#eeefab',
   },
   balanceAmount: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#fff',
     marginVertical: 5,
@@ -159,25 +190,30 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
   },
-  starsCard: {
+  starsCardWrapper:{
     flex: 1,
     backgroundColor: '#7ec479',
     padding: 15,
     marginLeft: 10,
+    flexDirection:'row',
+  },
+  starsCard: {
+
   },
   starsTitle: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#eeefab',
   },
   starsAmount: {
-    fontSize: 26,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#fff',
     marginVertical: 5,
   },
   starsSubtitle: {
     fontSize: 12,
+    width: 120,
     color: '#eeefab',
   },
   voucherSection: {
@@ -185,11 +221,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 30,
     marginBottom: 10,
+    flexDirection: 'row',
+  },
+  iconGift: {
+    marginRight: 30,
   },
   voucherText: {
     fontSize: 17,
     fontWeight: 'bold',
+    fontStyle:'italic',
     color: '#fff',
+    marginTop: 10,
+    marginRight: 17,
   },
   orderAgainSection: {
     backgroundColor: '#7ec479',
@@ -269,15 +312,15 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 25,
-    alignSelf:'flex-end',
-    bottom: 40,
+    alignSelf: 'flex-end',
+    bottom: -20,
     right: 20,
   },
   cardButtonText: {
     fontSize: 16,
     color: 'white',
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
   },
 });
 

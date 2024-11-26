@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { colorTheme, PayInStoreTop } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as Progress from 'react-native-progress';
 
 const MembershipDetail = ({ navigation }) => {
   const progress = 7 / 20;
@@ -51,6 +52,7 @@ const MembershipDetail = ({ navigation }) => {
             </View>
           </View>
         </View>
+        <Progress.Bar progress={0.3} width={200} />
       </View>
     </SafeAreaView>
   );

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import {colorTheme} from '../component/store';
 const CardScreen = ({navigation}) => {
   return (
@@ -28,6 +27,7 @@ const CardScreen = ({navigation}) => {
         <Image
           source={require('../../assets/img/goldCard.png')}
           style={styles.goldCard}
+          resizeMode='contain'
         />
         <View style={styles.moneyWrap}>
           <Text style={styles.money}>đ20 000</Text>
@@ -68,19 +68,18 @@ const styles = StyleSheet.create({
     shadowOffset: {width: -2, height: 4},
     shadowOpacity: 0.2,
     marginBottom: 10,
+    alignItems: "center"
   },
   title: {
     fontSize: 25,
     color: '#568f56',
     paddingLeft: 20,
-    paddingTop: 15,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
 
   iconClose: {
     paddingRight: 20,
-    paddingTop: 10,
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: '400',
     color: colorTheme.greenText,
   },
@@ -107,11 +106,12 @@ const styles = StyleSheet.create({
   },
 
   money: {
-    fontSize: 26,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: 'bold',
     color: colorTheme.white,
   },
   subtitle: {
+    fontSize: 12,
     color: colorTheme.white,
   },
 

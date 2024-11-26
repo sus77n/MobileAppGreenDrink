@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -32,21 +32,21 @@ const HomeScreen = ({navigation}) => {
                 <Text style={styles.addButtonText}>Add money</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={()=>navigation.navigate('Card')}>
-              <Icon name='angle-right' style={styles.iconArrow} size={50} color={'white'}/>
+            <TouchableOpacity onPress={() => navigation.navigate('Card')}>
+              <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
             </TouchableOpacity>
           </View>
 
           <View style={styles.starsCardWrapper}>
-          <View style={styles.starsCard}>
-            <Text style={styles.starsTitle}>STARS</Text>
-            <Text style={styles.starsAmount}>7</Text>
-            <Text style={styles.starsSubtitle}>
-              13 star(s) until next reward
-            </Text>
-          </View>
-          <TouchableOpacity>
-              <Icon name='angle-right' style={styles.iconArrow} size={50} color={'white'}/>
+            <View style={styles.starsCard}>
+              <Text style={styles.starsTitle}>STARS</Text>
+              <Text style={styles.starsAmount}>7</Text>
+              <Text style={styles.starsSubtitle}>
+                13 star(s) until next reward
+              </Text>
+            </View>
+            <TouchableOpacity>
+              <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
             </TouchableOpacity>
           </View>
         </View>
@@ -56,31 +56,22 @@ const HomeScreen = ({navigation}) => {
           <Image
             style={styles.iconGift}
             source={require('../../assets/img/iconGift.png')}
+            resizeMode='contain'
           />
           <Text style={styles.voucherText}>
             You have 1 available voucher(s)
           </Text>
-          <TouchableOpacity onPress={()=>navigation.navigate('Card')}>
-              <Icon name='angle-right' style={styles.iconArrow} size={50} color={'white'}/>
-            </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Card')}>
+            <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
+          </TouchableOpacity>
         </View>
 
         {/* Order Again Section */}
         <View style={styles.orderAgainSection}>
           <Text style={styles.orderAgainTitle}>ORDER AGAIN?</Text>
-          <Text style={styles.orderAgainDetails}>
+          <Text style={styles.orderAgainDetails} numberOfLines={1} ellipsizeMode='tail'>
             2 Item(s) | x1 Green Tea Cream Frappuccino L, x1 Americano Cold M
           </Text>
-          <View style={styles.orderImages}>
-            <Image
-              source={{uri: 'https://via.placeholder.com/50'}}
-              style={styles.orderImage}
-            />
-            <Image
-              source={{uri: 'https://via.placeholder.com/50'}}
-              style={styles.orderImage}
-            />
-          </View>
           <TouchableOpacity style={styles.reorderButton}>
             <Text style={styles.reorderButtonText}>Reorder</Text>
           </TouchableOpacity>
@@ -90,7 +81,7 @@ const HomeScreen = ({navigation}) => {
         <View style={styles.drinksSection}>
           <View style={styles.drinkCard}>
             <Image
-              source={{uri: 'https://via.placeholder.com/100'}}
+              source={{ uri: 'https://via.placeholder.com/100' }}
               style={styles.drinkImage}
             />
             <Text style={styles.drinkTitle}>Zesty Lemonade Fizz</Text>
@@ -99,20 +90,9 @@ const HomeScreen = ({navigation}) => {
               fizzing soda base.
             </Text>
           </View>
-          <View style={styles.drinkCard}>
-            <Image
-              source={{uri: 'https://via.placeholder.com/100'}}
-              style={styles.drinkImage}
-            />
-            <Text style={styles.drinkTitle}>Zesty Lemonade Fizz</Text>
-            <Text style={styles.drinkDescription}>
-              Refreshing soda with a twist of citrus and a sprinkle of fresh
-              herbs.
-            </Text>
-          </View>
         </View>
         {/* Card Section */}
-        <TouchableOpacity style={styles.cardButton} onPress={()=>navigation.navigate('Card')}>
+        <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
           <Text style={styles.cardButtonText}>₫20,000 on card</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -152,16 +132,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#7ec479',
     padding: 15,
     marginRight: 5,
-    flexDirection:'row',
+    flexDirection: 'row',
   },
   balanceCard: {
 
   },
 
   iconArrow: {
-    marginLeft: 20,
+    marginLeft: 10,
     marginTop: 'auto',
-    marginBottom:'auto',
+    marginBottom: 'auto',
   },
 
   balanceTitle: {
@@ -170,7 +150,7 @@ const styles = StyleSheet.create({
     color: '#eeefab',
   },
   balanceAmount: {
-    fontSize: 30,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
     marginVertical: 5,
@@ -180,7 +160,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     width: 120,
     borderRadius: 25,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: 'white',
     alignItems: 'center',
     marginTop: 7,
@@ -188,14 +168,14 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 14,
     color: 'white',
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
-  starsCardWrapper:{
+  starsCardWrapper: {
     flex: 1,
     backgroundColor: '#7ec479',
     padding: 15,
     marginLeft: 10,
-    flexDirection:'row',
+    flexDirection: 'row',
   },
   starsCard: {
 
@@ -206,7 +186,7 @@ const styles = StyleSheet.create({
     color: '#eeefab',
   },
   starsAmount: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
     marginVertical: 5,
@@ -218,21 +198,25 @@ const styles = StyleSheet.create({
   },
   voucherSection: {
     backgroundColor: '#f79814',
-    paddingHorizontal: 15,
-    paddingVertical: 30,
+    justifyContent: "center",
+    paddingHorizontal: "auto",
+    paddingVertical: 8,
     marginBottom: 10,
     flexDirection: 'row',
   },
   iconGift: {
-    marginRight: 30,
+    marginRight: 10,
+    width: 50,
+    height: 50,
+    marginTop: 8,
   },
   voucherText: {
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: 'bold',
-    fontStyle:'italic',
+    fontStyle: 'italic',
     color: '#fff',
-    marginTop: 10,
-    marginRight: 17,
+    marginRight: 10,
+    marginVertical: "auto",
   },
   orderAgainSection: {
     backgroundColor: '#7ec479',
@@ -283,7 +267,7 @@ const styles = StyleSheet.create({
   drinkCard: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    width: '48%',
+    width: '60%',
     alignItems: 'center',
   },
   drinkImage: {
@@ -312,8 +296,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 25,
-    alignSelf: 'flex-end',
-    bottom: -20,
+    bottom: 10,
     right: 20,
   },
   cardButtonText: {

@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
-const TransactionScreen = () =>{
-    return(
+const TransactionScreen = ({ navigation }) => {
+    return (
         <View></View>
     )
 }

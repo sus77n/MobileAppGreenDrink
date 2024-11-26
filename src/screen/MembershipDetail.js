@@ -7,25 +7,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme} from '../component/store';
+import { colorTheme, PayInStoreTop } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const MembershipDetail = ({navigation}) => {
-    const progress = 7/20;
+const MembershipDetail = ({ navigation }) => {
+  const progress = 7 / 20;
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.top}>
-        <Text style={styles.title}>Pay In Store</Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'Home'}],
-            })
-          }>
-          <Text style={styles.iconClose}>X</Text>
-        </TouchableOpacity>
-      </View>
+      <PayInStoreTop navigation={navigation} />
       <View style={styles.cardSection}>
         <View style={styles.cardTitleWrap}>
           <Text style={styles.cardTitle}>Gold member</Text>
@@ -43,12 +32,12 @@ const MembershipDetail = ({navigation}) => {
                 name="star"
                 color={colorTheme.orangeText}
                 size={20}
-                style={{marginLeft: 5, marginTop: 8}}
+                style={{ marginLeft: 5, marginTop: 8 }}
               />
             </View>
           </View>
           <View style={styles.star}>
-          <Text style={styles.subTitle}>Total stars</Text>
+            <Text style={styles.subTitle}>Total stars</Text>
             <View style={styles.rewardWrap}>
               <Text style={styles.amountStars}>
                 50
@@ -57,7 +46,7 @@ const MembershipDetail = ({navigation}) => {
                 name="star"
                 color={colorTheme.orangeText}
                 size={20}
-                style={{marginLeft: 5, marginTop: 8}}
+                style={{ marginLeft: 5, marginTop: 8 }}
               />
             </View>
           </View>
@@ -72,30 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colorTheme.grayBackground,
   },
-  top: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    justifyContent: 'space-between',
-    height: 70,
-    shadowColor: '#171717',
-    shadowOffset: {width: -2, height: 4},
-    shadowOpacity: 0.2,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    color: '#568f56',
-    paddingLeft: 20,
-    fontWeight: 'bold',
-  },
-
-  iconClose: {
-    paddingRight: 20,
-    fontSize: 20,
-    fontWeight: '400',
-    color: colorTheme.greenText,
-  },
-
+  
   cardSection: {
     backgroundColor: colorTheme.darkGrayBackground,
     paddingVertical: 15,

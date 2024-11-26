@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import {colorTheme} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import ProgressBarAndroid from 'react-native-community'
 
 const MembershipDetail = ({navigation}) => {
     const progress = 7/20;
@@ -63,13 +62,6 @@ const MembershipDetail = ({navigation}) => {
             </View>
           </View>
         </View>
-        <ProgressBarAndroid 
-        styleAttr="Horizontal"
-        indeterminate={false}
-        progress={progress}
-        color="#FFD700"
-        style={styles.progressBar}
-      />
       </View>
     </SafeAreaView>
   );

@@ -60,7 +60,7 @@ const HomeScreen = ({navigation}) => {
           <Text style={styles.voucherText}>
             You have 1 available voucher(s)
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>navigation.navigate('Card')}>
               <Icon name='angle-right' style={styles.iconArrow} size={50} color={'white'}/>
             </TouchableOpacity>
         </View>
@@ -112,7 +112,7 @@ const HomeScreen = ({navigation}) => {
           </View>
         </View>
         {/* Card Section */}
-        <TouchableOpacity style={styles.cardButton}>
+        <TouchableOpacity style={styles.cardButton} onPress={()=>navigation.navigate('Card')}>
           <Text style={styles.cardButtonText}>₫20,000 on card</Text>
         </TouchableOpacity>
       </ScrollView>

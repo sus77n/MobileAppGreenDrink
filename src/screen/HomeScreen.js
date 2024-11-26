@@ -32,7 +32,7 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.addButtonText}>Add money</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate('Card')}>
+            <TouchableOpacity onPress={() => navigation.navigate('MembershipDetail')}>
               <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
             </TouchableOpacity>
           </View>
@@ -45,7 +45,7 @@ const HomeScreen = ({ navigation }) => {
                 13 star(s) until next reward
               </Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('MembershipDetail')}> 
               <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
             </TouchableOpacity>
           </View>

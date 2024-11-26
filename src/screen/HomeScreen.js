@@ -32,7 +32,7 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.addButtonText}>Add money</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate('MembershipDetail')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Card')}>
               <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
             </TouchableOpacity>
           </View>
@@ -72,13 +72,13 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.orderAgainDetails} numberOfLines={1} ellipsizeMode='tail'>
             2 Item(s) | x1 Green Tea Cream Frappuccino L, x1 Americano Cold M
           </Text>
-          <TouchableOpacity style={styles.reorderButton}>
+          <TouchableOpacity style={styles.reorderButton}  onPress={() => navigation.navigate('ReviewOrderScreen')}>
             <Text style={styles.reorderButtonText}>Reorder</Text>
           </TouchableOpacity>
         </View>
 
         {/* Suggested Drinks Section */}
-        <View style={styles.drinksSection}>
+        <TouchableOpacity style={styles.drinksSection} onPress={() => navigation.navigate('NewsScreen')}>
           <View style={styles.drinkCard}>
             <Image
               source={{ uri: 'https://via.placeholder.com/100' }}
@@ -90,7 +90,7 @@ const HomeScreen = ({ navigation }) => {
               fizzing soda base.
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
         {/* Card Section */}
         <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
           <Text style={styles.cardButtonText}>₫20,000 on card</Text>

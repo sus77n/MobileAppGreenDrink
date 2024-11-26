@@ -198,14 +198,13 @@ const styles = StyleSheet.create({
   },
   voucherSection: {
     backgroundColor: '#f79814',
-    justifyContent: "center",
-    paddingHorizontal: "auto",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
     paddingVertical: 8,
     marginBottom: 10,
     flexDirection: 'row',
   },
   iconGift: {
-    marginRight: 10,
     width: 50,
     height: 50,
     marginTop: 8,
@@ -215,7 +214,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontStyle: 'italic',
     color: '#fff',
-    marginRight: 10,
     marginVertical: "auto",
   },
   orderAgainSection: {

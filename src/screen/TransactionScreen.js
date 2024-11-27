@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colorTheme } from "../component/store";
+import { colorTheme, TopGoBack } from "../component/store";
 const TransactionScreen = ({ navigation }) => {
 
     const transactions = [
@@ -38,6 +38,8 @@ const TransactionScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <TopGoBack text={"Transaction History"} navigation={navigation}/>
+
             <Text style={styles.header}>Nov 2024</Text>
 
             <FlatList

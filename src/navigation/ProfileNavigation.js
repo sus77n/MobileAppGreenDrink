@@ -10,13 +10,15 @@ import TransactionDetail from '../screen/TransactionDetail';
 
 const Stack = createNativeStackNavigator();
 const ProfileNavigation = () => {
-    return(
-        <Stack.Navigator>
-            <Stack.Screen name='Profile' component={ProfileScreen} options={{headerShown: false}}/>
-            <Stack.Screen name='ProfileDetail' component={ProfileDetail}/>
-            <Stack.Screen name='Transaction' component={TransactionScreen}/>
-            <Stack.Screen name='TransactionDetail' component={TransactionDetail}/>
-            <Stack.Screen name='MembershipDetail' component={MembershipDetail}/> 
+    return (
+        <Stack.Navigator
+            screenOptions={{ headerShown: false, }}
+        >
+            <Stack.Screen name='Profile' component={ProfileScreen} />
+            <Stack.Screen name='ProfileDetail' component={ProfileDetail} />
+            <Stack.Screen name='Transaction' component={TransactionScreen} />
+            <Stack.Screen name='TransactionDetail' component={TransactionDetail} />
+            <Stack.Screen name='MembershipDetail' component={MembershipDetail} />
         </Stack.Navigator>
     )
 }

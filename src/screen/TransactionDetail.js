@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { colorTheme } from "../component/store";
+import { colorTheme, TopGoBack } from "../component/store";
 const TransactionDetail = ({ navigation }) => {
     const transaction = {
         store: 'Hikari Bình Dương',
@@ -23,9 +23,8 @@ const TransactionDetail = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
+            <TopGoBack text={"Edit Personal Information"} navigation={navigation} />
 
-            {/* Store and Date */}
             <View style={styles.block}>
                 <Text style={styles.header}>Order & Pick-up Purchase</Text>
                 <View style={styles.row}>

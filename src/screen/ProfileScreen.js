@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProfileScreen = ({ navigation }) => {
 
-
     return (
         <ScrollView style={styles.container}>
             <View style={styles.header}>
@@ -22,7 +21,7 @@ const ProfileScreen = ({ navigation }) => {
             <View style={styles.sectionBlock}>
                 <Text style={styles.headerSection}>ACCOUNT DETAILS</Text>
                 <View style={styles.bodySection}>
-                    <TouchableOpacity style={styles.row}>
+                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate("ProfileDetail")}>
                         <Text style={styles.rowText}>Personal Information</Text>
                         <Icon name='account-details-outline' style={styles.accountIcon} size={40} color={colorTheme.black} />
                     </TouchableOpacity>
@@ -30,7 +29,7 @@ const ProfileScreen = ({ navigation }) => {
                         <Text style={styles.rowText}>Membership Details</Text>
                         <Icon name='crown-circle-outline' style={styles.accountIcon} size={40} color={colorTheme.black} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.row}>
+                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate("Transaction")}>
                         <Text style={styles.rowText}>Transaction History</Text>
                         <Icon name='history' style={styles.accountIcon} size={40} color={colorTheme.black} />
                     </TouchableOpacity>

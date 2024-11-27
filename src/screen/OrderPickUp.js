@@ -1,7 +1,6 @@
 import React from "react";
-import { Image, SafeAreaView, StyleSheet, View } from "react-native";
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colorTheme, TopGoBack } from "../component/store";
-import { ScrollView } from "react-native-gesture-handler";
 const OrderPickUp = ({navigation}) =>{
     return(
         <SafeAreaView style={styles.container}>
@@ -31,7 +30,7 @@ const styles=StyleSheet.create({
         fontSize: 20,
         color: colorTheme.greenText,
         fontWeight: "600",
-        
+
     }
 })
 

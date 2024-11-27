@@ -1,4 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export const colorTheme = {
   greenBackground: '#7ec479',
@@ -59,3 +60,40 @@ export const PayInStoreTop = ({navigation, text}) => {
     </View>
   );
 };
+
+export const TopGoBack = ({navigation, text}) => {
+  const styles = StyleSheet.create({
+    top: {
+      flexDirection: 'row',
+      backgroundColor: 'white',
+      height: 70,
+      elevation: 5,
+      paddingLeft: 20,
+      shadowColor: '#000',
+      shadowOffset: {width: 2, height: 5},
+      shadowOpacity: 0.25,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 20,
+      color: '#568f56',
+      paddingRight: 20,
+      fontWeight: 'bold',
+    },
+    iconBack: {
+      marginRight: 30,
+    },
+  });
+
+  return (
+    <View style={styles.top}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.goBack()
+        }>
+        <Icon name="angle-left" color={colorTheme.greenText} size={30} style={styles.iconBack}/>
+      </TouchableOpacity>
+      <Text style={styles.title}>{text}</Text>
+    </View>
+  );
+}

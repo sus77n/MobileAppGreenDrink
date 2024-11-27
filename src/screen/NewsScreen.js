@@ -5,7 +5,7 @@ const NewsScreen = ({navigation, route}) =>{
     return(
         <SafeAreaView style={styles.container}>
         <PayInStoreTop navigation={navigation} text={'ss'}/>
-            <Image source={require('../../assets/img/news1.jpg')} style={{width:"100%"}}/>
+            <Image source={require('../../assets/img/news1.jpg')} style={{width:"100%", marginTop:10}}/>
             <Text style={styles.content}>Bursting with the tangy zing of freshly squeezed lemons, this sparkling soda blends a hint of sweet wildflower... aaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Text>
         </SafeAreaView>
     )

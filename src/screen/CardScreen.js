@@ -7,22 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme} from '../component/store';
+import {colorTheme, PayInStoreTop} from '../component/store';
 const CardScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.top}>
-        <Text style={styles.title}>Pay In Store</Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'Home'}],
-            })
-          }>
-          <Text style={styles.iconClose}>X</Text>
-        </TouchableOpacity>
-      </View>
+      <PayInStoreTop navigation={navigation} text={'Pay In Store'}/>
       <View style={styles.card}>
         <Image
           source={require('../../assets/img/goldCard.png')}
@@ -59,30 +48,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colorTheme.grayBackground,
   },
-  top: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    justifyContent: 'space-between',
-    height: 70,
-    shadowColor: '#171717',
-    shadowOffset: {width: -2, height: 4},
-    shadowOpacity: 0.2,
-    marginBottom: 10,
-    alignItems: "center"
-  },
-  title: {
-    fontSize: 20,
-    color: '#568f56',
-    paddingLeft: 20,
-    fontWeight: 'bold',
-  },
-
-  iconClose: {
-    paddingRight: 20,
-    fontSize: 20,
-    fontWeight: '400',
-    color: colorTheme.greenText,
-  },
 
   voucherIcon: {
     
@@ -91,6 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.greenBackground,
     marginRight: 15,
     marginLeft: 15,
+    marginTop: 15,
     borderRadius: 10,
     flexDirection: 'row',
     padding: 20,

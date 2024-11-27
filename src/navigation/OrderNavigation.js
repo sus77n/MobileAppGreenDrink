@@ -9,11 +9,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 const OrderNavigation = () => {
     return(
-        <Stack.Navigator>
+        <Stack.Navigator
+            screenOptions={({route}) => {
+                
+            }}
+        >
             <Stack.Screen name='Order' component={OrderScreen} options={{headerShown: false}}/>
-            <Stack.Screen name='OrderPickUp' component={OrderPickUp}/>
-            <Stack.Screen name='Delivery' component={Delivery}/>
-            <Stack.Screen name='ReviewOrder' component={ReviewOrder}/>
+            <Stack.Screen name='OrderPickUp' component={OrderPickUp} options={{headerShown: false}}/>
+            <Stack.Screen name='Delivery' component={Delivery} options={{headerShown: false}}/>
+            <Stack.Screen name='ReviewOrder' component={ReviewOrder} options={{headerShown: false}}/>
         </Stack.Navigator>
     )
 }

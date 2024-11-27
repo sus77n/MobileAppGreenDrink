@@ -21,7 +21,7 @@ const HomeNavigation = () =>{
             <Stack.Screen name='Card' component={CardScreen} options={{headerShown:false}}/>
             <Stack.Screen name='MembershipDetail' component={MembershipDetail} options={{headerShown:false}}/>
             <Stack.Screen name='ReviewOrderScreen' component={ReviewOrder} options={{headerShown:false}}/>
-            <Stack.Screen name='NewsScreen' component={NewsScreen}/>
+            <Stack.Screen name='NewsScreen' component={NewsScreen} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }

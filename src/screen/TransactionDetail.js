@@ -23,7 +23,7 @@ const TransactionDetail = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <TopGoBack text={"Edit Personal Information"} navigation={navigation} />
+            <TopGoBack text={"Transaction Details"} navigation={navigation} />
 
             <View style={styles.block}>
                 <Text style={styles.header}>Order & Pick-up Purchase</Text>

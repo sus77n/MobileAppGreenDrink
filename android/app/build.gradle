@@ -117,5 +117,7 @@ dependencies {
         implementation jscFlavor
     }
     implementation project(':react-native-vector-icons')
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 }
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")

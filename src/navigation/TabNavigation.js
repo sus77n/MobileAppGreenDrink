@@ -7,6 +7,7 @@ import HomeNavigation from './HomeNavigation';
 import StoreScreen from '../screen/StoreScreen';
 import ProfileNavigation from './ProfileNavigation';
 import OrderNavigation from './OrderNavigation';
+import StoreNavigation from './StoreNavigation';
 
 const Tab = createBottomTabNavigator();
 const TabNavigation = () => {
@@ -41,9 +42,9 @@ const TabNavigation = () => {
           component={HomeNavigation}
           options={{headerShown: false}}
         />
-        <Tab.Screen name="Order" component={OrderNavigation} options={{headerShown: false}}/>
-        <Tab.Screen name="Store" component={StoreScreen} options={{headerShown: false}}/>
-        <Tab.Screen name="Profile" component={ProfileNavigation} options={{headerShown: false}}/>
+        <Tab.Screen name="Order" component={OrderNavigation} />
+        <Tab.Screen name="Store" component={StoreNavigation} />
+        <Tab.Screen name="Profile" component={ProfileNavigation} />
       </Tab.Navigator>
     </NavigationContainer>
   );

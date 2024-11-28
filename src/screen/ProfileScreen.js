@@ -2,6 +2,7 @@ import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { colorTheme, TopGoBack } from "../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MapView from 'react-native-maps';
 
 const ProfileScreen = ({ navigation }) => {
 

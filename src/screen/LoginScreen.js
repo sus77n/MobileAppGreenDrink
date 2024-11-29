@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ImageBackground,
   SafeAreaView,
@@ -12,33 +12,77 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import auth from '@react-native-firebase/auth';
+import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-const LoginScreen = ({navigation}) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  
-  const loginFunc = () =>{
-    auth().signInWithEmailAndPassword(email, password)
-    .then((res) => {
-      console.log(res)
-      Alert.alert('','Login successfully',[
-        {
-          text:'Ok',
-          onPress:()=>{
-            navigation.navigate('Tab')
-          }
-        }
-      ])
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    // Ensure that your webClientId is correctly set.
+    GoogleSignin.configure({
+      webClientId: "1046745299175-5b64vsicc0k21kck5c2ctpr607v39270.apps.googleusercontent.com",
+    });
+  }, []);
+
+  async function onGoogleButtonPress() {
+    try {
+      // Check for Google Play services
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+      // Sign in with Google
+      const signInResult = await GoogleSignin.signIn();
+      console.log("Google Sign-In Result:", signInResult);
+
+      // Check if idToken is available
+      let idToken = signInResult.idToken;
+      if (!idToken) {
+        idToken = signInResult.data?.idToken; // For versions that return a different structure
+      }
       
-    })
-    .catch(e => {
-      console.log(e);
-      Alert.alert('Wrong username or password, try again')
-      setEmail('')
-      setPassword('')
-    })
+      if (!idToken) {
+        throw new Error("Google Sign-In failed: No ID token returned.");
+      }
+
+      // Create a Google credential with the ID token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign in to Firebase with the credential
+      const userCredential = await auth().signInWithCredential(googleCredential);
+      console.log("Firebase User:", userCredential.user);
+
+      // Show success message and navigate
+      Alert.alert("Success", "Signed in with Google successfully!");
+      navigation.navigate("Tab");
+
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      Alert.alert("Error", error.message || "An error occurred during Google Sign-In.");
+    }
   }
+
+  const loginFunc = () => {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((res) => {
+        console.log(res);
+        Alert.alert("", "Login successfully", [
+          {
+            text: "Ok",
+            onPress: () => {
+              navigation.navigate("Tab");
+            },
+          },
+        ]);
+      })
+      .catch((e) => {
+        console.log(e);
+        Alert.alert("Wrong username or password, try again");
+        setEmail("");
+        setPassword("");
+      });
+  };
 
   return (
     <SafeAreaView style={styles.layout}>
@@ -47,44 +91,45 @@ const LoginScreen = ({navigation}) => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          {/* Background Image Section */}
           <View style={styles.backgroundContainer}>
             <ImageBackground
-              source={require("../img/loginBackground.jpg")} // Adjust this path
+              source={require("../img/loginBackground.jpg")}
               style={styles.background}
             >
               <Text style={styles.title}>Welcome to Green Drink</Text>
             </ImageBackground>
           </View>
 
-          {/* Main Login Form */}
           <View style={styles.main}>
             <Text style={styles.textLogin}>Please log in</Text>
-
-            {/* Inputs */}
-            <TextInput placeholder="Number phone" style={styles.textInput} 
-                              value={email}
-                              onChangeText={setEmail}
+            <TextInput
+              placeholder="Number phone"
+              style={styles.textInput}
+              value={email}
+              onChangeText={setEmail}
             />
-            <TextInput placeholder="Password" style={styles.textInput} secureTextEntry 
-                              value={password}
-                              onChangeText={setPassword}
+            <TextInput
+              placeholder="Password"
+              style={styles.textInput}
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
             />
-
-            {/* Login Button & Forgot Password */}
             <View style={styles.loginButtonContainer}>
               <Text style={styles.forgotPassword}>Forgot password?</Text>
-              <TouchableOpacity style={styles.buttonLogin} onPress={() => loginFunc()}>
+              <TouchableOpacity style={styles.buttonLogin} onPress={loginFunc}>
                 <Text style={styles.textButtonLogin}>Login</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Sign Up & Google Login */}
             <View style={styles.signUpContainer}>
-              <TouchableOpacity style={styles.buttonSignUp} onPress={()=>navigation.navigate('SignUp')} >
+              <TouchableOpacity
+                style={styles.buttonSignUp}
+                onPress={() => navigation.navigate("SignUp")}
+              >
                 <Text style={styles.textButtonSignUp}>Sign Up</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonGoogle}>
+              <TouchableOpacity style={styles.buttonGoogle} onPress={onGoogleButtonPress}>
                 <Text style={styles.textButtonGg}>Connect with Google</Text>
               </TouchableOpacity>
             </View>
@@ -101,7 +146,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 
-  // Background Image
   backgroundContainer: {
     height: "60%",
   },
@@ -119,12 +163,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#eeefab",
   },
-  // Main Login Form
+
   main: {
     backgroundColor: "white",
     height: "100%",
     borderRadius: 50,
-    marginTop: -100, // Overlap with the background
+    marginTop: -100,
     paddingHorizontal: 30,
     paddingVertical: 40,
     shadowColor: "#000",
@@ -133,12 +177,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+
   textLogin: {
     color: "#568f56",
     fontWeight: "500",
     fontSize: 27,
     marginBottom: 20,
   },
+
   textInput: {
     height: 50,
     borderBottomWidth: 1,
@@ -147,18 +193,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
+
   loginButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     height: 80,
   },
+
   forgotPassword: {
     color: "#568f56",
     fontSize: 14,
     marginBottom: 15,
     justifyContent: "center",
   },
+
   buttonLogin: {
     backgroundColor: "#568f56",
     paddingVertical: 15,
@@ -167,15 +216,18 @@ const styles = StyleSheet.create({
     width: 100,
     height: 50,
   },
+
   textButtonLogin: {
     color: "#FFF",
     fontWeight: "600",
     fontSize: 16,
   },
+
   signUpContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
+
   buttonSignUp: {
     width: 100,
     height: 50,
@@ -185,11 +237,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   textButtonSignUp: {
     color: "#568f56",
     fontWeight: "600",
     fontSize: 16,
   },
+
   buttonGoogle: {
     width: 240,
     height: 50,
@@ -199,6 +253,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   textButtonGg: {
     color: "#568f56",
     fontWeight: "600",

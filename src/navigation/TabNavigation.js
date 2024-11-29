@@ -1,31 +1,31 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
-import 'react-native-gesture-handler';
-import React from 'react';
+import {NavigationContainer, StackActions, useFocusEffect} from '@react-navigation/native';
+import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import HomeNavigation from './HomeNavigation';
-import StoreScreen from '../screen/StoreScreen';
-import ProfileNavigation from './ProfileNavigation';
 import OrderNavigation from './OrderNavigation';
 import StoreNavigation from './StoreNavigation';
+import ProfileNavigation from './ProfileNavigation';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {Text} from 'react-native';
+import LoginScreen from '../screen/LoginScreen';
+import SignUpScreen from '../screen/SignUpScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { colorTheme } from '../component/store';
 
 const Tab = createBottomTabNavigator();
-const TabNavigation = () => {
-  return (
-    <NavigationContainer>
-      <Tab.Navigator
+const Stack = createNativeStackNavigator();
+const TabNav = () =>{
+  return(
+    <Tab.Navigator
+        initialRouteName="HomeNav"
         screenOptions={({route}) => ({
           tabBarIcon: ({color, size}) => {
             let iconName;
-            if (route.name === 'Home') {
-              iconName = 'home';
-            } else if (route.name === 'Order') {
-              iconName = 'coffee';
-            } else if (route.name === 'Store') {
-              iconName = 'map-marker';
-            } else {
-              iconName = 'user';
-            }
+            if (route.name === 'HomeNav') iconName = 'home';
+            else if (route.name === 'OrderNav') iconName = 'coffee';
+            else if (route.name === 'StoreNav') iconName = 'map-marker';
+            else iconName = 'user';
             return <Icon name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: '#7ec479',
@@ -34,18 +34,40 @@ const TabNavigation = () => {
             height: 70,
             paddingTop: 7,
             borderTopRightRadius: 30,
-            borderTopLeftRadius: 30, 
+            borderTopLeftRadius: 30,
+          },
+          headerShown: false,
+          tabBarLabel: () => {
+            let iconName;
+            if (route.name === 'HomeNav') iconName = 'Home';
+            else if (route.name === 'OrderNav') iconName = 'Order';
+            else if (route.name === 'StoreNav') iconName = 'Store';
+            else iconName = 'Profile';
+            return <Text>{iconName}</Text>;
           },
         })}>
-        <Tab.Screen
-          name="Home"
-          component={HomeNavigation}
-          options={{headerShown: false}}
-        />
-        <Tab.Screen name="Order" component={OrderNavigation} />
-        <Tab.Screen name="Store" component={StoreNavigation} />
-        <Tab.Screen name="Profile" component={ProfileNavigation} />
-      </Tab.Navigator>
+        <Tab.Screen name="HomeNav" component={HomeNavigation} />
+        <Tab.Screen name="OrderNav" component={OrderNavigation} />
+        <Tab.Screen name="StoreNav" component={StoreNavigation} />
+        <Tab.Screen name="ProfileNav" component={ProfileNavigation} />
+      </Tab.Navigator> 
+  )
+}
+
+const TabNavigation = ({navigation}) => {
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={({route})=>({
+            headerTintColor: colorTheme.greenText,
+            headerShown:false
+        })}
+      >
+        <Stack.Screen name='Login' component={LoginScreen}/>
+        <Stack.Screen name='SignUp' component={SignUpScreen}/>
+        <Stack.Screen name='Tab' component={TabNav}/>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

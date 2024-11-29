@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: "row",
         justifyContent: "space-between",
-        borderBottomColor: "#000",
+        borderBottomColor: colorTheme.grayLine,
         borderBottomWidth: 1,
         alignItems: "center",
         paddingVertical: 10,

@@ -9,7 +9,7 @@ import TypeDrinkScreen from '../screen/TypeDrinkScreen';
 import ProductDetail from '../screen/ProductDetail';
 
 const Stack = createNativeStackNavigator();
-const OrderNavigation = () => {
+const OrderNavigation = ({route}) => {
     return(
         <Stack.Navigator
             screenOptions={({route}) => {

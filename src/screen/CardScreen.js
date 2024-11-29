@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import {colorTheme, PayInStoreTop} from '../component/store';
-const CardScreen = ({navigation}) => {
+const CardScreen = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <PayInStoreTop navigation={navigation} text={'Pay In Store'}/>

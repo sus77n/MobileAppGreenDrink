@@ -82,15 +82,17 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     textField: {
-        borderBlockColor: colorTheme.grayLine,
+        borderBottomColor: colorTheme.grayLine,
         borderBottomWidth: 1,
         paddingHorizontal: "2%",
         fontSize: 16,
+        fontWeight:"500",
         marginBottom: "3%",
         marginTop: "-2%",
     },
     text: {
         color: colorTheme.black,
+        fontWeight:"500",
         fontSize: 16,
     },
     dateInput: {
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderColor: colorTheme.greenBackground,
         marginHorizontal: "auto",
-        paddingVertical: 6,
+        paddingVertical: '2%',
         marginTop: "5%"
     },
     saveTextbtn: {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ImageBackground,
   SafeAreaView,
@@ -10,9 +10,36 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Alert,
 } from "react-native";
+import auth from '@react-native-firebase/auth';
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const loginFunc = () =>{
+    auth().signInWithEmailAndPassword(email, password)
+    .then((res) => {
+      console.log(res)
+      Alert.alert('','Login successfully',[
+        {
+          text:'Ok',
+          onPress:()=>{
+            navigation.navigate('Tab')
+          }
+        }
+      ])
+      
+    })
+    .catch(e => {
+      console.log(e);
+      Alert.alert('Wrong username or password, try again')
+      setEmail('')
+      setPassword('')
+    })
+  }
+
   return (
     <SafeAreaView style={styles.layout}>
       <KeyboardAvoidingView
@@ -35,20 +62,26 @@ const LoginScreen = () => {
             <Text style={styles.textLogin}>Please log in</Text>
 
             {/* Inputs */}
-            <TextInput placeholder="Number phone" style={styles.textInput} />
-            <TextInput placeholder="Password" style={styles.textInput} secureTextEntry />
+            <TextInput placeholder="Number phone" style={styles.textInput} 
+                              value={email}
+                              onChangeText={setEmail}
+            />
+            <TextInput placeholder="Password" style={styles.textInput} secureTextEntry 
+                              value={password}
+                              onChangeText={setPassword}
+            />
 
             {/* Login Button & Forgot Password */}
             <View style={styles.loginButtonContainer}>
               <Text style={styles.forgotPassword}>Forgot password?</Text>
-              <TouchableOpacity style={styles.buttonLogin}>
+              <TouchableOpacity style={styles.buttonLogin} onPress={() => loginFunc()}>
                 <Text style={styles.textButtonLogin}>Login</Text>
               </TouchableOpacity>
             </View>
 
             {/* Sign Up & Google Login */}
             <View style={styles.signUpContainer}>
-              <TouchableOpacity style={styles.buttonSignUp}>
+              <TouchableOpacity style={styles.buttonSignUp} onPress={()=>navigation.navigate('SignUp')} >
                 <Text style={styles.textButtonSignUp}>Sign Up</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonGoogle}>

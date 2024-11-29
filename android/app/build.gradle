@@ -119,5 +119,13 @@ dependencies {
     implementation project(':react-native-vector-icons')
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+      // Import the Firebase BoM
+  implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+  // Add the dependency for the Firebase SDK for Google Analytics
+  implementation("com.google.firebase:firebase-analytics")
 }
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+apply plugin: 'com.google.gms.google-services'
+project.ext.react = [
+    enableHermes: false
+]

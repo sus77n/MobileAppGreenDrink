@@ -92,10 +92,10 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </TouchableOpacity>
         {/* Card Section */}
-        <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
+      </ScrollView>
+      <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
           <Text style={styles.cardButtonText}>₫20,000 on card</Text>
         </TouchableOpacity>
-      </ScrollView>
     </SafeAreaView>
   );
 };

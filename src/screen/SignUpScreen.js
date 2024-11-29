@@ -10,14 +10,28 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Alert,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import DatePicker from 'react-native-date-picker';
+import auth from '@react-native-firebase/auth';
 
 const SignUpScreen = () => {
   const [currency, setCurrency] = useState('Miss');
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const signUpFunc = () =>{
+    auth().createUserWithEmailAndPassword(email, password).then(()=>{
+      Alert.alert("User created")
+    })
+    .catch((e)=>{
+      console.log("Sign up error: " + e)
+    })
+  }
+
   return (
     <SafeAreaView style={styles.layout}>
       <View>
@@ -42,11 +56,17 @@ const SignUpScreen = () => {
               <Text style={styles.textLogin}>First name:</Text>
               <TextInput style={styles.textInput} />
               <Text style={styles.textLogin}>Last name:</Text>
-              <TextInput style={styles.textInput} secureTextEntry />
-              <Text style={styles.textLogin}>Number phone:</Text>
-              <TextInput style={styles.textInput} secureTextEntry />
+              <TextInput style={styles.textInput}/>
               <Text style={styles.textLogin}>Email:</Text>
-              <TextInput style={styles.textInput} secureTextEntry />
+              <TextInput style={styles.textInput} 
+                value={email}
+                onChangeText={setEmail}
+              />
+              <Text style={styles.textLogin}>Password:</Text>
+              <TextInput style={styles.textInput} 
+                value={password}
+                onChangeText={setPassword}
+              />
               <DatePicker
                 modal
                 open={open}
@@ -61,8 +81,8 @@ const SignUpScreen = () => {
               />
               {/* Login Button & Forgot Password */}
               <View style={styles.loginButtonContainer}>
-                <TouchableOpacity style={styles.buttonLogin}>
-                  <Text style={styles.textButtonLogin}>Login</Text>
+                <TouchableOpacity style={styles.buttonLogin} onPress={()=>signUpFunc()}>
+                  <Text style={styles.textButtonLogin}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
             </View>

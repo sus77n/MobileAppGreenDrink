@@ -49,13 +49,9 @@ export const PayInStoreTop = ({navigation, text}) => {
   return (
     <View style={styles.top}>
       <Text style={styles.title}>{text}</Text>
-      <TouchableOpacity
-        onPress={() =>
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Home'}],
-          })
-        }>
+      <TouchableOpacity onPress={() => {
+        navigation.popToTop();
+      }}>
         <Text style={styles.iconClose}>X</Text>
       </TouchableOpacity>
     </View>
@@ -88,13 +84,15 @@ export const TopGoBack = ({navigation, text}) => {
 
   return (
     <View style={styles.top}>
-      <TouchableOpacity
-        onPress={() =>
-          navigation.goBack()
-        }>
-        <Icon name="angle-left" color={colorTheme.greenText} size={30} style={styles.iconBack}/>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Icon
+          name="angle-left"
+          color={colorTheme.greenText}
+          size={30}
+          style={styles.iconBack}
+        />
       </TouchableOpacity>
       <Text style={styles.title}>{text}</Text>
     </View>
   );
-}
+};

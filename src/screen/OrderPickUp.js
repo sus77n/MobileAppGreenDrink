@@ -23,7 +23,7 @@ const OrderPickUp = ({navigation}) => {
               style={styles.imageWrap}
               onPress={() => navigation.navigate('ProductDetail')}>
               <Image
-                source={require('../../assets/img/blended1.png')}
+                source={{uri: 'https://i.pinimg.com/736x/70/e6/1e/70e61e5cc347d34f192e7249ceb31033.jpg'}}
                 style={styles.img}
               />
             </TouchableOpacity>
@@ -34,7 +34,7 @@ const OrderPickUp = ({navigation}) => {
               <TouchableOpacity>
                 <Icon
                   name="heart"
-                  color={'white'}
+                  color={colorTheme.greenText}
                   size={20}
                   style={{marginRight: 20}}
                 />
@@ -51,13 +51,13 @@ const OrderPickUp = ({navigation}) => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.nameWrap}
+              style={styles.nameWrapEven}
               onPress={() => navigation.navigate('ProductDetail')}>
               <Text style={styles.name}>Zesty Lemonade Fizz</Text>
               <TouchableOpacity>
                 <Icon
                   name="heart-o"
-                  color={'white'}
+                  color={colorTheme.greenText}
                   size={20}
                   style={{marginRight: 20}}
                 />
@@ -80,7 +80,7 @@ const OrderPickUp = ({navigation}) => {
               <TouchableOpacity>
                 <Icon
                   name="heart-o"
-                  color={'white'}
+                  color={colorTheme.greenText}
                   size={20}
                   style={{marginRight: 20}}
                 />
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: colorTheme.greenText,
     fontWeight: '600',
+    marginBottom: '5%'
   },
 
   typeDrink: {
@@ -177,37 +178,51 @@ const styles = StyleSheet.create({
   drinkRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: '7%',
+    // marginTop: '3%',
   },
   imageWrap: {
+    left: '3%',
     zIndex: 1,
-    backgroundColor: colorTheme.lightGreeenBackground,
-    paddingHorizontal: '4%',
-    borderRadius: 20,
+    backgroundColor: colorTheme.white,
+    paddingHorizontal: '7%',
+    paddingVertical:'4%',
+    borderRadius: 100,
   },
   img: {
-    top: '-25%',
-    height: 67,
+    width: 30,
+    height: 50,
   },
   nameWrap: {
     zIndex: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    width: '85%',
-    backgroundColor: colorTheme.greenBackground,
-    left: '-4%',
-    paddingVertical: '5%',
-    borderRadius: 10,
+    width: '100%',
+    backgroundColor: colorTheme.greenBackgroundDrink,
+    left: '-22%',
+    paddingVertical: '11%',
+    // borderRadius: 10,
   },
   name: {
     width: '60%',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     textAlign: 'center',
-    color: colorTheme.white,
-    left: '-10%',
+    color: colorTheme.greenText,
+    left: '-5%',
   },
+  nameWrapEven: {
+    zIndex: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    width: '100%',
+    backgroundColor: colorTheme.white,
+    left: '-22%',
+    paddingVertical: '11%',
+    // borderRadius: 10,
+  },
+
   typeWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',

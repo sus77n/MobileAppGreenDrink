@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -9,8 +9,26 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import firestore from '@react-native-firebase/firestore';
+
 
 const HomeScreen = ({ navigation }) => {
+  const [test, setTest] = useState('')
+
+  const getData = async () =>{
+    const drinkCollection = await firestore().collection('drinkTest').get();
+    console.log(drinkCollection.docs[0].data());
+    setTest(drinkCollection.docs[0].data())
+  }
+
+  const sourceImage = '../../asset/img/' + test.image;
+
+  useEffect(() =>{
+    getData();
+    console.log(test);
+    console.log(test.image);
+  },[]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -81,10 +99,11 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.drinksSection} onPress={() => navigation.navigate('NewsScreen')}>
           <View style={styles.drinkCard}>
             <Image
-              source={{ uri: 'https://via.placeholder.com/100' }}
+
+              source={{uri: 'https://i.pinimg.com/736x/70/e6/1e/70e61e5cc347d34f192e7249ceb31033.jpg'}}
               style={styles.drinkImage}
             />
-            <Text style={styles.drinkTitle}>Zesty Lemonade Fizz</Text>
+            <Text style={styles.drinkTitle}>{test.name}</Text>
             <Text style={styles.drinkDescription}>
               Bursting with the tang of freshly squeezed lemons, paired with a
               fizzing soda base.
@@ -269,8 +288,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   drinkImage: {
-    width: '100%',
-    height: 100,
+    width: 200,
+    height: 300,
     borderRadius: 10,
     marginBottom: 10,
   },

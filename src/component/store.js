@@ -5,6 +5,7 @@ export const colorTheme = {
   lightGreeenBackground: '#87e281',
   greenBackground: '#7ec479',
   greenText: '#568f56',
+  greenBackgroundDrink: '#e1ead4',
   orangeBackground: '#f79814',
   orangeText: '#fabe11',
   grayBackground: '#f5f5f5',
@@ -17,6 +18,7 @@ export const colorTheme = {
   silver: '#9d9d9d',
   gold: '#fabe11',
   diamond: '#3ea8ff',
+
 };
 
 export const PayInStoreTop = ({navigation, text}) => {

@@ -4,7 +4,7 @@ import { colorTheme } from '../component/store';
 
 const HomeStoreScreen = ({navigation}) => {
   const [transactions, setTransactions] = useState([
-    { id: 'T1000001', status: 'Not Received' },
+    { id: 'T1000001', status: 'Received' },
     { id: 'T1000002', status: 'Completed' },
     { id: 'T1000003', status: 'Received' },
   ]);
@@ -25,16 +25,6 @@ const HomeStoreScreen = ({navigation}) => {
         <Text style={styles.transactionId}>Transaction ID: {item.id}</Text>
         <Text style={styles.statusText}>Status: {item.status}</Text>
         <View style={styles.buttonContainer}>
-          {item.status === 'Not Received' && (
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleTransactionStatus(item.id, 'Received')}
-              disabled={item.status === 'Received'} // Disable after status change
-            >
-              <Text style={styles.buttonText}>Mark as Received</Text>
-            </TouchableOpacity>
-          )}
-
           {item.status === 'Received' && (
             <TouchableOpacity
               style={styles.button}

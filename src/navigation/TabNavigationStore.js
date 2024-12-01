@@ -9,21 +9,46 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ManageDetailTrans from '../screen/ManageDetailTrans';
 import { colorTheme } from '../component/store';
+import AddProduct from '../screen/AddProduct';
+import EditProduct from '../screen/EditProduct';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+const getTabBarVisibility = (route) => {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+  // Specify which screens should hide the tab bar
+  const hiddenScreens = ['Edit', 'Add', 'ManageDetailTrans'];
+  return hiddenScreens.includes(routeName) ? 'none' : 'flex';
+};
 const HomeStack = () =>{
  return(
   <Stack.Navigator
   screenOptions={({route})=>({
             headerTintColor: colorTheme.greenText,
-            headerShown:false
+            headerShown:false,
+            tabBarStyle: { display: getTabBarVisibility(route) },
         })}
   >
   <Stack.Screen name="HomeMain" component={HomeStoreScreen}/>
   <Stack.Screen name='ManageDetailTrans' component={ManageDetailTrans}/>
 </Stack.Navigator>
  )
+}
+
+const ProductStack = () =>{
+  return(
+    <Stack.Navigator
+    screenOptions={({route})=>({
+              headerTintColor: colorTheme.greenText,
+              headerShown:false
+          })}
+    >
+    <Stack.Screen name="Manage" component={ManageProduct}/>
+    <Stack.Screen name='Add' component={AddProduct}/>
+    <Stack.Screen name='Edit' component={EditProduct}/>
+  </Stack.Navigator>
+   )
 }
 
 const TabNavigationStore = () => {
@@ -51,11 +76,12 @@ const TabNavigationStore = () => {
           shadowOpacity: 0.25,
           shadowRadius: 30,
           elevation: 10,
+          display: getTabBarVisibility(route)
         },
         headerShown: false,
       })}>
       <Tab.Screen name="Home" component={HomeStack} />
-      <Tab.Screen name="Product" component={ManageProduct} />
+      <Tab.Screen name="Product" component={ProductStack} />
       <Tab.Screen name="Store" component={ManageStore} />
       <Tab.Screen name="Transaction" component={ManageTransaction} />
     </Tab.Navigator>

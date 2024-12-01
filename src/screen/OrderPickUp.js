@@ -31,7 +31,6 @@ const OrderPickUp = ({navigation}) => {
         });
 
         setCategories(categories);
-        console.log(categories);
         setLoading(false);
       });
 

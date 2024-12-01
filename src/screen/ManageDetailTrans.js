@@ -9,9 +9,9 @@ import {
   Alert,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox'; // Correct import for CheckBox
-import {colorTheme} from '../component/store';
+import {colorTheme, TopGoBack} from '../component/store';
 
-const ManageDetailTrans = ({route}) => {
+const ManageDetailTrans = ({navigation,route}) => {
   const transaction = {
     id: 'T1000001',
     customerName: 'John Doe',
@@ -86,6 +86,7 @@ const ManageDetailTrans = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+    <TopGoBack navigation={navigation} text={transaction.id}/>
       {/* Customer Info at the top */}
       <View style={styles.customerCard}>
         <Text style={styles.customerName}>

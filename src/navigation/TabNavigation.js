@@ -82,7 +82,7 @@ const TabNav = () => {
 
 const TabNavigation = ({navigation}) => {
   return (
-    <NavigationContainer>
+
       <Stack.Navigator
         screenOptions={({route}) => ({
           headerTintColor: colorTheme.greenText,
@@ -92,7 +92,7 @@ const TabNavigation = ({navigation}) => {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Tab" component={TabNav} />
       </Stack.Navigator>
-    </NavigationContainer>
+
   );
 };
 

@@ -12,7 +12,7 @@ import {
 import {colorTheme, TopGoBack} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
-const TypeDrinkScreen = ({navigation, route}) => {
+const ManageProduct = ({navigation, route}) => {
   const {cate} = route.params;
 
   const [loading, setLoading] = useState(true);
@@ -82,7 +82,7 @@ const TypeDrinkScreen = ({navigation, route}) => {
         style={styles.main}
         data={drinks}
         renderItem={renderDrink}
-        keyExtractor={item => item.key}
+        keyExtractor={(item) => item.id}
       />
       <TouchableOpacity
         style={styles.cart}
@@ -130,8 +130,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     width: '100%',
+    // backgroundColor: colorTheme.greenBackgroundDrink,
     left: '-22%',
     paddingVertical: '11%',
+    // borderRadius: 10,
   },
   name: {
     width: '60%',
@@ -150,6 +152,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.white,
     left: '-22%',
     paddingVertical: '11%',
+    // borderRadius: 10,
   },
   cart: {
     position:'absolute',
@@ -171,4 +174,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TypeDrinkScreen;
+export default ManageProduct;

@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, Dimensions } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import { colorTheme } from '../component/store';
 
-const { width, height } = Dimensions.get('window');
-
-const HomeStoreScreen = () => {
-  // Mock data for transactions
+const HomeStoreScreen = ({navigation}) => {
   const [transactions, setTransactions] = useState([
     { id: 'T1000001', status: 'Not Received' },
     { id: 'T1000002', status: 'Completed' },
     { id: 'T1000003', status: 'Received' },
   ]);
 
-  // Update the status of a transaction
   const handleTransactionStatus = (transactionId, newStatus) => {
     const updatedTransactions = transactions.map(transaction => {
       if (transaction.id === transactionId) {
@@ -20,19 +17,19 @@ const HomeStoreScreen = () => {
       return transaction;
     });
     setTransactions(updatedTransactions);
-    Alert.alert('Success', `Transaction ${transactionId} marked as ${newStatus}`);
   };
 
   const renderTransactionItem = ({ item }) => {
     return (
-      <View style={styles.transactionCard}>
+      <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageDetailTrans')}>
         <Text style={styles.transactionId}>Transaction ID: {item.id}</Text>
-        <Text>Status: {item.status}</Text>
+        <Text style={styles.statusText}>Status: {item.status}</Text>
         <View style={styles.buttonContainer}>
           {item.status === 'Not Received' && (
             <TouchableOpacity
               style={styles.button}
               onPress={() => handleTransactionStatus(item.id, 'Received')}
+              disabled={item.status === 'Received'} // Disable after status change
             >
               <Text style={styles.buttonText}>Mark as Received</Text>
             </TouchableOpacity>
@@ -42,6 +39,7 @@ const HomeStoreScreen = () => {
             <TouchableOpacity
               style={styles.button}
               onPress={() => handleTransactionStatus(item.id, 'Completed')}
+              disabled={item.status === 'Completed'} // Disable after status change
             >
               <Text style={styles.buttonText}>Mark as Completed</Text>
             </TouchableOpacity>
@@ -51,12 +49,15 @@ const HomeStoreScreen = () => {
             <Text style={styles.completedText}>Completed</Text>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
+         <View style={styles.greetingSection}>
+          <Text style={styles.greetingText}>Green Drink Store</Text>
+        </View>
       <FlatList
         data={transactions}
         renderItem={renderTransactionItem}
@@ -70,15 +71,34 @@ const HomeStoreScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colorTheme.grayBackground,
   },
   listContainer: {
-    paddingHorizontal: '5%', // Percentage-based padding
+    paddingHorizontal: '5%',
+  },
+  greetingSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    backgroundColor: colorTheme.white,
+    paddingVertical: '4%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  greetingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colorTheme.greenText,
   },
   transactionCard: {
     backgroundColor: '#fff',
-    padding: '5%', // Percentage-based padding
-    marginBottom: '3%', // Margin in percentage
+    padding: '5%',
+    marginBottom: '3%',
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -87,19 +107,24 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   transactionId: {
-    fontSize: '5%', // Responsive font size (percentage)
+    fontSize: 12,
     fontWeight: 'bold',
+  },
+  statusText:{
+    color: colorTheme.black,
+    fontWeight: '600',
+    marginTop: '3%',
   },
   buttonContainer: {
     flexDirection: 'row',
-    marginTop: '3%', // Percentage margin
+    marginTop: '3%',
   },
   button: {
     backgroundColor: '#7ec479',
-    paddingVertical: '4%', // Vertical padding in percentage
-    paddingHorizontal: '6%', // Horizontal padding in percentage
+    paddingVertical: '4%',
+    paddingHorizontal: '6%',
     borderRadius: 5,
-    marginRight: '4%', // Right margin in percentage
+    marginRight: '4%',
   },
   buttonText: {
     color: '#fff',
@@ -108,7 +133,7 @@ const styles = StyleSheet.create({
   completedText: {
     color: 'green',
     fontWeight: 'bold',
-    marginTop: '3%', // Margin in percentage
+    marginTop: '3%',
   },
 });
 

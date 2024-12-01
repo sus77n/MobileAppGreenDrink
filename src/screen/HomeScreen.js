@@ -11,7 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getUser } from '../component/store';
+import { colorTheme, getUser } from '../component/store';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#568f56',
+    color: colorTheme.greenText,
   },
 
   balanceStarsSection: {

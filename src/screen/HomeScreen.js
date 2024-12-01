@@ -10,31 +10,46 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUser } from '../component/store';
 
 
 const HomeScreen = ({ navigation }) => {
-  const [test, setTest] = useState('')
+  const [user, setUser] = useState('');
+  // const [test, setTest] = useState('')
 
-  const getData = async () =>{
-    const drinkCollection = await firestore().collection('drinkTest').get();
-    console.log(drinkCollection.docs[0].data());
-    setTest(drinkCollection.docs[0].data())
-  }
+  // const getData = async () =>{
+  //   const drinkCollection = await firestore().collection('categories').get();
+  //   console.log(drinkCollection.docs[0].data());
+  //   setTest(drinkCollection.docs[0].data())
+  // }
 
-  const sourceImage = '../../asset/img/' + test.image;
+  // useEffect(() =>{
+  //   getData();
+  //   console.log(test);
+  //   console.log(test.image);
+  // },[]);
+  // const userGet = async () =>{
+  //   await getUser();
+  //   setUser(userGet);
+  // }
 
-  useEffect(() =>{
-    getData();
-    console.log(test);
-    console.log(test.image);
-  },[]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUser(); // Await the result of getUser
+      setUser(userData); // Update the state with the resolved user
+      console.log('User home screen:', userData);
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         {/* Greeting Section */}
         <View style={styles.greetingSection}>
-          <Text style={styles.greetingText}>Good morning, Peter! 🌞</Text>
+          <Text style={styles.greetingText}>Good morning, {user.email}! 🌞</Text>
           <TouchableOpacity>
             <Text style={styles.mailIcon}>📩</Text>
           </TouchableOpacity>
@@ -100,10 +115,10 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.drinkCard}>
             <Image
 
-              source={{uri: 'https://i.pinimg.com/736x/70/e6/1e/70e61e5cc347d34f192e7249ceb31033.jpg'}}
+              source={{uri: 'https://drive.usercontent.google.com/download?id=1m4CPS1rwv1rDRXYvxPQLInG5e3bH69XG&export=view&authuser=0'}}
               style={styles.drinkImage}
             />
-            <Text style={styles.drinkTitle}>{test.name}</Text>
+            <Text style={styles.drinkTitle}>hh</Text>
             <Text style={styles.drinkDescription}>
               Bursting with the tang of freshly squeezed lemons, paired with a
               fizzing soda base.

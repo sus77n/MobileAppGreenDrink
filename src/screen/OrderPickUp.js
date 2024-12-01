@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  FlatList,
   Image,
   SafeAreaView,
   ScrollView,
@@ -10,147 +11,133 @@ import {
 } from 'react-native';
 import {colorTheme, TopGoBack} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import firestore from '@react-native-firebase/firestore';
 const OrderPickUp = ({navigation}) => {
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [seasonalDrink, setSeasonalDrink] = useState([]);
+
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('categories')
+      .onSnapshot(querySnapshot => {
+        const categories = [];
+
+        querySnapshot.forEach(documentSnapshot => {
+          categories.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
+        });
+
+        setCategories(categories);
+        console.log(categories);
+        setLoading(false);
+      });
+
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+  }, []);
+
+  const renderCategories = ({item: cate}) => {
+    return (
+      <TouchableOpacity
+        style={[styles.drinkTag, {marginBottom: 10}]}
+        onPress={() => navigation.navigate('TypeDrink', {cate})}>
+        <View style={styles.imageWrapTag}>
+          <Image source={{uri: cate.img}} style={styles.img} />
+        </View>
+        <View style={styles.nameWrapTag}>
+          <Text style={styles.nameTag}>{cate.name}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('drinks')
+      .onSnapshot(querySnapshot => {
+        const drinks = [];
+
+        querySnapshot.forEach(documentSnapshot => {
+          drinks.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
+        });
+
+        const filter = drinks.filter(item => item.category === 'Seasonal');
+        setSeasonalDrink(filter);
+        setLoading(false);
+      });
+
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+  }, []);
+  const renderDrink = ({item: drink, index}) => {
+    return (
+      <TouchableOpacity
+        style={styles.drinkRow}
+        onPress={() =>
+          navigation.navigate('ProductDetail', {drink})
+        }>
+        <View style={styles.imageWrap}>
+          <Image source={{uri: drink.img}} style={styles.img} />
+        </View>
+        <View
+          style={[
+            styles.nameWrap,
+            {
+              backgroundColor:
+                index % 2 === 0
+                  ? colorTheme.greenBackgroundDrink
+                  : colorTheme.white,
+            },
+          ]}>
+          <Text style={styles.name}>{drink.name}</Text>
+          <TouchableOpacity>
+            <Icon
+              name="heart-o"
+              color={colorTheme.greenText}
+              size={20}
+              style={{marginRight: '8%'}}
+            />
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TopGoBack navigation={navigation} text={'Order & Pick-up'} />
       <View style={styles.searchSection}></View>
-      <ScrollView style={styles.main}>
+      <View style={styles.main}>
         <View style={styles.typeDrink}>
           <Text style={styles.type}>Seasonal Drink Menu</Text>
-          <View style={styles.drinkRow}>
-            <TouchableOpacity
-              style={styles.imageWrap}
-              onPress={() => navigation.navigate('ProductDetail')}>
-              <Image
-                source={{uri: 'https://i.pinimg.com/736x/70/e6/1e/70e61e5cc347d34f192e7249ceb31033.jpg'}}
-                style={styles.img}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.nameWrap}
-              onPress={() => navigation.navigate('ProductDetail')}>
-              <Text style={styles.name}>Zesty Lemonade Fizz</Text>
-              <TouchableOpacity>
-                <Icon
-                  name="heart"
-                  color={colorTheme.greenText}
-                  size={20}
-                  style={{marginRight: 20}}
-                />
-              </TouchableOpacity>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.drinkRow}>
-            <TouchableOpacity
-              style={styles.imageWrap}
-              onPress={() => navigation.navigate('ProductDetail')}>
-              <Image
-                source={require('../../assets/img/tea3.png')}
-                style={styles.img}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.nameWrapEven}
-              onPress={() => navigation.navigate('ProductDetail')}>
-              <Text style={styles.name}>Zesty Lemonade Fizz</Text>
-              <TouchableOpacity>
-                <Icon
-                  name="heart-o"
-                  color={colorTheme.greenText}
-                  size={20}
-                  style={{marginRight: 20}}
-                />
-              </TouchableOpacity>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.drinkRow}>
-            <TouchableOpacity
-              style={styles.imageWrap}
-              onPress={() => navigation.navigate('ProductDetail')}>
-              <Image
-                source={require('../../assets/img/coffee5.png')}
-                style={styles.img}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.nameWrap}
-              onPress={() => navigation.navigate('ProductDetail')}>
-              <Text style={styles.name}>Zesty Lemonade Fizz</Text>
-              <TouchableOpacity>
-                <Icon
-                  name="heart-o"
-                  color={colorTheme.greenText}
-                  size={20}
-                  style={{marginRight: 20}}
-                />
-              </TouchableOpacity>
-            </TouchableOpacity>
-          </View>
+          <FlatList
+            data={seasonalDrink}
+            renderItem={renderDrink}
+            keyExtractor={(item) =>item.id}
+          />
+
         </View>
         <View style={styles.typeDrink}>
           <Text style={styles.type}>Drink Menu</Text>
-          <View style={styles.typeWrap}>
-            <TouchableOpacity
-              style={[styles.drinkTag, {marginBottom: 10}]}
-              onPress={() => navigation.navigate('TypeDrink')}>
-              <View style={styles.imageWrapTag}>
-                <Image
-                  source={require('../../assets/img/coffee2.png')}
-                  style={styles.img}
-                />
-              </View>
-              <View style={styles.nameWrapTag}>
-                <Text style={styles.nameTag}>Coffee</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.drinkTag, {marginBottom: 10}]}
-              onPress={() => navigation.navigate('TypeDrink')}>
-              <View style={styles.imageWrapTag}>
-                <Image
-                  source={require('../../assets/img/tea1.png')}
-                  style={styles.img}
-                />
-              </View>
-              <View style={styles.nameWrapTag}>
-                <Text style={styles.nameTag}>Tea</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.drinkTag, {marginBottom: 10}]}
-              onPress={() => navigation.navigate('TypeDrink')}>
-              <View style={styles.imageWrapTag}>
-                <Image
-                  source={require('../../assets/img/blended4.png')}
-                  style={styles.img}
-                  onPress={() => navigation.navigate('TypeDrink')}
-                />
-              </View>
-              <View style={styles.nameWrapTag}>
-                <Text style={styles.nameTag}>Blended</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.drinkTag, {marginBottom: 10}]}
-              onPress={() => navigation.navigate('TypeDrink')}>
-              <View style={styles.imageWrapTag}>
-                <Image
-                  source={require('../../assets/img/coffee5.png')}
-                  style={styles.img}
-                />
-              </View>
-              <View style={styles.nameWrapTag}>
-                <Text style={styles.nameTag}>Others</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <FlatList
+            data={categories}
+            renderItem={renderCategories}
+            keyExtractor={item => item.key}
+            numColumns={2}></FlatList>
         </View>
-      </ScrollView>
-      <TouchableOpacity style={styles.cart} onPress={() => navigation.navigate('ReviewOrder')}>
-          <Text style={styles.total}>Total: đ50,000</Text>
-          <Icon name="shopping-cart" size={30} color={colorTheme.white} />
-        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        style={styles.cart}
+        onPress={() => navigation.navigate('ReviewOrder')}>
+        <Text style={styles.total}>Total: đ50,000</Text>
+        <Icon name="shopping-cart" size={30} color={colorTheme.white} />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -169,11 +156,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: colorTheme.greenText,
     fontWeight: '600',
-    marginBottom: '5%'
+    marginBottom: '5%',
   },
 
   typeDrink: {
     marginTop: '5%',
+    width: '100%',
   },
   drinkRow: {
     flexDirection: 'row',
@@ -185,7 +173,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     backgroundColor: colorTheme.white,
     paddingHorizontal: '7%',
-    paddingVertical:'4%',
+    paddingVertical: '4%',
     borderRadius: 100,
   },
   img: {
@@ -222,49 +210,46 @@ const styles = StyleSheet.create({
     paddingVertical: '11%',
     // borderRadius: 10,
   },
-
-  typeWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
   drinkTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: '6%',
-    width: '48%',
+    marginBottom: '2%',
+    width: '48%', // This can be kept if space is properly managed.
+    marginHorizontal: '1%', // Add horizontal margin for spacing.
   },
   imageWrapTag: {
     zIndex: 1,
-    backgroundColor: colorTheme.lightGreeenBackground,
-    paddingHorizontal: '9%',
-    borderRadius: 20,
+    backgroundColor: colorTheme.white,
+    paddingHorizontal: '13%',
+    paddingVertical: '7%',
+    left: '6%',
+    borderRadius: 50,
   },
   nameWrapTag: {
     zIndex: 0,
     alignItems: 'center',
-    width: '65%',
-    backgroundColor: colorTheme.greenBackground,
-    left: '-8%',
-    paddingVertical: '9%',
-    borderRadius: 10,
+    width: '100%',
+    backgroundColor: colorTheme.greenBackgroundDrink,
+    left: '-42%',
+    paddingVertical: '18%',
   },
   nameTag: {
-    width: '100%',
+    width: '70%',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    color: colorTheme.white,
+    left: '19%',
+    color: colorTheme.greenText,
   },
   cart: {
     position:'absolute',
-    width:'100%',
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: '8%',
     paddingVertical: '5%',
-    bottom:0,
+    bottom: 0,
     backgroundColor: colorTheme.greenBackground,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,

@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -98,3 +100,14 @@ export const TopGoBack = ({navigation, text}) => {
     </View>
   );
 };
+
+export const getUser = async () => {
+  try {
+    const storedUser = await AsyncStorage.getItem('User');
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch (error) {
+    console.log('Error when getting user:', error);
+    return null;
+  }
+};
+

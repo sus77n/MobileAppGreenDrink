@@ -31,6 +31,8 @@ const TabNav = () => {
       'Delivery',
       'TransactionDetail',
       'ProfileDetail',
+      'TypeDrink',    
+      'ProductDetail'
     ];
     return hiddenScreens.includes(routeName) ? 'none' : 'flex';
   };

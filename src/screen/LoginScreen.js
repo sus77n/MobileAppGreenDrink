@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("abc@gmail.com");
@@ -62,11 +63,21 @@ const LoginScreen = ({ navigation }) => {
     }
   }
 
+  const setUserStorage = async (user) =>{
+    try {
+      await AsyncStorage.setItem('User', JSON.stringify(user));
+    } catch (error) {
+      console.log('Error when store user: ' + error);
+    }
+  }
+
   const loginFunc = () => {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
-        console.log(res);
+        console.log(res.user);
+        
+        setUserStorage(res.user)
         Alert.alert("", "Login successfully", [
           {
             text: "Ok",
@@ -83,6 +94,9 @@ const LoginScreen = ({ navigation }) => {
         setPassword("");
       });
   };
+
+
+
 
   return (
     <SafeAreaView style={styles.layout}>

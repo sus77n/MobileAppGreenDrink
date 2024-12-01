@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Image,
   ImageBackground,
@@ -8,67 +8,113 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, TopGoBack} from '../component/store';
+import {colorTheme} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
-const ProductDetail = ({navigation}) => {
+
+const ProductDetail = ({navigation, route}) => {
+  const [selectedSize, setSelectedSize] = useState('S');
+  const [sweetness, setSweetness] = useState('Regular');
+  const {drink} = route.params;
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
         source={require('../../assets/img/detailBackgroun.png')}
         style={{width: '101%', height: '115%'}}>
-        <TouchableOpacity
-        onPress={() =>
-          navigation.goBack()
-        }>
-        <Icon name="angle-left" color={colorTheme.greenText} size={30} style={styles.iconBack}/>
-      </TouchableOpacity>
+        {/* Back Button */}
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon
+            name="angle-left"
+            color={colorTheme.greenText}
+            size={30}
+            style={styles.iconBack}
+          />
+        </TouchableOpacity>
+
+        {/* Content */}
         <View style={styles.wrapWhite}>
+          {/* Top Section */}
           <View style={styles.top}>
             <View style={styles.topLeft}>
-              <Text style={styles.name}>Zesty Lemonade Fizz</Text>
-              <Text style={styles.descrip}>
-                Bursting with the tangy zing of freshly squeezed lemons, this
-                sparkling soda blends a hint of sweet wildflower.
-              </Text>
+              <Text style={styles.name}>{drink.name}</Text>
+              <Text style={styles.descrip}>{drink.description}</Text>
             </View>
             <View style={styles.topRight}>
-              <Image
-                source={require('../../assets/img/tea5w130.png')}
-                style={styles.img}
-              />
-              <Text style={styles.price}>đ50,000</Text>
+              <Image source={{uri: drink.img}} style={styles.img} />
+              <Text style={styles.price}>đ{drink.price}</Text>
             </View>
           </View>
+
+          {/* Drink Size Section */}
           <View style={styles.sizeSetion}>
             <Text style={styles.titleSize}>Drink size</Text>
             <View style={styles.sizeGroup}>
-              <TouchableOpacity style={styles.sizeSquareActive}>
-                <Image source={require('../../assets/img/sizeS.png')} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.sizeSquareUnactive}>
-                <Image source={require('../../assets/img/sizeM.png')} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.sizeSquareUnactive}>
-                <Image source={require('../../assets/img/sizeL.png')} />
-              </TouchableOpacity>
+              {['S', 'M', 'L'].map(size => (
+                <TouchableOpacity
+                  key={size}
+                  style={
+                    selectedSize === size
+                      ? styles.sizeSquareActive
+                      : styles.sizeSquareUnactive
+                  }
+                  onPress={() => setSelectedSize(size)}>
+                  <Image
+                    source={
+                      size === 'S'
+                        ? require('../../assets/img/sizeS.png')
+                        : size === 'M'
+                        ? require('../../assets/img/sizeM.png')
+                        : require('../../assets/img/sizeL.png')
+                    }
+                  />
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
+
+          {/* Sweetness Section */}
           <View style={styles.sweetSection}>
             <Text style={styles.titleSize}>Sweetness</Text>
             <View style={styles.buttonGroup}>
-              <TouchableOpacity style={styles.button} onPress={() => {}}>
-                <Text style={styles.buttonText}>Regular</Text>
+              <TouchableOpacity
+                style={
+                  sweetness === 'Regular'
+                    ? styles.button
+                    : styles.unactiveButton
+                }
+                onPress={() => setSweetness('Regular')}>
+                <Text
+                  style={
+                    sweetness === 'Regular'
+                      ? styles.buttonText
+                      : styles.unactiveButtonText
+                  }>
+                  Regular
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.unactiveButton}
-                onPress={() => {}}>
-                <Text style={styles.unactiveButtonText}>Less sweet</Text>
+                style={
+                  sweetness === 'Less sweet'
+                    ? styles.button
+                    : styles.unactiveButton
+                }
+                onPress={() => setSweetness('Less sweet')}>
+                <Text
+                  style={
+                    sweetness === 'Less sweet'
+                      ? styles.buttonText
+                      : styles.unactiveButtonText
+                  }>
+                  Less sweet
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
+
+          {/* Add to Cart Section */}
           <TouchableOpacity style={styles.cart}>
-                <Text style={styles.total}>Total: đ50,000</Text>
-                <Icon name='shopping-cart' size={30} color={colorTheme.white}/>
+            <Text style={styles.total}>Total: đ50,000</Text>
+            <Icon name="shopping-cart" size={30} color={colorTheme.white} />
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -82,7 +128,7 @@ const styles = StyleSheet.create({
   },
   iconBack: {
     marginLeft: '5%',
-    marginTop: '5%'
+    marginTop: '5%',
   },
   wrapWhite: {
     position: 'absolute',
@@ -118,13 +164,15 @@ const styles = StyleSheet.create({
   },
   img: {
     position: 'absolute',
-    marginTop: '-105%',
+    marginTop: '-120%',
+    width: "90%",
+    height: "160%",
   },
   price: {
     color: colorTheme.orangeBackground,
     fontWeight: '700',
     fontSize: 23,
-    marginTop: '50%',
+    marginTop: '60%',
   },
   sizeSetion: {
     paddingHorizontal: '8%',
@@ -196,18 +244,20 @@ const styles = StyleSheet.create({
     color: colorTheme.greenBackground,
     fontWeight: 'bold',
   },
-  cart:{
-    flexDirection:'row',
+  cart: {
+    position:'absolute',
+    width: '100%',
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center',
+    alignItems: 'center',
     paddingHorizontal: '8%',
-    paddingVertical:'5%',
-    marginTop: '8%',
+    paddingVertical: '5%',
+    bottom: '4%',
     backgroundColor: colorTheme.greenBackground,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
   },
-  total:{
+  total: {
     color: colorTheme.white,
     fontSize: 20,
     fontWeight: '700',

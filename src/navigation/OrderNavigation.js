@@ -9,23 +9,22 @@ import TypeDrinkScreen from '../screen/TypeDrinkScreen';
 import ProductDetail from '../screen/ProductDetail';
 
 const Stack = createNativeStackNavigator();
-const OrderNavigation = ({route}) => {
-    return(
+
+export const OrderNavigation = ({ route }) => {
+    return (
         <Stack.Navigator
             // initialRouteName={
 
             // }
-            screenOptions={({route}) => {
+            screenOptions={({ route }) => {
             }}
         >
-            <Stack.Screen name='Order' component={OrderScreen} options={{headerShown: false}}/>
-            <Stack.Screen name='OrderPickUp' component={OrderPickUp} options={{headerShown: false}}/>
-            <Stack.Screen name='Delivery' component={Delivery} options={{headerShown: false}}/>
-            <Stack.Screen name='ReviewOrder' component={ReviewOrder} options={{headerShown: false}}/>
-            <Stack.Screen name='TypeDrink' component={TypeDrinkScreen} options={{headerShown: false}}/>
-            <Stack.Screen name='ProductDetail' component={ProductDetail} options={{headerShown: false}}/>
+            <Stack.Screen name='Order' component={OrderScreen} options={{ headerShown: false }} />
+            <Stack.Screen name='OrderPickUp' component={OrderPickUp} options={{ headerShown: false }} />
+            <Stack.Screen name='Delivery' component={Delivery} options={{ headerShown: false }} />
+            <Stack.Screen name='ReviewOrder' component={ReviewOrder} options={{ headerShown: false }} />
+            <Stack.Screen name='TypeDrink' component={TypeDrinkScreen} options={{ headerShown: false }} />
+            <Stack.Screen name='ProductDetail' component={ProductDetail} options={{ headerShown: false }} />
         </Stack.Navigator>
     )
 }
-
-export default OrderNavigation;

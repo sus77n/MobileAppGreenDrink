@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useState } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export const colorTheme = {
@@ -23,7 +22,7 @@ export const colorTheme = {
 
 };
 
-export const PayInStoreTop = ({navigation, text}) => {
+export const PayInStoreTop = ({ navigation, text }) => {
   const styles = StyleSheet.create({
     top: {
       flexDirection: 'row',
@@ -32,7 +31,7 @@ export const PayInStoreTop = ({navigation, text}) => {
       height: 70,
       elevation: 5,
       shadowColor: '#000',
-      shadowOffset: {width: 2, height: 5},
+      shadowOffset: { width: 2, height: 5 },
       shadowOpacity: 0.25,
       alignItems: 'center',
     },
@@ -62,7 +61,7 @@ export const PayInStoreTop = ({navigation, text}) => {
   );
 };
 
-export const TopGoBack = ({navigation, text}) => {
+export const TopGoBack = ({ navigation, text }) => {
   const styles = StyleSheet.create({
     top: {
       flexDirection: 'row',
@@ -71,7 +70,7 @@ export const TopGoBack = ({navigation, text}) => {
       elevation: 5,
       paddingLeft: 20,
       shadowColor: '#000',
-      shadowOffset: {width: 2, height: 5},
+      shadowOffset: { width: 2, height: 5 },
       shadowOpacity: 0.25,
       alignItems: 'center',
     },
@@ -111,3 +110,13 @@ export const getUser = async () => {
   }
 };
 
+
+export const setUserStorage = async (user) => {
+  try {
+    await AsyncStorage.setItem('User', JSON.stringify(user));
+  } catch (error) {
+    console.log('Error when store user: ' + error);
+  }
+}
+
+export const adminId = "6d0GeGvHvqdWu7wylZ72K1EiE9o2";

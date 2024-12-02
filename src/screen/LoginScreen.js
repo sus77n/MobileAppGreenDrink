@@ -14,10 +14,10 @@ import {
 } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { adminId, setUserStorage } from "../component/store";
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("abc@gmail.com");
+  const [email, setEmail] = useState("admin@gmail.com");
   const [password, setPassword] = useState("123456");
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const LoginScreen = ({ navigation }) => {
       if (!idToken) {
         idToken = signInResult.data?.idToken; // For versions that return a different structure
       }
-      
+
       if (!idToken) {
         throw new Error("Google Sign-In failed: No ID token returned.");
       }
@@ -55,19 +55,17 @@ const LoginScreen = ({ navigation }) => {
 
       // Show success message and navigate
       Alert.alert("Success", "Signed in with Google successfully!");
-      navigation.navigate("Tab");
+
+      const { uid } = res.user;
+      if (uid === adminId) {
+        navigation.navigate("ManagerTab");
+      } else {
+        navigation.navigate("UserTab");
+      }
 
     } catch (error) {
       console.error("Google Sign-In Error:", error);
       Alert.alert("Error", error.message || "An error occurred during Google Sign-In.");
-    }
-  }
-
-  const setUserStorage = async (user) =>{
-    try {
-      await AsyncStorage.setItem('User', JSON.stringify(user));
-    } catch (error) {
-      console.log('Error when store user: ' + error);
     }
   }
 
@@ -76,16 +74,24 @@ const LoginScreen = ({ navigation }) => {
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
         console.log(res.user);
-        
         setUserStorage(res.user)
+
+
         Alert.alert("", "Login successfully", [
           {
             text: "Ok",
-            onPress: () => {
-              navigation.navigate("Tab");
-            },
           },
         ]);
+
+        const { uid } = res.user;
+        if (uid === adminId) {
+          console.log("Manager");
+          navigation.navigate("ManagerTab");
+        } else {
+          console.log("User");
+          navigation.navigate("UserTab");
+        }
+
       })
       .catch((e) => {
         console.log(e);

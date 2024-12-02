@@ -1,13 +1,11 @@
 import React from 'react';
-import TabNavigation from './src/navigation/TabNavigation';
-import LoginScreen from './src/screen/LoginScreen';
-import TabNavigationStore from './src/navigation/TabNavigationStore';
 import { NavigationContainer } from '@react-navigation/native';
+import InitialNavigation from './src/navigation/InitialNavigation';
 
 const App = () =>{
   return(
     <NavigationContainer>
-      <TabNavigationStore/>
+      <InitialNavigation/>
     </NavigationContainer>
   )
 }

@@ -5,11 +5,12 @@ import ProfileScreen from '../screen/ProfileScreen';
 import ProfileDetail from '../screen/ProfileDetail';
 import TransactionScreen from '../screen/TransactionScreen';
 import MembershipDetail from '../screen/MembershipDetail';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TransactionDetail from '../screen/TransactionDetail';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
-const ProfileNavigation = () => {
+
+export const CustomerProfileNavigation = () => {
     return (
         <Stack.Navigator
             screenOptions={{ headerShown: false, }}
@@ -22,6 +23,4 @@ const ProfileNavigation = () => {
         </Stack.Navigator>
     )
 }
-
-export default ProfileNavigation
 

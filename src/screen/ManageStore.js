@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  PermissionsAndroid,
-  Platform,
   StyleSheet,
   Text,
   View,
@@ -9,23 +7,22 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
-import {colorTheme} from '../component/store';
+import 'react-native-gesture-handler';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { colorTheme } from '../component/store';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 
-const ManageStore = () => {
+const ManagerStore = ({ navigation }) => {
   const [region, setRegion] = useState({
     latitude: 11.053818758889006,
     longitude: 106.66820561894689,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
-  const [loading, setLoading] = useState(false);
   const [locations, setLocation] = useState([]);
 
-  const renderLocation = ({item: location}) => {
+  const renderLocation = ({ item: location }) => {
     return (
       <TouchableOpacity
         style={styles.locationCard}
@@ -40,44 +37,45 @@ const ManageStore = () => {
         <Text style={styles.address}>{location.name}</Text>
         <Text style={styles.drinks}>{location.address}</Text>
         <View style={styles.row}>
-          <TouchableOpacity style={styles.contactBtn} onPress={() => {}}>
+          <TouchableOpacity style={styles.contactBtn} onPress={() => { }}>
             <Text style={styles.contactText}>Phone: {location.contact}</Text>
           </TouchableOpacity>
-          <Icon name="map-outline" size={50} color={'black'} />
+          <Icon
+            name="pencil"
+            color={colorTheme.greenText}
+            size={30}
+          />
         </View>
       </TouchableOpacity>
     );
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Fetching location...</Text>
-      </View>
-    );
-  }
 
   useEffect(() => {
-    const subscriber = firestore()
-      .collection('storeLocations')
-      .onSnapshot(querySnapshot => {
-        const storeLocations = [];
-        querySnapshot.forEach(documentSnapshot => {
-          storeLocations.push({
-            ...documentSnapshot.data(),
-            key: documentSnapshot.id, // Ensure each category has a unique key
-          });
-        });
-        setLocation(storeLocations); // Set the categories as an array
-        setLoading(false);
-        storeLocations.forEach((location) => {
-            console.log(location);
-            
-        })
-      });
+    const focusListener = navigation.addListener("focus", () => {
+      const subscriber = firestore()
+        .collection('storeLocations')
+        .onSnapshot(querySnapshot => {
+          const storeLocations = [];
 
-    return () => subscriber(); // Unsubscribe when no longer in use
+          querySnapshot.forEach(documentSnapshot => {
+            storeLocations.push({
+              ...documentSnapshot.data(),
+              key: documentSnapshot.id,
+            });
+          });
+
+          storeLocations.forEach((location, index) => {
+            console.log(location);
+          })
+
+          setLocation(storeLocations);
+        });
+
+      return () => subscriber();
+    });
+
+    return () => focusListener();
   }, []);
 
   return (
@@ -109,12 +107,19 @@ const ManageStore = () => {
         </MapView>
       </View>
       <View style={styles.nearbyBlock}>
-        <Text style={styles.title}>Nearby Stores</Text>
-        <FlatList
-          data={locations}
-          renderItem={renderLocation}
-        //   keyExtractor={({item}) => item.name}
-          ></FlatList>
+        <Text style={styles.title}>Existed Stores</Text>
+        {locations.length === 0 ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color={colorTheme.greenBackground} />
+            <Text>Fetching location...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={locations}
+            renderItem={renderLocation}
+            keyExtractor={(item) => item.name}
+          />
+        )}
       </View>
     </View>
   );
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 15,
     fontWeight: '700',
-    color: colorTheme.black,
+    color: colorTheme.greenText,
     marginVertical: '3%',
   },
   contactBtn: {
@@ -182,4 +187,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ManageStore;
+export default ManagerStore;

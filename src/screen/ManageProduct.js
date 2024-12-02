@@ -293,7 +293,7 @@ const ManageProduct = ({navigation}) => {
         style={styles.main}
         data={filteredDrinks}
         renderItem={renderDrink}
-        keyExtractor={item => item.key}
+        keyExtractor={(item) => item.key}
       />
     </SafeAreaView>
   );

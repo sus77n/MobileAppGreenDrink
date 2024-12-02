@@ -211,14 +211,12 @@ const ManageProduct = ({navigation}) => {
             style={{marginRight: '8%'}}
           />
         ) : (
-          <TouchableOpacity>
             <Icon
               name="pencil"
               color={colorTheme.greenText}
               size={20}
               style={{marginRight: '8%'}}
             />
-          </TouchableOpacity>
         )}
       </View>
     </TouchableOpacity>

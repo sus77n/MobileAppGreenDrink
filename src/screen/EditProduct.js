@@ -71,15 +71,13 @@ const styles = StyleSheet.create({
 });
 
 const EditProduct = ({ navigation, route }) => {
-  const { drink } = route.params;  // Get the product object from route params
+  const { drink } = route.params; 
   const [name, setName] = useState(drink.name);
   const [price, setPrice] = useState(drink.price.toString());
   const [img, setImg] = useState(drink.img);
   const [description, setDescription] = useState(drink.description);
   const [category, setCategory] = useState(drink.category);
   const [categories, setCategories] = useState([]);
-
-  // Fetch categories from Firestore when component mounts
   useEffect(() => {
     const subscriber = firestore()
       .collection('categories')
@@ -88,7 +86,7 @@ const EditProduct = ({ navigation, route }) => {
         querySnapshot.forEach(documentSnapshot => {
           categoriesList.push({
             label: documentSnapshot.data().name, // Assuming 'name' is the category name
-            value: documentSnapshot.id,
+            value: documentSnapshot.data().name,
           });
         });
         setCategories(categoriesList);
@@ -96,30 +94,22 @@ const EditProduct = ({ navigation, route }) => {
 
     return () => subscriber();
   }, []);
-
   const handlePreview = () => {
-    // Code to handle preview of the product (e.g., show product info in a modal or a new screen)
     console.log('Preview product:', { name, price, img, description, category });
   };
-
   const handleSave = () => {
     if (!name || !price || !img || !description || !category) {
       Alert.alert('Error', 'Please fill in all the fields');
       return;
     }
-
-    const numericPrice = parseFloat(price); // Convert price to number
-
-  // Ensure the price is a valid number
+    const numericPrice = parseFloat(price); 
   if (isNaN(numericPrice)) {
     Alert.alert('Error', 'Please enter a valid price');
     return;
   }
-
-  // Save updated product to Firestore
     firestore()
       .collection('drinks')
-      .doc(drink.id)  // Use product's ID to update the specific product
+      .doc(drink.key)
       .update({
         name,
         price,
@@ -129,7 +119,7 @@ const EditProduct = ({ navigation, route }) => {
       })
       .then(() => {
         Alert.alert('Success', 'Product updated successfully');
-        navigation.goBack();  // Navigate back after saving
+        navigation.goBack(); 
       })
       .catch((error) => {
         Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -138,7 +128,6 @@ const EditProduct = ({ navigation, route }) => {
   };
 
   const handleCancel = () => {
-    // Optionally, confirm cancellation before navigating back
     Alert.alert('Cancel', 'Are you sure you want to discard changes?', [
       { text: 'Yes', onPress: () => navigation.goBack() },
       { text: 'No' },

@@ -59,7 +59,7 @@ const AddProduct = ({ navigation }) => {
         querySnapshot.forEach(documentSnapshot => {
           categoriesList.push({
             label: documentSnapshot.data().name, // Assuming 'name' is the category name
-            value: documentSnapshot.id,
+            value: documentSnapshot.data().name,
           });
         });
         setCategories(categoriesList);

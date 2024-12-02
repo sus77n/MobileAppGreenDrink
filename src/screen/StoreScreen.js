@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-    PermissionsAndroid,
-    Platform,
     StyleSheet,
     Text,
     View,
@@ -10,7 +8,6 @@ import {
     TouchableOpacity,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import Geolocation from "@react-native-community/geolocation";
 import { colorTheme } from "../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -167,7 +164,7 @@ const styles = StyleSheet.create({
     address: {
         fontSize: 15,
         fontWeight: '700',
-        color: colorTheme.black,
+        color: colorTheme.greenText,
         marginVertical: '3%',
     },
     contactBtn: {

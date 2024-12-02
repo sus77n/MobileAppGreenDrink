@@ -1,108 +1,128 @@
-import React from "react";
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colorTheme, TopGoBack } from "../component/store";
-const ManageTransaction = ({ navigation }) => {
+import React, {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import {colorTheme, TopGoBack} from '../component/store';
 
-    const transactions = [
-        {
-            id: '1',
-            description: 'Order & Pick-up Purchase',
-            stars: '5 star(s) earned',
-            amount: '₫100,000',
-            date: '01/11/2024 15:00',
-            icon: 'https://img.icons8.com/ios/50/touchscreen.png', // Example icon URL
-        },
-        {
-            id: '2',
-            description: 'Order & Pick-up Purchase',
-            stars: '5 star(s) earned',
-            amount: '₫100,000',
-            date: '01/11/2024 15:00',
-            icon: 'https://img.icons8.com/ios/50/touchscreen.png', // Example icon URL
-        },
-    ];
+const ManageTransaction = ({navigation}) => {
+  const [transactions, setTransactions] = useState([]);
 
-    const renderTransaction = ({ item }) => (
-        <TouchableOpacity style={styles.transactionContainer} onPress={() => navigation.navigate("TransactionDetail", { item })}>
-            <Image source={{ uri: item.icon }} style={styles.icon} />
-            <View style={styles.left}>
-                <Text style={styles.description}>{item.description}</Text>
-                <Text style={styles.stars}>{item.stars}</Text>
-            </View>
-            <View style={styles.right}>
-                <Text style={styles.amount}>{item.amount}</Text>
-                <Text style={styles.date}>{item.date}</Text>
-            </View>
-        </TouchableOpacity>
-    );
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('transactions')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(async querySnapshot => {
+        const transactionsList = [];
+  
+        const fetchDrinksPromises = querySnapshot.docs.map(async documentSnapshot => {
+          const transactionData = documentSnapshot.data();
+          const drinksSnapshot = await firestore()
+            .collection('transactions')
+            .doc(documentSnapshot.id)
+            .collection('drinks')
+            .get();
+  
+          // Convert drinks subcollection to an array
+          const drinks = drinksSnapshot.docs.map(drinkDoc => ({
+            id: drinkDoc.id,
+            ...drinkDoc.data(),
+          }));
+  
+          return {
+            id: documentSnapshot.id,
+            ...transactionData, 
+            drinks,
+            amount: `₫${transactionData.price?.toLocaleString()}`,
+            priceBeforePromotion: `₫${transactionData.priceBeforePromotion?.toLocaleString()}`,
+            date: new Date(transactionData.createdAt.toDate()),
+          };
+        });
+  
+        // Wait for all promises to resolve
+        const allTransactions = await Promise.all(fetchDrinksPromises);
+  
+        // Group transactions by month
+        const groupedData = [];
+        let currentMonth = null;
+  
+        allTransactions.forEach(transaction => {
+          const month = transaction.date.toLocaleString('default', {
+            month: 'long',
+            year: 'numeric',
+          });
+          if (month !== currentMonth) {
+            groupedData.push({type: 'header', month});
+            currentMonth = month;
+          }
+          groupedData.push({type: 'transaction', ...transaction});
+        });
+  
+        setTransactions(groupedData);
+      });
+    return () => subscriber();
+  }, []);
+  
+
+  const renderItem = ({item}) => {
+    if (item.type === 'header') {
+      return <Text style={styles.header}>{item.month}</Text>;
+    }
 
     return (
-        <View style={styles.container}>
-            <TopGoBack text={"Transaction History"} navigation={navigation}/>
-
-            <Text style={styles.header}>Nov 2024</Text>
-
-            <FlatList
-                data={transactions}
-                renderItem={renderTransaction}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContainer}
-            />
+      <TouchableOpacity
+        style={styles.transactionContainer}
+        onPress={() =>
+          navigation.navigate('ManageTransDetail', {transaction: item})
+        }>
+        <View style={styles.left}>
+          <Text style={styles.description}>{item.type}</Text>
         </View>
-    )
-}
+        <View style={styles.right}>
+          <Text style={styles.amount}>{item.amount}</Text>
+          <Text style={styles.date}>{item.date.toLocaleString()}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <TopGoBack text={'Transaction History'} navigation={navigation} />
+      <FlatList
+        data={transactions}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.key}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colorTheme.white,
-    },
-    header: {
-        backgroundColor: "#ccc",
-        padding: "2%",
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colorTheme.white,
-    },
-    listContainer: {
-        paddingHorizontal: "5%",
-    },
-    transactionContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: "4%",
-        borderBottomWidth: 1,
-        borderBottomColor: colorTheme.grayLine,
-    },
-    icon: {
-        width: "15%",
-        height: "100%",
-        marginRight: 10,
-    },
-    left: {
-        flex: 1,
-    },
-    right: {
-        alignItems: "center",
-    },
-    description: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colorTheme.black,
-    },
-    stars: {
-        fontSize: 12,
-        color: '#666',
-    },
-    date: {
-        fontSize: 12,
-        color: '#aaa',
-    },
-    amount: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colorTheme.black,
-        marginBottom: "3%"
-    },
+  container: {flex: 1, backgroundColor: colorTheme.white},
+  header: {
+    backgroundColor: '#ccc',
+    padding: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colorTheme.white,
+  },
+  transactionContainer: {
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colorTheme.grayLine,
+  },
+  left: {flex: 1},
+  right: {alignItems: 'flex-end'},
+  description: {fontSize: 14, fontWeight: 'bold', color: colorTheme.black},
+  date: {fontSize: 12, color: '#aaa'},
+  amount: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colorTheme.black,
+    marginBottom: 5,
+  },
 });
+
 export default ManageTransaction;

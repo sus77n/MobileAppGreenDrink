@@ -12,6 +12,7 @@ import { colorTheme } from '../component/store';
 import AddProduct from '../screen/AddProduct';
 import EditProduct from '../screen/EditProduct';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import ManageTransDetail from '../screen/ManageTransDetail';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -51,6 +52,20 @@ const ProductStack = () =>{
    )
 }
 
+const TransactionStack =() =>{
+  return(
+    <Stack.Navigator
+      screenOptions={({route})=>({
+              headerTintColor: colorTheme.greenText,
+              headerShown:false
+          })}
+    >
+      <Stack.Screen name='TransactionMain' component={ManageTransaction}/>
+      <Stack.Screen name='ManageTransDetail' component={ManageTransDetail}/>
+    </Stack.Navigator>
+  )
+}
+
 const TabNavigationStore = () => {
     return (
     <Tab.Navigator
@@ -83,7 +98,7 @@ const TabNavigationStore = () => {
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Product" component={ProductStack} />
       <Tab.Screen name="Store" component={ManageStore} />
-      <Tab.Screen name="Transaction" component={ManageTransaction} />
+      <Tab.Screen name="Transaction" component={TransactionStack} />
     </Tab.Navigator>
   );
 };

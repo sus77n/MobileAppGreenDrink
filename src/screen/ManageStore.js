@@ -22,29 +22,31 @@ const ManagerStore = ({ navigation }) => {
   });
   const [locations, setLocation] = useState([]);
 
-  const renderLocation = ({ item: location }) => {
+  const renderLocation = ({ item: store }) => {
     return (
       <TouchableOpacity
         style={styles.locationCard}
         onPress={() =>
           setRegion({
-            latitude: location.latitude,
-            longitude: location.longitude,
+            latitude: store.latitude,
+            longitude: store.longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           })
         }>
-        <Text style={styles.address}>{location.name}</Text>
-        <Text style={styles.drinks}>{location.address}</Text>
+        <Text style={styles.address}>{store.name}</Text>
+        <Text style={styles.drinks}>{store.address}</Text>
         <View style={styles.row}>
           <TouchableOpacity style={styles.contactBtn} onPress={() => { }}>
-            <Text style={styles.contactText}>Phone: {location.contact}</Text>
+            <Text style={styles.contactText}>Phone: {store.contact}</Text>
           </TouchableOpacity>
-          <Icon
-            name="pencil"
-            color={colorTheme.greenText}
-            size={30}
-          />
+          <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate("EditStore", { store })}>
+            <Icon
+              name="pencil"
+              color={colorTheme.greenBackground}
+              size={30}
+            />
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     );
@@ -111,7 +113,7 @@ const ManagerStore = ({ navigation }) => {
         {locations.length === 0 ? (
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color={colorTheme.greenBackground} />
-            <Text>Fetching location...</Text>
+            <Text>Loading location...</Text>
           </View>
         ) : (
           <FlatList
@@ -184,6 +186,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: '4%',
+  },
+  editBtn: {
+    borderWidth: 1,
+    borderColor: colorTheme.greenBackground,
+    padding: "3%",
+    borderRadius: 50,
   },
 });
 

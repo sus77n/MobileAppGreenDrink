@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colorTheme } from '../component/store';
 import StoreScreen from '../screen/StoreScreen';
 import ManagerStore from '../screen/ManageStore';
+import EditStore from '../screen/EditStore';
 
 const Stack = createNativeStackNavigator();
 

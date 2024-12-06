@@ -122,7 +122,6 @@ export const getTimeNow = () =>{
     return `as of ${formattedTime}, ${formattedDate}`;
 }
 
-<<<<<<< Updated upstream
 export const resetUserAfterChange = async (userKey) => {
   try {
     const userDoc = await getFirestore().collection("customers").doc(userKey).get();
@@ -141,8 +140,6 @@ export const resetUserAfterChange = async (userKey) => {
 export const adminId = "6d0GeGvHvqdWu7wylZ72K1EiE9o2";
 export const webClientId = "1046745299175-5b64vsicc0k21kck5c2ctpr607v39270.apps.googleusercontent.com";
 export const GOOGLE_MAPS_APIKEY = 'AIzaSyCKRP7vSTDKCWUu9DYYyBtkcUPpVOBkTYk';
-=======
-export const adminId = "6d0GeGvHvqdWu7wylZ72K1EiE9o2";
 
 export const calculateTotal = async (drinks) => {
   let newTotal = 0;
@@ -171,4 +168,3 @@ export const calculateTotal = async (drinks) => {
   // Update the total state
   setTotal(newTotal);
 };
->>>>>>> Stashed changes

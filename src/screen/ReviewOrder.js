@@ -1,5 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
+  FlatList,
   Image,
   SafeAreaView,
   StyleSheet,
@@ -9,13 +11,97 @@ import {
 } from 'react-native';
 import {colorTheme, PayInStoreTop} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
-const ReviewOrder = ({navigation}) => {
-  const [quantity, setQuantity] = useState(2);
-  const pricePerItem = 100000; // Price of one item
-  const totalPrice = quantity * pricePerItem; // Calculate total price
+import firestore from '@react-native-firebase/firestore';
 
-  const incrementQuantity = () => setQuantity(quantity + 1);
-  const decrementQuantity = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
+const ReviewOrder = ({navigation, route}) => {
+  const {order, total} = route.params;
+  const [drinkDetails, setDrinkDetails] = useState({});
+  const [quantities, setQuantities] = useState({});
+
+  // Fetch drink details from Firestore
+  useEffect(() => {
+    const fetchDrinkDetails = async () => {
+      try {
+        const details = {};
+        const quantityMap = {};
+        for (const drink of Object.values(order.drinks)) {
+          const doc = await firestore().collection('drinks').doc(drink.key).get();
+          if (doc.exists) {
+            details[drink.key] = doc.data();
+            quantityMap[drink.key] = drink.quantity || 1; // Initialize quantity
+          } else {
+            console.warn(`Drink with key ${drink.key} not found`);
+          }
+        }
+        setDrinkDetails(details);
+        setQuantities(quantityMap);
+      } catch (error) {
+        console.error('Error fetching drink details:', error);
+      }
+    };
+
+    fetchDrinkDetails();
+  }, [order.drinks]);
+
+  // Update quantity for a specific drink
+  const updateQuantity = (key, increment) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [key]: Math.max(1, (prev[key] || 1) + increment),
+    }));
+  };
+
+  useEffect(() => {
+    console.log('order list:', order.drinks); // Logs the full array
+  }, []);
+
+  const renderItem = ({item: drink}) => {
+    const details = drinkDetails[drink.key];
+    if (!details) return null;
+
+    return (
+      <View>
+        <View style={styles.itemContainer}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.itemName}>
+              {details.name}
+            </Text>
+            <Text style={styles.itemDetails}>Drink size: {drink.custom.size}</Text>
+            <Text style={styles.itemDetails}>Sweetness: {drink.custom.sweetness}</Text>
+          </View>
+          <Text style={styles.itemPrice}>đ{details.price.toLocaleString()}</Text>
+        </View>
+        <View style={styles.controls}>
+          <View style={styles.controls}>
+            <TouchableOpacity
+              style={styles.controlButton}
+              onPress={() => {}}>
+              <Icon
+                name="minus-circle"
+                color={colorTheme.greenBackground}
+                size={25}
+              />
+            </TouchableOpacity>
+            <Text style={styles.quantity}>{drink.quantity}</Text>
+            <TouchableOpacity
+              style={styles.controlButton}
+              onPress={() => {}}>
+              <Icon
+                name="plus-circle"
+                color={colorTheme.greenBackground}
+                size={25}
+              />
+            </TouchableOpacity>
+          </View>
+          <View>
+            <Text style={styles.totalPrice}>
+            đ{(details.price * drink.quantity).toLocaleString()}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
   return (
     <SafeAreaView style={styles.container}>
       <PayInStoreTop navigation={navigation} text={'Review Order'} />
@@ -32,53 +118,13 @@ const ReviewOrder = ({navigation}) => {
         />
       </View>
       <View style={styles.itemSection}>
-        {/* Order Header */}
         <Text style={styles.header}>Order items</Text>
 
-        {/* Order Item Section */}
-        <View style={styles.itemContainer}>
-          {/* Product Image */}
-          <Image
-            source={{
-              uri: 'https://via.placeholder.com/60', // Replace with your actual image link
-            }}
-            style={styles.image}
-          />
-
-          {/* Product Info */}
-          <View style={styles.infoContainer}>
-            <Text style={styles.itemName}>
-              Green Tea Cream Frappuccino Blended Beverage
-            </Text>
-            <Text style={styles.itemDetails}>Drink size: L</Text>
-
-          </View>
-
-          {/* Total Price */}
-          <Text style={styles.itemPrice}>
-              đ{pricePerItem.toLocaleString()}
-            </Text>
-        </View>
-
-        {/* Quantity Controls */}
-        <View style={styles.controls}>
-          <View style={styles.controls}>
-          <TouchableOpacity
-            style={styles.controlButton}
-            onPress={decrementQuantity}>
-            <Icon name='minus-circle' color={colorTheme.greenBackground} size={25}/>
-          </TouchableOpacity>
-          <Text style={styles.quantity}>{quantity}</Text>
-          <TouchableOpacity
-            style={styles.controlButton}
-            onPress={incrementQuantity}>
-            <Icon name='plus-circle' color={colorTheme.greenBackground} size={25}/>
-          </TouchableOpacity>
-          </View>
-          <View>
-            <Text style={styles.totalPrice}>đ{totalPrice.toLocaleString()}</Text>
-          </View>
-        </View>
+        <FlatList
+          data={Object.values(order.drinks)}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.key}
+        />
 
         {/* Divider */}
         <View style={styles.divider} />
@@ -87,10 +133,27 @@ const ReviewOrder = ({navigation}) => {
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
           <Text style={styles.orderTotalValue}>
-            đ{totalPrice.toLocaleString()}
+           đ{total}
           </Text>
         </View>
       </View>
+
+      <TouchableOpacity style={styles.cardButton} onPress={() =>
+        Alert.alert('','Are you sure to pay ?',[
+          {
+            text: "Ok",
+            onPress: () =>{
+              console.log('Ok Pressed')
+            }
+          },
+          {
+            text: "Cancel",
+            onPress: () => console.log('Cancel Pressed')
+          }
+        ])
+      }>
+          <Text style={styles.cardButtonText}>Pay</Text>
+        </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -138,12 +201,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  image: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-    marginRight: 10,
-  },
   infoContainer: {
     flex: 1,
   },
@@ -162,7 +219,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   totalPrice: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'right',
@@ -189,11 +246,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   orderTotalLabel: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   orderTotalValue: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -212,6 +269,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colorTheme.greenBackground,
     fontWeight: 'bold',
+  },
+  cardButton: {
+    position: 'absolute',
+    width: 170,
+    backgroundColor: '#7ec479',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    bottom: 10,
+    right: 20,
+  },
+  cardButtonText: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

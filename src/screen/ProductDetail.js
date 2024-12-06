@@ -240,7 +240,7 @@ const ProductDetail = ({navigation, route}) => {
             onPress={() => addOrUpdateDrinkWithCheck(order.key, drink.key, {size: selectedSize,sweetness: sweetness}, 1)}>
             <Icon name="plus" size={25} color={colorTheme.white} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cart} onPress={() => {}}>
+          <TouchableOpacity style={styles.cart} onPress={() => navigation.navigate('ReviewOrder',{order})}>
             <Text style={styles.total}>Total: đ{total}</Text>
             <Icon name="shopping-cart" size={30} color={colorTheme.white} />
           </TouchableOpacity>

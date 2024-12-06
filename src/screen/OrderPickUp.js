@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {colorTheme, getUser, TopGoBack} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import firestore, { getFirestore } from '@react-native-firebase/firestore';
+import firestore, {getFirestore} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const OrderPickUp = ({navigation}) => {
   const [loading, setLoading] = useState(true);
@@ -23,24 +23,27 @@ const OrderPickUp = ({navigation}) => {
   const [listOrder, setListOrder] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const calculateTotal = async (drinks) => {
+  const calculateTotal = async drinks => {
     let newTotal = 0;
 
     // Fetch the base price for each drink
     const drinkKeys = Object.keys(drinks); // Assuming `drinks` is an object with drink keys
     for (const i of drinkKeys) {
       const drinkData = drinks[i];
-      const { key, custom, quantity } = drinkData;
+      const {key, custom, quantity} = drinkData;
 
       try {
         // Fetch the drink document from Firestore
-        const drinkSnapshot = await firestore().collection('drinks').doc(key).get();
+        const drinkSnapshot = await firestore()
+          .collection('drinks')
+          .doc(key)
+          .get();
         if (drinkSnapshot.exists) {
           const drinkInfo = drinkSnapshot.data();
           const basePrice = drinkInfo.price || 0; // Fallback to 0 if price isn't available
 
           // Add to total
-          newTotal += (basePrice) * quantity;
+          newTotal += basePrice * quantity;
         }
       } catch (error) {
         console.error(`Error fetching drink data for ${drinkId}:`, error);
@@ -129,7 +132,6 @@ const OrderPickUp = ({navigation}) => {
       </TouchableOpacity>
     );
   };
-  
 
   useEffect(() => {
     const subscriber = firestore()
@@ -156,9 +158,7 @@ const OrderPickUp = ({navigation}) => {
     return (
       <TouchableOpacity
         style={styles.drinkRow}
-        onPress={() =>
-          navigation.navigate('ProductDetail', {drink})
-        }>
+        onPress={() => navigation.navigate('ProductDetail', {drink})}>
         <View style={styles.imageWrap}>
           <Image source={{uri: drink.img}} style={styles.img} />
         </View>
@@ -196,9 +196,8 @@ const OrderPickUp = ({navigation}) => {
           <FlatList
             data={seasonalDrink}
             renderItem={renderDrink}
-            keyExtractor={(item) =>item.id}
+            keyExtractor={item => item.id}
           />
-
         </View>
         <View style={styles.typeDrink}>
           <Text style={styles.type}>Drink Menu</Text>
@@ -211,7 +210,14 @@ const OrderPickUp = ({navigation}) => {
       </View>
       <TouchableOpacity
         style={styles.cart}
-        onPress={() => navigation.navigate('ReviewOrder')}>
+        onPress={() => {
+          console.log('Order before navigation:', order);
+          if (order) {
+            navigation.navigate('ReviewOrder', {order, total});
+          } else {
+            console.warn('Order is not ready yet!');
+          }
+        }}>
         <Text style={styles.total}>Total: đ{total}</Text>
         <Icon name="shopping-cart" size={30} color={colorTheme.white} />
       </TouchableOpacity>
@@ -291,8 +297,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: '2%',
-    width: '48%', // This can be kept if space is properly managed.
-    marginHorizontal: '1%', // Add horizontal margin for spacing.
+    width: '48%',
+    marginHorizontal: '1%', 
   },
   imageWrapTag: {
     zIndex: 1,
@@ -319,7 +325,7 @@ const styles = StyleSheet.create({
     color: colorTheme.greenText,
   },
   cart: {
-    position:'absolute',
+    position: 'absolute',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -338,4 +344,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderPickUp
+export default OrderPickUp;

@@ -18,7 +18,7 @@ const CustomerTab = () => {
       'Inbox',
       'Card',
       'MembershipDetail',
-      'ReviewOrderScreen',
+      'ReviewOrder',
       'OrderPickUp',
       'Delivery',
       'TransactionDetail',

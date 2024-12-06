@@ -161,7 +161,7 @@ const TypeDrinkScreen = ({navigation, route}) => {
       />
       <TouchableOpacity
         style={styles.cart}
-        onPress={() => navigation.navigate('ReviewOrder')}>
+        onPress={() => navigation.navigate('ReviewOrder',{order})}>
         <Text style={styles.total}>Total: đ{total}</Text>
         <Icon name="shopping-cart" size={30} color={colorTheme.white} />
       </TouchableOpacity>

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, TopGoBack} from '../component/store';
+import {colorTheme, getUser, TopGoBack} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 const TypeDrinkScreen = ({navigation, route}) => {
@@ -17,6 +17,81 @@ const TypeDrinkScreen = ({navigation, route}) => {
 
   const [loading, setLoading] = useState(true);
   const [drinks, setDrinks] = useState([]);
+
+  const [order, setOrder] = useState('');
+  const [listOrder, setListOrder] = useState([]);
+  const [total, setTotal] = useState(0);
+
+  const calculateTotal = async (drinks) => {
+    let newTotal = 0;
+
+    // Fetch the base price for each drink
+    const drinkKeys = Object.keys(drinks); // Assuming `drinks` is an object with drink keys
+    for (const i of drinkKeys) {
+      const drinkData = drinks[i];
+      const { key, custom, quantity } = drinkData;
+
+      try {
+        // Fetch the drink document from Firestore
+        const drinkSnapshot = await firestore().collection('drinks').doc(key).get();
+        if (drinkSnapshot.exists) {
+          const drinkInfo = drinkSnapshot.data();
+          const basePrice = drinkInfo.price || 0; // Fallback to 0 if price isn't available
+
+          // Add to total
+          newTotal += (basePrice) * quantity;
+        }
+      } catch (error) {
+        console.error(`Error fetching drink data for ${drinkId}:`, error);
+      }
+    }
+
+    // Update the total state
+    setTotal(newTotal);
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUser(); // Fetch the user data
+      console.log('User Pickup:', userData);
+
+      try {
+        const documentSnapshot = await firestore()
+          .collection('orders')
+          .doc(userData.orderKey)
+          .get();
+
+        if (documentSnapshot.exists) {
+          const data = documentSnapshot.data();
+          console.log('Order Data:', data);
+          setOrder(data);
+
+          if (data.drinks) {
+            console.log('Drinks:', data.drinks);
+            setListOrder(data.drinks);
+
+            // Calculate total for the current drinks
+            await calculateTotal(data.drinks);
+          } else {
+            console.log('Drinks field is undefined or does not exist.');
+          }
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching order data:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Listen for changes to listOrder and recalculate total
+  useEffect(() => {
+    if (listOrder) {
+      calculateTotal(listOrder);
+    }
+  }, [listOrder]);
 
   useEffect(() => {
     const subscriber = firestore()
@@ -87,7 +162,7 @@ const TypeDrinkScreen = ({navigation, route}) => {
       <TouchableOpacity
         style={styles.cart}
         onPress={() => navigation.navigate('ReviewOrder')}>
-        <Text style={styles.total}>Total: đ50,000</Text>
+        <Text style={styles.total}>Total: đ{total}</Text>
         <Icon name="shopping-cart" size={30} color={colorTheme.white} />
       </TouchableOpacity>
     </SafeAreaView>

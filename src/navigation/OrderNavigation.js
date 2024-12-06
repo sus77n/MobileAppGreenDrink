@@ -19,7 +19,7 @@ export const OrderNavigation = ({ route }) => {
             screenOptions={({ route }) => {
             }}
         >
-            <Stack.Screen name='Order' component={OrderScreen} options={{ headerShown: false }} />
+            <Stack.Screen name='OrderMain' component={OrderScreen} options={{ headerShown: false }} />
             <Stack.Screen name='OrderPickUp' component={OrderPickUp} options={{ headerShown: false }} />
             <Stack.Screen name='Delivery' component={Delivery} options={{ headerShown: false }} />
             <Stack.Screen name='ReviewOrder' component={ReviewOrder} options={{ headerShown: false }} />

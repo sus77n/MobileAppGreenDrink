@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -11,6 +11,7 @@ import {
 import {colorTheme} from '../component/store';
 
 const OrderScreen = ({navigation}) => {
+  const [selectedType, setSelectedTye] = useState('OrderPickUp');
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.greetingSection}>
@@ -38,11 +39,27 @@ const OrderScreen = ({navigation}) => {
       <View style={styles.reorderSection}>
         <Text style={styles.reorderTitle}>Order again</Text>
         <View style={styles.buttonGroup}>
-          <TouchableOpacity style={styles.button} onPress={() => {}}>
-            <Text style={styles.buttonText}>Order & Pick-up</Text>
+          <TouchableOpacity style={
+                    selectedType === 'OrderPickUp'
+                      ? styles.button
+                      : styles.unactiveButton
+                  } onPress={() => setSelectedTye('OrderPickUp')}>
+            <Text style={
+                    selectedType === 'OrderPickUp'
+                      ? styles.buttonText
+                      : styles.unactiveButtonText
+                  }>Order & Pick-up</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.unactiveButton} onPress={() => {}}>
-            <Text style={styles.unactiveButtonText}>Delivery</Text>
+          <TouchableOpacity style={
+                    selectedType === 'Delivery'
+                      ? styles.button
+                      : styles.unactiveButton
+                  } onPress={() => setSelectedTye('Delivery')}>
+            <Text style={
+                    selectedType === 'Delivery'
+                      ? styles.buttonText
+                      : styles.unactiveButtonText
+                  }>Delivery</Text>
           </TouchableOpacity>
         </View>
         <ScrollView>

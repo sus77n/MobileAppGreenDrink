@@ -93,32 +93,33 @@ const LoginScreen = ({ navigation, route }) => {
 
           if (!(password === userData.password)) {
             throw new Error("Wrong password");
-            
+
           }
 
           setUserStorage({ ...userData, key: userKey })
           const { email } = userData;
           if (email === adminId) {
-            console.log("Manager");
             navigation.navigate("ManagerTab");
           } else {
             console.log("User");
             navigation.navigate("UserTab");
           }
 
+          Alert.alert("", "Login successfully", [
+            {
+              text: "Ok",
+              onPress: () => {
+                setEmail("")
+                setPassword("")
+              }
+            },
+          ]);
+
         });
 
-
-        Alert.alert("", "Login successfully", [
-          {
-            text: "Ok",
-            onPress: () => {
-              // setEmail("")
-              // setPassword("")
-            }
-          },
-        ]);
-
+      })
+      .then(() => {
+        
       })
       .catch((e) => {
         console.log(e);

@@ -34,14 +34,17 @@ const HomeScreen = ({ navigation }) => {
   //   setUser(userGet);
   // }
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUser(); // Await the result of getUser
-      setUser(userData); // Update the state with the resolved user
-      console.log('User home screen:', userData);
-    };
+  const fetchUser = async () => {
+    const userData = await getUser(); // Await the result of getUser
+    setUser(userData); // Update the state with the resolved user
+    console.log('User home screen:', userData);
+  };
 
-    fetchUser();
+  useEffect(() => {
+    const loadScreen = () => {
+      navigation.addListener("focus", fetchUser());
+    };
+    return () => loadScreen();
   }, []);
 
   return (

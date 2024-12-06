@@ -1,30 +1,59 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { colorTheme, TopGoBack } from "../component/store";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { colorTheme, resetUserAfterChange, TopGoBack } from "../component/store";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getFirestore } from "@react-native-firebase/firestore";
 
-const ProfileDetail = ({ navigation }) => {
-    const [gender, setGender] = useState('Ms');
-    const [firstName, setFirstName] = useState('Peter');
-    const [lastName, setLastName] = useState('Peter');
-    const [birthday, setBirthday] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [email, setEmail] = useState('peter@gmail.com');
-    const [phone, setPhone] = useState('0999999999');
+const ProfileDetail = ({ navigation, route }) => {
+    const { user } = route.params;
 
-    const handleDateChange = (event, selectedDate) => {
-        setShowDatePicker(false);
-        if (selectedDate) {
-            setBirthday(selectedDate);
+    const [gender, setGender] = useState(user.formOfAddress);
+    const [username, setUsername] = useState(user.username);
+    // const [birthday, setBirthday] = useState(new Date());
+    // const [showDatePicker, setShowDatePicker] = useState(false);
+    const [email, setEmail] = useState(user.email);
+    const [phone, setPhone] = useState(user.phone);
+
+    // const handleDateChange = (event, selectedDate) => {
+    //     setShowDatePicker(false);
+    //     if (selectedDate) {
+    //         setBirthday(selectedDate);
+    //     }
+    // };
+
+    const updateInformation = () => {
+        try {
+
+            if (!username || !email || !phone) {
+                throw new Error("Should fill all blanks");
+            }
+
+            getFirestore().collection("customers").doc(user.key)
+                .update(
+                    {
+                        username: username,
+                        formOfAddress: gender,
+                        email: email,
+                        phone: phone,
+                    }
+                )
+                .then(() => {
+                    resetUserAfterChange(user.key);
+                    Alert.alert('Success', 'User updated successfully');
+                    navigation.goBack();
+                })
+
+        } catch (error) {
+            Alert.alert('Error', 'Something went wrong. Please try again.');
+            console.error('Error updating user:', error.massage);
         }
-    };
+    }
 
     return (
         <View style={styles.container}>
             <TopGoBack text={"Edit Personal Information"} navigation={navigation} />
-
             <View style={styles.wrapper}>
                 <Text style={styles.title}>General Information</Text>
                 <View style={styles.textField}>
@@ -35,37 +64,26 @@ const ProfileDetail = ({ navigation }) => {
                         <Picker.Item label="Mr" value="Mr" />
                     </Picker>
                 </View>
-                <Text style={styles.label}>First name*</Text>
-                <TextInput style={styles.textField} value={firstName} onChangeText={setFirstName}></TextInput>
-                <Text style={styles.label}>Last name*</Text>
-                <TextInput style={styles.textField} value={lastName} onChangeText={setLastName} ></TextInput>
-                <Text style={styles.label}>Birthday</Text>
-                <TouchableOpacity
-                    style={styles.dateInput}
-                    onPress={() => setShowDatePicker(true)}>
-                    <Text style={styles.text}>{birthday.toLocaleDateString()}</Text>
-                    <Icon name='calendar-month-outline' style={styles.accountIcon} size={26} color={colorTheme.grayText} />
-                </TouchableOpacity>
-                {showDatePicker && (
-                    <DateTimePicker
-                        value={birthday}
-                        mode="date"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                        onChange={handleDateChange}
-                    />
-                )}
+                <Text style={styles.label}>Username:</Text>
+                <TextInput style={styles.textField} value={username} onChangeText={setUsername}></TextInput>
                 <Text style={styles.title}>Contact Information</Text>
                 <Text style={styles.label}>Email</Text>
                 <TextInput style={styles.textField} inputMode="email" value={email} onChangeText={setEmail}></TextInput>
                 <Text style={styles.label}>Phone</Text>
                 <TextInput style={styles.textField} inputMode="tel" value={phone} onChangeText={setPhone}></TextInput>
 
-                <TouchableOpacity style={styles.saveBtn}>
-                    <Text style={styles.saveTextbtn}>SAVE</Text>
+                <TouchableOpacity style={styles.saveBtn} onPress={() => navigation.navigate("ChangePassword", { user })}>
+                    <Text style={styles.saveTextbtn}>Change password</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.saveBtn} onPress={updateInformation}>
+                    <Text style={styles.saveTextbtn}>Save</Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
+
+
 }
 
 const styles = StyleSheet.create({
@@ -86,13 +104,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         paddingHorizontal: "2%",
         fontSize: 16,
-        fontWeight:"500",
+        fontWeight: "500",
         marginBottom: "3%",
         marginTop: "-2%",
     },
     text: {
         color: colorTheme.black,
-        fontWeight:"500",
+        fontWeight: "500",
         fontSize: 16,
     },
     dateInput: {

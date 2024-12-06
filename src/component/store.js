@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getFirestore } from '@react-native-firebase/firestore';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -119,4 +120,21 @@ export const setUserStorage = async (user) => {
   }
 }
 
+export const resetUserAfterChange = async (userKey) => {
+  try {
+    const userDoc = await getFirestore().collection("customers").doc(userKey).get();
+    if (userDoc.exists) {
+      const userData = userDoc.data(); // Get user data
+      setUserStorage({ ...userData, key: userKey }); // Add key if needed
+    } else {
+      console.error("No user found with the given key.");
+    }
+  } catch (error) {
+    console.error("Error resetting user data:", error);
+  }
+
+}
+
 export const adminId = "6d0GeGvHvqdWu7wylZ72K1EiE9o2";
+export const webClientId = "1046745299175-5b64vsicc0k21kck5c2ctpr607v39270.apps.googleusercontent.com";
+export const GOOGLE_MAPS_APIKEY = 'AIzaSyCKRP7vSTDKCWUu9DYYyBtkcUPpVOBkTYk';

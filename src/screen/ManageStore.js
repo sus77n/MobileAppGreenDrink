@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,14 +6,18 @@ import {
   ActivityIndicator,
   FlatList,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import 'react-native-gesture-handler';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import {colorTheme} from '../component/store';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { colorTheme, GOOGLE_MAPS_APIKEY } from '../component/store';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
+import Geolocation from '@react-native-community/geolocation';
+import MapViewDirections from 'react-native-maps-directions';
 
-const ManagerStore = ({navigation}) => {
+
+const ManagerStore = ({ navigation }) => {
   const [region, setRegion] = useState({
     latitude: 11.053818758889006,
     longitude: 106.66820561894689,
@@ -21,37 +25,21 @@ const ManagerStore = ({navigation}) => {
     longitudeDelta: 0.0421,
   });
   const [locations, setLocation] = useState([]);
-  const [selectionMode, setSelectionMode] = useState(false);
-
-  const renderLocation = ({item: store}) => {
-    return (
-      <TouchableOpacity
-        style={styles.locationCard}
-        onPress={() =>
-          setRegion({
-            latitude: store.latitude,
-            longitude: store.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          })
-        }>
-        <Text style={styles.address}>{store.name}</Text>
-        <Text style={styles.drinks}>{store.address}</Text>
-        <View style={styles.row}>
-          <TouchableOpacity style={styles.contactBtn} onPress={() => {}}>
-            <Text style={styles.contactText}>Phone: {store.contact}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.editBtn}
-            onPress={() => navigation.navigate('EditStore', {store})}>
-            <Icon name="pencil" color={colorTheme.greenBackground} size={30} />
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const [userPosition, setUserPosition] = useState(null);
+  const [selectedMarker, setSelectedMarker] = useState();
 
   useEffect(() => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        setUserPosition({ latitude, longitude });
+        console.log("get user position successfully: " + userPosition);
+        
+      },
+      error => Alert.alert('Error', 'Unable to get location: ' + error.message),
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 10000 }
+    );
+
     const focusListener = navigation.addListener('focus', () => {
       const subscriber = firestore()
         .collection('storeLocations')
@@ -77,6 +65,69 @@ const ManagerStore = ({navigation}) => {
 
     return () => focusListener();
   }, []);
+
+  const deleteHandler = ({ store }) => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this store?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            try {
+              firestore().collection('storeLocations').doc(store.key).delete();
+              Alert.alert("Successful", "Deleted successfully");
+            } catch (error) {
+              console.error("Delete error: ", error);
+              Alert.alert("Delete failed", "Delete store failed!")
+            }
+          }
+        },
+      ],
+    );
+  };
+
+  const renderLocation = ({ item: store }) => {
+    return (
+      <TouchableOpacity
+        style={styles.locationCard}
+        onPress={() => {
+          setRegion({
+            latitude: parseFloat(store.latitude),
+            longitude: parseFloat(store.longitude),
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+          setSelectedMarker({
+            latitude: parseFloat(store.latitude),
+            longitude: parseFloat(store.longitude)
+          })
+        }}>
+        <Text style={styles.address}>{store.name}</Text>
+        <Text style={styles.drinks}>{store.address}</Text>
+        <View style={styles.row}>
+          <TouchableOpacity style={styles.contactBtn} onPress={() => { }}>
+            <Text style={styles.contactText}>Phone: {store.contact}</Text>
+          </TouchableOpacity>
+          <View style={styles.btnRow}>
+            <TouchableOpacity
+              onPress={() => deleteHandler({ store })}>
+              <Icon name="trash" style={styles.editBtn} color={colorTheme.white} size={20} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('EditStore', { store })}>
+              <Icon name="pencil" style={styles.editBtn} color={colorTheme.white} size={20} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -104,30 +155,25 @@ const ManagerStore = ({navigation}) => {
               description={location.address}
             />
           ))}
+          {/* {selectedMarker && (
+            <MapViewDirections
+              origin={userPosition}
+              destination={selectedMarker}
+              apikey={GOOGLE_MAPS_APIKEY}
+              strokeWidth={3}
+              strokeColor="blue"
+              onError={error => console.log('Directions API error: ', error)}
+            />
+          )} */}
         </MapView>
       </View>
       <View style={styles.nearbyBlock}>
         <View style={styles.row}>
           <Text style={styles.title}>Existed Stores</Text>
-          <View>
+          <View style={styles.btnRow}>
             <TouchableOpacity
-              style={styles.actionButton}
               onPress={() => navigation.navigate('Add')}>
-              <Icon name="plus" color={colorTheme.white} size={20} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => setSelectionMode(!selectionMode)}>
-              {selectionMode ? (
-                <Icon name="times" color={colorTheme.white} size={20} />
-              ) : (
-                <Icon name="navicon" color={colorTheme.white} size={20} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={deleteSelectedDrinks}>
-              <Icon name="trash" color={colorTheme.white} size={20} />
+              <Icon name="plus" style={styles.editBtn} color={colorTheme.white} size={20} />
             </TouchableOpacity>
           </View>
         </View>
@@ -159,18 +205,28 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+
   },
   coverMap: {
     height: '50%',
     width: '100%',
-    marginVertical: '4%',
+    borderRadius: 5,
+    shadowColor: colorTheme.black,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.30,
+    shadowRadius: 4.65,
+
+    elevation: 8,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#4CAF50',
     marginLeft: '5%',
-    marginTop: '5%',
+    marginVertical: "2%"
   },
   loaderContainer: {
     flex: 1,
@@ -210,13 +266,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: '4%',
+    marginVertical: "2%"
   },
   editBtn: {
-    borderWidth: 1,
-    borderColor: colorTheme.greenBackground,
-    padding: '3%',
-    borderRadius: 50,
+    backgroundColor: colorTheme.greenBackground,
+    borderRadius: 25,
+    justifyContent: "center",
+    paddingHorizontal: 9,
+    paddingVertical: 7,
+  },
+  btnRow: {
+    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: "space-evenly",
+    width: 100,
   },
 });
 

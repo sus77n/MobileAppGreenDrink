@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
+  Alert,
   ImageBackground,
   SafeAreaView,
   StyleSheet,
@@ -7,29 +8,66 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
-  Alert,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-import DatePicker from 'react-native-date-picker';
-import auth from '@react-native-firebase/auth';
+import { Picker } from '@react-native-picker/picker';
+import firestore from '@react-native-firebase/firestore';
+import { colorTheme } from '../component/store';
+import bcrypt from "bcryptjs";
 
-const SignUpScreen = () => {
-  const [currency, setCurrency] = useState('Miss');
+const SignUpScreen = ({ navigation }) => {
+  const [username, setUsername] = useState('');
+  const [formOfAddress, setFormOfAddress] = useState('Mr');
   const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const signUpFunc = () =>{
-    auth().createUserWithEmailAndPassword(email, password).then(()=>{
-      Alert.alert("User created")
-    })
-    .catch((e)=>{
-      console.log("Sign up error: " + e)
-    })
+  const signUpFunc = async () => {
+
+    try {
+      if (!username || !email || !password || !phone) {
+        throw new Error("Please fill all the information.");
+      }
+
+      const db = firestore();
+
+      const existedUsername = await db.collection("customers")
+        .where("username", "==", username)
+        .get();
+
+      if (!existedUsername.empty) {
+        throw new Error("Existed username");
+      }
+
+      const existedPhone = await db.collection("customers")
+        .where("email", "==", email)
+        .get();
+      const existedEmail = await db.collection("customers")
+        .where("phone", "==", phone)
+        .get();
+      if (!existedPhone.empty || !existedEmail.empty) {
+        throw new Error("Existed user");
+      }
+
+
+      await db.collection("customers").add({
+        username: username,
+        password: password,
+        email: email,
+        phone: phone,
+        formOfAddress: formOfAddress, //Mr or Ms
+        balance: 0,
+        stars: 0,
+        totalStars: 0,
+        createAt: date,
+      })
+      Alert.alert("Successful", "Sign up successfully")
+      navigation.pop();
+
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+
   }
 
   return (
@@ -44,45 +82,35 @@ const SignUpScreen = () => {
             <View style={styles.main}>
               {/* <Text style={styles.textLogin}>Please log in</Text> */}
               <Picker
-                selectedValue={currency}
-                onValueChange={currentCurrency => setCurrency(currentCurrency)}
-                dropdownIconColor={'#568f56'}
+                selectedValue={formOfAddress}
+                onValueChange={formOfAddress => setFormOfAddress(formOfAddress)}
+                dropdownIconColor={colorTheme.greenText}
                 style={styles.gender}>
-                <Picker.Item color="#568f56" label="Ms" value="Ms" />
-                <Picker.Item color="#568f56" label="Miss" value="Miss" />
-                <Picker.Item color="#568f56" label="Mr" value="Mr" />
+                <Picker.Item color={colorTheme.greenText} label="Ms" value="Ms" />
+                <Picker.Item color={colorTheme.greenText} label="Mr" value="Mr" />
               </Picker>
               {/* Inputs */}
-              <Text style={styles.textLogin}>First name:</Text>
-              <TextInput style={styles.textInput} />
-              <Text style={styles.textLogin}>Last name:</Text>
-              <TextInput style={styles.textInput}/>
+              <Text style={styles.textLogin}>Username:</Text>
+              <TextInput style={styles.textInput} value={username} onChangeText={setUsername}></TextInput>
+              <Text style={styles.textLogin}>Password:</Text>
+              <TextInput style={styles.textInput} value={password} onChangeText={setPassword} ></TextInput>
               <Text style={styles.textLogin}>Email:</Text>
-              <TextInput style={styles.textInput} 
+              <TextInput style={styles.textInput}
                 value={email}
                 onChangeText={setEmail}
               />
-              <Text style={styles.textLogin}>Password:</Text>
-              <TextInput style={styles.textInput} 
-                value={password}
-                onChangeText={setPassword}
-              />
-              <DatePicker
-                modal
-                open={open}
-                date={date}
-                onConfirm={date => {
-                  setOpen(false);
-                  setDate(date);
-                }}
-                onCancel={() => {
-                  setOpen(false);
-                }}
+              <Text style={styles.textLogin}>Phone:</Text>
+              <TextInput style={styles.textInput}
+                value={phone}
+                onChangeText={setPhone}
               />
               {/* Login Button & Forgot Password */}
               <View style={styles.loginButtonContainer}>
-                <TouchableOpacity style={styles.buttonLogin} onPress={()=>signUpFunc()}>
+                <TouchableOpacity style={styles.buttonLogin} onPress={() => signUpFunc()}>
                   <Text style={styles.textButtonLogin}>Sign Up</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonLogin} onPress={() => navigation.goBack()}>
+                  <Text style={styles.textButtonLogin}>Log in</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -128,7 +156,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     paddingVertical: 30,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,

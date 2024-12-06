@@ -1,17 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colorTheme, TopGoBack } from "../component/store";
+import { colorTheme, getUser, setUserStorage, TopGoBack } from "../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MapView from 'react-native-maps';
 
 const ProfileScreen = ({ navigation }) => {
+    const [user, setUser] = useState(null);
+
+    useEffect(async () => {
+        const fetchUser = async () => {
+            const user = await getUser();
+            setUser(user);
+            console.log("User:", user);
+        };
+
+        fetchUser();
+    }, [])
+
+    const logoutHandler = () => {
+        try {
+            setUserStorage(null);  // Clear user data
+
+            // Reset navigation stack to 'Login'
+            // navigation.dispatch(
+            //     CommonActions.reset({
+            //         index: 0,
+            //         routes: [{ name: 'Login' }],
+            //     })
+            // );
+        } catch (error) {
+            console.error("Error resetting navigation: ", error);
+        }
+    };
 
     return (
         <ScrollView style={styles.container}>
             <View style={styles.header}>
                 <Icon name='crown' style={styles.crownIcon} size={50} color={'white'} />
                 <Icon name='account-circle-outline' size={100} color={'white'} />
-                <Text style={[styles.whiteText, styles.name]}>Peter</Text>
+                <Text style={[styles.whiteText, styles.name]}>{user ? user.username : "User"}</Text>
                 <View style={styles.subHeader}>
                     <Icon name='star' style={styles.accountIcon} size={22} color={colorTheme.orangeText} />
                     <Text style={[styles.whiteText, styles.subHeaderText]}>56</Text>
@@ -22,11 +48,11 @@ const ProfileScreen = ({ navigation }) => {
             <View style={styles.sectionBlock}>
                 <Text style={styles.headerSection}>ACCOUNT DETAILS</Text>
                 <View style={styles.bodySection}>
-                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate("ProfileDetail")}>
+                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate("ProfileDetail", { user })}>
                         <Text style={styles.rowText}>Personal Information</Text>
                         <Icon name='account-details-outline' style={styles.accountIcon} size={40} color={colorTheme.black} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.row}>
+                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate("MembershipDetail")}>
                         <Text style={styles.rowText}>Membership Details</Text>
                         <Icon name='crown-circle-outline' style={styles.accountIcon} size={40} color={colorTheme.black} />
                     </TouchableOpacity>
@@ -63,7 +89,7 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.logOutBtn}>
+            <TouchableOpacity style={styles.logOutBtn} onPress={logoutHandler}>
                 <Text style={styles.logOutText}>LOG OUT</Text>
             </TouchableOpacity>
         </ScrollView>

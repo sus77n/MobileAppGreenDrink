@@ -14,16 +14,29 @@ import {
 } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { adminId, setUserStorage } from "../component/store";
+import { adminId, getUser, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
+import { getFirestore } from "@react-native-firebase/firestore";
 
-const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("admin@gmail.com");
-  const [password, setPassword] = useState("123456");
+const LoginScreen = ({ navigation, route }) => {
+  const [email, setEmail] = useState("minh@gmail.com");
+  const [password, setPassword] = useState("123");
+  const { isLogout } = route.params ? route.params : false;
+  if (isLogout) {
+    console.log("check:", isLogout);
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: "Login",
+        }
+      ]
+    })
+  }
 
   useEffect(() => {
     // Ensure that your webClientId is correctly set.
     GoogleSignin.configure({
-      webClientId: "1046745299175-5b64vsicc0k21kck5c2ctpr607v39270.apps.googleusercontent.com",
+      webClientId: webClientId,
     });
   }, []);
 
@@ -42,9 +55,9 @@ const LoginScreen = ({ navigation }) => {
         idToken = signInResult.data?.idToken; // For versions that return a different structure
       }
 
-      if (!idToken) {
-        throw new Error("Google Sign-In failed: No ID token returned.");
-      }
+      // if (!idToken) {
+      //   throw new Error("Google Sign-In failed: No ID token returned.");
+      // }
 
       // Create a Google credential with the ID token
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
@@ -52,11 +65,12 @@ const LoginScreen = ({ navigation }) => {
       // Sign in to Firebase with the credential
       const userCredential = await auth().signInWithCredential(googleCredential);
       console.log("Firebase User:", userCredential.user);
+      setUserStorage(userCredential.user);
 
       // Show success message and navigate
       Alert.alert("Success", "Signed in with Google successfully!");
 
-      const { uid } = res.user;
+      const { uid } = userCredential.user;
       if (uid === adminId) {
         navigation.navigate("ManagerTab");
       } else {
@@ -70,39 +84,49 @@ const LoginScreen = ({ navigation }) => {
   }
 
   const loginFunc = () => {
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((res) => {
-        console.log(res.user);
-        setUserStorage(res.user)
+
+    getFirestore().collection("customers").where("email", "==", email).get()
+      .then((data) => {
+        data.forEach((doc) => {
+          const userData = doc.data();
+          const userKey = doc.id;
+
+          if (!(password === userData.password)) {
+            throw new Error("Wrong password");
+            
+          }
+
+          setUserStorage({ ...userData, key: userKey })
+          const { email } = userData;
+          if (email === adminId) {
+            console.log("Manager");
+            navigation.navigate("ManagerTab");
+          } else {
+            console.log("User");
+            navigation.navigate("UserTab");
+          }
+
+        });
 
 
         Alert.alert("", "Login successfully", [
           {
             text: "Ok",
+            onPress: () => {
+              // setEmail("")
+              // setPassword("")
+            }
           },
         ]);
-
-        const { uid } = res.user;
-        if (uid === adminId) {
-          console.log("Manager");
-          navigation.navigate("ManagerTab");
-        } else {
-          console.log("User");
-          navigation.navigate("UserTab");
-        }
 
       })
       .catch((e) => {
         console.log(e);
-        Alert.alert("Wrong username or password, try again");
+        Alert.alert("Invalid user", e.toString());
         setEmail("");
         setPassword("");
       });
   };
-
-
-
 
   return (
     <SafeAreaView style={styles.layout}>

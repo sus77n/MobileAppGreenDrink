@@ -5,29 +5,31 @@ import { colorTheme } from '../component/store';
 import StoreScreen from '../screen/StoreScreen';
 import ManagerStore from '../screen/ManageStore';
 import EditStore from '../screen/EditStore';
+import AddStore from '../screen/AddStore';
 
 const Stack = createNativeStackNavigator();
 
-export const CustomerStoreNavigation = () =>{
-    return(
+export const CustomerStoreNavigation = () => {
+    return (
         <Stack.Navigator
-            screenOptions={({route})=>({
-            headerTintColor: colorTheme.greenText,
-            headerShown: false
-        })}>
+            screenOptions={({ route }) => ({
+                headerTintColor: colorTheme.greenText,
+                headerShown: false
+            })}>
             <Stack.Screen name='Store' component={StoreScreen} />
         </Stack.Navigator>
     )
 }
 
-export const ManagerStoreNavigation = () =>{
-    return(
+export const ManagerStoreNavigation = () => {
+    return (
         <Stack.Navigator
-            screenOptions={({route})=>({
-            headerTintColor: colorTheme.greenText,
-            headerShown: false
-        })}>
+            screenOptions={({ route }) => ({
+                headerTintColor: colorTheme.greenText,
+                headerShown: false
+            })}>
             <Stack.Screen name='Store' component={ManagerStore} />
+            <Stack.Screen name='Add' component={AddStore} />
             <Stack.Screen name='EditStore' component={EditStore} />
         </Stack.Navigator>
     )

@@ -13,7 +13,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 
 const StoreScreen = ({ navigation }) => {
-    const [loading, setLoading] = useState(false);
     const [locations, setLocation] = useState([]);
     const [region, setRegion] = useState({
         latitude: 11.053818758889006,
@@ -28,8 +27,8 @@ const StoreScreen = ({ navigation }) => {
                 style={styles.locationCard}
                 onPress={() =>
                     setRegion({
-                        latitude: location.latitude,
-                        longitude: location.longitude,
+                        latitude: parseFloat(location.latitude),
+                        longitude: parseFloat(location.longitude),
                         latitudeDelta: 0.01,
                         longitudeDelta: 0.01,
                     })
@@ -49,7 +48,6 @@ const StoreScreen = ({ navigation }) => {
 
     useEffect(() => {
         const focusListener = navigation.addListener("focus", () => {
-            setLoading(true);
 
             const subscriber = firestore()
                 .collection('storeLocations')
@@ -68,7 +66,6 @@ const StoreScreen = ({ navigation }) => {
                     })
 
                     setLocation(storeLocations);
-                    setLoading(false);
                 });
 
             return () => subscriber();
@@ -97,8 +94,8 @@ const StoreScreen = ({ navigation }) => {
                         <Marker
                             key={index}
                             coordinate={{
-                                latitude: location.latitude,
-                                longitude: location.longitude,
+                                latitude: parseFloat(location.latitude),
+                                longitude: parseFloat(location.longitude),
                             }}
                             title={location.name}
                             description={location.address}

@@ -49,7 +49,7 @@ const HomeScreen = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollView}>
         {/* Greeting Section */}
         <View style={styles.greetingSection}>
-          <Text style={styles.greetingText}>Good morning, {user.email}! 🌞</Text>
+          <Text style={styles.greetingText}>Good morning, {user.formOfAddress}.{user.username}! 🌞</Text>
           <TouchableOpacity>
             <Text style={styles.mailIcon}>📩</Text>
           </TouchableOpacity>

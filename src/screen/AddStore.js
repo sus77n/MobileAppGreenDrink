@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
 import { colorTheme } from '../component/store';
 import firestore from '@react-native-firebase/firestore';
@@ -69,33 +69,12 @@ const styles = StyleSheet.create({
     },
 });
 
-const EditStoreScreen = ({ navigation, route }) => {
-    const { store } = route.params;
-    const [name, setName] = useState(store.name);
-    const [address, setAddress] = useState(store.address);
-    const [contact, setContact] = useState(store.contact);
-    const [latitude, setLatitude] = useState(store.latitude.toString());
-    const [longitude, setLongitude] = useState(store.longitude.toString());
-    const [hasEdit, setHasEdit] = useState(false); // Track edits
-
-    // Helper to compare the current state with the original store
-    useEffect(() => {
-        const original = {
-            name: store.name,
-            address: store.address,
-            contact: store.contact,
-            latitude: store.latitude,
-            longitude: store.longitude,
-        };
-        const current = { name, address, contact, latitude, longitude };
-
-        // Check if there's any difference
-        const isEdited = Object.keys(original).some(
-            (key) => original[key] !== current[key]
-        );
-
-        setHasEdit(isEdited);
-    }, [name, address, contact, latitude, longitude]); // Recalculate on state changes
+const AddStore = ({ navigation, }) => {
+    const [name, setName] = useState("");
+    const [address, setAddress] = useState("");
+    const [contact, setContact] = useState("");
+    const [latitude, setLatitude] = useState();
+    const [longitude, setLongitude] = useState();
 
     const handlePreview = () => {
         console.log('Preview product:', { name, address, contact, latitude, longitude });
@@ -108,41 +87,37 @@ const EditStoreScreen = ({ navigation, route }) => {
         }
         const toNumberLatitude = parseFloat(latitude);
         const toNumberLongitude = parseFloat(latitude);
-
+        
         if (isNaN(toNumberLongitude) || isNaN(toNumberLatitude)) {
             Alert.alert('Error', 'Please enter a valid location');
             return;
         }
+        
         firestore()
             .collection('storeLocations')
-            .doc(store.key)
-            .update({
-                name : name,
-                address : address,
-                contact : contact,
-                latitude : latitude,
-                longitude : longitude,
+            .add({
+                name: name,
+                address: address,
+                contact: contact,
+                latitude: parseFloat(latitude),
+                longitude: parseFloat(longitude),
             })
             .then(() => {
-                Alert.alert('Success', 'Store updated successfully');
+                Alert.alert('Success', 'Store saved successfully');
                 navigation.goBack();
             })
             .catch((error) => {
                 Alert.alert('Error', 'Something went wrong. Please try again.');
-                console.error('Error updating product:', error);
+                console.error('Error adding product:', error);
             });
     };
 
 
     const handleCancel = () => {
-        if (hasEdit) {
-            Alert.alert('Cancel', 'Are you sure you want to discard changes?', [
-                { text: 'Yes', onPress: () => navigation.goBack() },
-                { text: 'No' },
-            ]);
-        } else {
-            navigation.goBack();
-        }
+        Alert.alert('Cancel', 'Are you sure you want to discard changes?', [
+            { text: 'Yes', onPress: () => navigation.goBack() },
+            { text: 'No' },
+        ]);
     };
 
     return (
@@ -167,15 +142,15 @@ const EditStoreScreen = ({ navigation, route }) => {
             />
             <TextInput
                 style={styles.input}
-                placeholder="Longitude"
-                value={longitude}
-                onChangeText={setLongitude}
-            />
-            <TextInput
-                style={styles.input}
                 placeholder="Latitude"
                 value={latitude}
                 onChangeText={setLatitude}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Longitude"
+                value={longitude}
+                onChangeText={setLongitude}
             />
 
 
@@ -184,7 +159,7 @@ const EditStoreScreen = ({ navigation, route }) => {
                     <Text style={styles.buttonText}>Preview</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.buttonText}>Update</Text>
+                    <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
                     <Text style={styles.buttonText}>Cancel</Text>
@@ -194,4 +169,4 @@ const EditStoreScreen = ({ navigation, route }) => {
     );
 };
 
-export default EditStoreScreen;
+export default AddStore;

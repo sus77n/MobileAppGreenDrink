@@ -6,24 +6,23 @@ import CustomerTab from "./CustomerNavigation";
 import ManagerTab from "./ManagerNavigation";
 import { colorTheme } from "../component/store";
 
-
 const Stack = createNativeStackNavigator();
 
 const InitialNavigation = () => {
-    return (
-      <Stack.Navigator
+  return (
+    <Stack.Navigator
       initialRouteName="Login"
-        screenOptions={({ route }) => ({
-          headerTintColor: colorTheme.greenText,
-          headerShown: false,
-        })}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="UserTab" component={CustomerTab} />
-        <Stack.Screen name="ManagerTab" component={ManagerTab} />
-      </Stack.Navigator>
-  
-    );
-  };
+      screenOptions={({ route }) => ({
+        headerTintColor: colorTheme.greenText,
+        headerShown: false,
+      })}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="UserTab" component={CustomerTab} />
+      <Stack.Screen name="ManagerTab" component={ManagerTab} />
+    </Stack.Navigator>
+
+  );
+};
 
 export default InitialNavigation;

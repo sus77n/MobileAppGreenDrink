@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   ImageBackground,
@@ -8,13 +8,136 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme} from '../component/store';
+import {colorTheme, getUser} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import firestore from '@react-native-firebase/firestore';
 
 const ProductDetail = ({navigation, route}) => {
+  const {drink} = route.params;
   const [selectedSize, setSelectedSize] = useState('S');
   const [sweetness, setSweetness] = useState('Regular');
-  const {drink} = route.params;
+
+  const [order, setOrder] = useState({});
+  const [listOrder, setListOrder] = useState([]);
+  const [total, setTotal] = useState(0);
+
+  const calculateTotal = async drinks => {
+    let newTotal = 0;
+
+    const drinkKeys = Object.keys(drinks); 
+    for (const i of drinkKeys) {
+      const drinkData = drinks[i];
+      const {key, quantity} = drinkData;
+      try {
+        const drinkSnapshot = await firestore()
+          .collection('drinks')
+          .doc(key)
+          .get();
+        if (drinkSnapshot.exists) {
+          const drinkInfo = drinkSnapshot.data();
+          const basePrice = drinkInfo.price || 0;
+          newTotal += basePrice * quantity;
+        }
+      } catch (error) {
+        console.error(`Error fetching drink data for ${drinkId}:`, error);
+      }
+    }
+    setTotal(newTotal);
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUser(); 
+      console.log('User Pickup:', userData);
+      try {
+        const documentSnapshot = await firestore()
+          .collection('orders')
+          .doc(userData.orderKey)
+          .get();
+
+        if (documentSnapshot.exists) {
+          const data = documentSnapshot.data();
+          const key = documentSnapshot.id; 
+          console.log('Order Data:', data);
+
+          // Combine the data with the document key
+          const dataWithKey = {...data, key};
+          setOrder(dataWithKey);
+          if (data.drinks) {
+            setListOrder(data.drinks);
+            await calculateTotal(data.drinks);
+          } else {
+            console.log('Drinks field is undefined or does not exist.');
+          }
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching order data:', error);
+      }
+    };
+    fetchUser();
+  }, [listOrder]);
+
+  useEffect(() => {
+    if (listOrder) {
+      calculateTotal(listOrder);
+    }
+  }, [listOrder]);
+
+  const generateDrinkKey = (drinkId, customization) => {
+    const customizationString = JSON.stringify(customization);
+    const base64Key = btoa(`${drinkId}_${customizationString}`);
+    return base64Key;
+  };
+
+  const addOrUpdateDrinkWithCheck = async (orderId, drinkId, customization, quantity) => {
+    try {
+      const drinkKey = generateDrinkKey(drinkId, customization);
+  
+      // Reference the specific order document
+      const orderRef = firestore().collection('orders').doc(orderId);
+      const orderSnapshot = await orderRef.get();
+  
+      if (orderSnapshot.exists) {
+        const orderData = orderSnapshot.data();
+        const existingDrink = orderData.drinks?.[drinkKey];
+  
+        if (existingDrink) {
+          // If the drink already exists, update the quantity
+          existingDrink.quantity += quantity;
+          await orderRef.update({
+            [`drinks.${drinkKey}`]: existingDrink,
+          });
+          console.log('Drink quantity updated!');
+        } else {
+          // Add a new drink
+          await orderRef.update({
+            [`drinks.${drinkKey}`]: {
+              key: drinkId,
+              custom: customization,
+              quantity: quantity || 1,
+            },
+          });
+          console.log('New drink added!');
+
+          // Re-fetch the updated order data to update the state
+      const updatedOrderSnapshot = await orderRef.get();
+      const updatedOrderData = updatedOrderSnapshot.data();
+
+      if (updatedOrderData && updatedOrderData.drinks) {
+        setListOrder(updatedOrderData.drinks); // Update listOrder state
+        await calculateTotal(updatedOrderData.drinks); // Recalculate the total price
+      }
+        }
+      } else {
+        console.log('Order not found!');
+      }
+    } catch (error) {
+      console.error('Error adding or updating drink:', error);
+    }
+  };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -112,8 +235,13 @@ const ProductDetail = ({navigation, route}) => {
           </View>
 
           {/* Add to Cart Section */}
-          <TouchableOpacity style={styles.cart}>
-            <Text style={styles.total}>Total: đ50,000</Text>
+          <TouchableOpacity
+            style={styles.addIcon}
+            onPress={() => addOrUpdateDrinkWithCheck(order.key, drink.key, {size: selectedSize,sweetness: sweetness}, 1)}>
+            <Icon name="plus" size={25} color={colorTheme.white} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cart} onPress={() => {}}>
+            <Text style={styles.total}>Total: đ{total}</Text>
             <Icon name="shopping-cart" size={30} color={colorTheme.white} />
           </TouchableOpacity>
         </View>
@@ -165,8 +293,8 @@ const styles = StyleSheet.create({
   img: {
     position: 'absolute',
     marginTop: '-120%',
-    width: "90%",
-    height: "160%",
+    width: '90%',
+    height: '160%',
   },
   price: {
     color: colorTheme.orangeBackground,
@@ -245,7 +373,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cart: {
-    position:'absolute',
+    position: 'absolute',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -261,6 +389,16 @@ const styles = StyleSheet.create({
     color: colorTheme.white,
     fontSize: 20,
     fontWeight: '700',
+  },
+
+  addIcon: {
+    position: 'absolute',
+    backgroundColor: colorTheme.orangeBackground,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 25,
+    bottom: '19%',
+    right: '5%',
   },
 });
 

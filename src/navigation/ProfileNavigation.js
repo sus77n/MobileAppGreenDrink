@@ -16,7 +16,7 @@ export const CustomerProfileNavigation = () => {
         <Stack.Navigator
             screenOptions={{ headerShown: false, }}
         >
-            <Stack.Screen name='Profile' component={ProfileScreen} />
+            <Stack.Screen name='ProfileMain' component={ProfileScreen} />
             <Stack.Screen name='ProfileDetail' component={ProfileDetail} />
             <Stack.Screen name='Transaction' component={TransactionScreen} />
             <Stack.Screen name='TransactionDetail' component={TransactionDetail} />

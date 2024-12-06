@@ -21,7 +21,7 @@ export const CustomerHomeNavigation = ({ route, navigation }) => {
                 headerTintColor: colorTheme.greenText,
                 headerShown: false
             })}>
-            <Stack.Screen name='Home' component={HomeScreen} />
+            <Stack.Screen name='HomeMain' component={HomeScreen} />
             <Stack.Screen name='Inbox' component={InboxScreen} />
             <Stack.Screen name='Card' component={CardScreen} />
             <Stack.Screen name='MembershipDetail' component={MembershipDetail} />

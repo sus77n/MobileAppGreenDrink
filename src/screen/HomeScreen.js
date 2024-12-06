@@ -46,7 +46,7 @@ const HomeScreen = ({ navigation }) => {
     };
     return () => loadScreen();
   }, []);
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -63,7 +63,7 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.balanceCardWrapper}>
             <View style={styles.balanceCard}>
               <Text style={styles.balanceTitle}>BALANCE</Text>
-              <Text style={styles.balanceAmount}>₫20,000</Text>
+              <Text style={styles.balanceAmount}>đ{user.balance}</Text>
               <TouchableOpacity style={styles.addButton}>
                 <Text style={styles.addButtonText}>Add money</Text>
               </TouchableOpacity>
@@ -76,9 +76,9 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.starsCardWrapper}>
             <View style={styles.starsCard}>
               <Text style={styles.starsTitle}>STARS</Text>
-              <Text style={styles.starsAmount}>7</Text>
+              <Text style={styles.starsAmount}>{user.stars}</Text>
               <Text style={styles.starsSubtitle}>
-                13 star(s) until next reward
+              {20 - user.stars} star(s) until next reward
               </Text>
             </View>
             <TouchableOpacity onPress={() => navigation.navigate('MembershipDetail')}> 
@@ -131,7 +131,7 @@ const HomeScreen = ({ navigation }) => {
         {/* Card Section */}
       </ScrollView>
       <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
-          <Text style={styles.cardButtonText}>₫20,000 on card</Text>
+          <Text style={styles.cardButtonText}>₫{user.balance} on card</Text>
         </TouchableOpacity>
     </SafeAreaView>
   );

@@ -112,12 +112,14 @@ export const getUser = async () => {
 };
 
 
-export const setUserStorage = async (user) => {
-  try {
-    await AsyncStorage.setItem('User', JSON.stringify(user));
-  } catch (error) {
-    console.log('Error when store user: ' + error);
-  }
+export const getTimeNow = () =>{
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedTime = `${hours % 12 || 12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+    const formattedDate = `${now.getDate()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+    return `as of ${formattedTime}, ${formattedDate}`;
 }
 
 export const resetUserAfterChange = async (userKey) => {
@@ -138,3 +140,31 @@ export const resetUserAfterChange = async (userKey) => {
 export const adminId = "6d0GeGvHvqdWu7wylZ72K1EiE9o2";
 export const webClientId = "1046745299175-5b64vsicc0k21kck5c2ctpr607v39270.apps.googleusercontent.com";
 export const GOOGLE_MAPS_APIKEY = 'AIzaSyCKRP7vSTDKCWUu9DYYyBtkcUPpVOBkTYk';
+
+export const calculateTotal = async (drinks) => {
+  let newTotal = 0;
+
+  // Fetch the base price for each drink
+  const drinkKeys = Object.keys(drinks); // Assuming `drinks` is an object with drink keys
+  for (const i of drinkKeys) {
+    const drinkData = drinks[i];
+    const { key, custom, quantity } = drinkData;
+
+    try {
+      // Fetch the drink document from Firestore
+      const drinkSnapshot = await firestore().collection('drinks').doc(key).get();
+      if (drinkSnapshot.exists) {
+        const drinkInfo = drinkSnapshot.data();
+        const basePrice = drinkInfo.price || 0; // Fallback to 0 if price isn't available
+
+        // Add to total
+        newTotal += (basePrice) * quantity;
+      }
+    } catch (error) {
+      console.error(`Error fetching drink data for ${drinkId}:`, error);
+    }
+  }
+
+  // Update the total state
+  setTotal(newTotal);
+};

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -7,8 +7,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, PayInStoreTop} from '../component/store';
+import {colorTheme, getTimeNow, getUser, PayInStoreTop} from '../component/store';
 const CardScreen = ({navigation, route}) => {
+  const [user, setUser] = useState({});
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getUser(); 
+      setUser(userData); 
+    };
+    fetchUser();
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <PayInStoreTop navigation={navigation} text={'Pay In Store'}/>
@@ -19,8 +28,8 @@ const CardScreen = ({navigation, route}) => {
           resizeMode='contain'
         />
         <View style={styles.moneyWrap}>
-          <Text style={styles.money}>đ20 000</Text>
-          <Text style={styles.subtitle}> as of 8:50 PM, 20/11/2024</Text>
+          <Text style={styles.money}>đ{user.stars}</Text>
+          <Text style={styles.subtitle}>{getTimeNow()}</Text>
         </View>
       </View>
       <TouchableOpacity style={styles.addButton}>

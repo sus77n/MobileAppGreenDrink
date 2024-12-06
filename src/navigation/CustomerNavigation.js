@@ -30,13 +30,13 @@ const CustomerTab = () => {
   };
   return (
     <Tab.Navigator
-      initialRouteName="HomeNav"
+      initialRouteName="Home"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === 'HomeNav') iconName = 'home';
-          else if (route.name === 'OrderNav') iconName = 'coffee';
-          else if (route.name === 'StoreNav') iconName = 'map-marker';
+          if (route.name === 'Home') iconName = 'home';
+          else if (route.name === 'Order') iconName = 'coffee';
+          else if (route.name === 'Store') iconName = 'map-marker';
           else iconName = 'user';
           return <Icon name={iconName} size={size} color={color} />;
         },
@@ -55,19 +55,11 @@ const CustomerTab = () => {
           display: getTabBarVisibility(route),
         },
         headerShown: false,
-        tabBarLabel: () => {
-          let iconName;
-          if (route.name === 'HomeNav') iconName = 'Home';
-          else if (route.name === 'OrderNav') iconName = 'Order';
-          else if (route.name === 'StoreNav') iconName = 'Store';
-          else iconName = 'Profile';
-          return <Text>{iconName}</Text>;
-        },
       })}>
-      <Tab.Screen name="HomeNav" component={CustomerHomeNavigation} />
-      <Tab.Screen name="OrderNav" component={OrderNavigation} />
-      <Tab.Screen name="StoreNav" component={CustomerStoreNavigation} />
-      <Tab.Screen name="ProfileNav" component={CustomerProfileNavigation} />
+      <Tab.Screen name="Home" component={CustomerHomeNavigation} />
+      <Tab.Screen name="Order" component={OrderNavigation} />
+      <Tab.Screen name="Store" component={CustomerStoreNavigation} />
+      <Tab.Screen name="Profile" component={CustomerProfileNavigation} />
     </Tab.Navigator>
   );
 };

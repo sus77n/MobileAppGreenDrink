@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
@@ -15,7 +16,7 @@ import { colorTheme, getUser } from '../component/store';
 
 
 const HomeScreen = ({ navigation }) => {
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState(null);
   // const [test, setTest] = useState('')
 
   // const getData = async () =>{
@@ -41,12 +42,17 @@ const HomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    const loadScreen = () => {
-      navigation.addListener("focus", fetchUser());
-    };
+    const loadScreen = navigation.addListener("focus", () =>  {fetchUser()});
     return () => loadScreen();
   }, []);
   
+  if (user === null) {
+    return (
+      <SafeAreaView>
+        <ActivityIndicator></ActivityIndicator>
+      </SafeAreaView>
+    )
+  } else {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
@@ -134,7 +140,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.cardButtonText}>₫{user.balance} on card</Text>
         </TouchableOpacity>
     </SafeAreaView>
-  );
+  );}
 };
 
 const styles = StyleSheet.create({

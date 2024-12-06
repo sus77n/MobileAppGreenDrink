@@ -85,18 +85,28 @@ const LoginScreen = ({ navigation, route }) => {
 
   const loginFunc = () => {
 
+    if (!email || !password) {
+      Alert.alert("Invalid", "Should fill all the blanks")
+      return;
+    }
+
     getFirestore().collection("customers").where("email", "==", email).get()
-      .then((data) => {
-        data.forEach((doc) => {
+      .then((querySnapshot) => {
+
+        if (querySnapshot.empty) {
+          throw new Error("Email does not exist");
+        }
+  
+        querySnapshot.forEach(async (doc) => {
           const userData = doc.data();
           const userKey = doc.id;
-
-          if (!(password === userData.password)) {
+  
+          if (password !== userData.password) {
             throw new Error("Wrong password");
-
           }
-
-          setUserStorage({ ...userData, key: userKey })
+  
+           await setUserStorage({ ...userData, key: userKey });
+  
           const { email } = userData;
           if (email === adminId) {
             navigation.navigate("ManagerTab");
@@ -104,27 +114,22 @@ const LoginScreen = ({ navigation, route }) => {
             console.log("User");
             navigation.navigate("UserTab");
           }
-
+  
           Alert.alert("", "Login successfully", [
             {
               text: "Ok",
               onPress: () => {
-                setEmail("")
-                setPassword("")
-              }
+                setEmail("");
+                setPassword("");
+              },
             },
           ]);
-
         });
-
-      })
-      .then(() => {
-        
       })
       .catch((e) => {
-        console.log(e);
-        Alert.alert("Invalid user", e.toString());
-        setEmail("");
+        console.log(e.message);
+        Alert.alert("Error", e.message);
+        setEmail(""); 
         setPassword("");
       });
   };

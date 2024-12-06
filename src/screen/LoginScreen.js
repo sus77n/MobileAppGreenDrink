@@ -107,8 +107,7 @@ const LoginScreen = ({ navigation, route }) => {
   
            await setUserStorage({ ...userData, key: userKey });
   
-          const { email } = userData;
-          if (email === adminId) {
+          if (userKey === adminId) {
             navigation.navigate("ManagerTab");
           } else {
             console.log("User");
@@ -153,7 +152,7 @@ const LoginScreen = ({ navigation, route }) => {
           <View style={styles.main}>
             <Text style={styles.textLogin}>Please log in</Text>
             <TextInput
-              placeholder="Number phone"
+              placeholder="Email"
               style={styles.textInput}
               value={email}
               onChangeText={setEmail}

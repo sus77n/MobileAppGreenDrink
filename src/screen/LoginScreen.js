@@ -18,8 +18,8 @@ import { adminId, getUser, resetUserAfterChange, setUserStorage, webClientId } f
 import { getFirestore } from "@react-native-firebase/firestore";
 
 const LoginScreen = ({ navigation, route }) => {
-  const [email, setEmail] = useState("minh@gmail.com");
-  const [password, setPassword] = useState("123");
+  const [email, setEmail] = useState("@gmail.com");
+  const [password, setPassword] = useState("123456");
   const { isLogout } = route.params ? route.params : false;
   if (isLogout) {
     console.log("check:", isLogout);

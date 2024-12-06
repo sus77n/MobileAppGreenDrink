@@ -48,8 +48,8 @@ const HomeScreen = ({ navigation }) => {
   
   if (user === null) {
     return (
-      <SafeAreaView>
-        <ActivityIndicator></ActivityIndicator>
+      <SafeAreaView style={styles.loading}>
+        <ActivityIndicator color={colorTheme.greenBackground} size={'large'} ></ActivityIndicator>
       </SafeAreaView>
     )
   } else {
@@ -150,6 +150,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     paddingVertical: 20,
+  },
+  loading: {
+    justifyContent: "center",
+    verticalAlign: "middle",
   },
   greetingSection: {
     flexDirection: 'row',

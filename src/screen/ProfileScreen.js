@@ -6,27 +6,28 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const ProfileScreen = ({ navigation }) => {
     const [user, setUser] = useState(null);
 
-    useEffect(async () => {
+    useEffect(() => {
         const fetchUser = async () => {
-            const user = await getUser();
-            setUser(user);
-            console.log("User:", user);
+            try {
+                const user = await getUser();
+                setUser(user);
+                console.log("User:", user);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+            }
         };
 
         fetchUser();
-    }, [])
+    }, []);
 
     const logoutHandler = () => {
         try {
-            setUserStorage(null);  // Clear user data
+            setUserStorage(null);
 
-            // Reset navigation stack to 'Login'
-            // navigation.dispatch(
-            //     CommonActions.reset({
-            //         index: 0,
-            //         routes: [{ name: 'Login' }],
-            //     })
-            // );
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+            })
         } catch (error) {
             console.error("Error resetting navigation: ", error);
         }
@@ -40,7 +41,7 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={[styles.whiteText, styles.name]}>{user ? user.username : "User"}</Text>
                 <View style={styles.subHeader}>
                     <Icon name='star' style={styles.accountIcon} size={22} color={colorTheme.orangeText} />
-                    <Text style={[styles.whiteText, styles.subHeaderText]}>56</Text>
+                    <Text style={[styles.whiteText, styles.subHeaderText]}>{user ? user.star : "0"}</Text>
                     <Text style={[styles.whiteText, styles.subHeaderText]}>Gold member</Text>
                 </View>
             </View>

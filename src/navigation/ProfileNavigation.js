@@ -8,13 +8,17 @@ import MembershipDetail from '../screen/MembershipDetail';
 import TransactionDetail from '../screen/TransactionDetail';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChangePassword from '../screen/ChangePassword';
+import { colorTheme } from '../component/store';
 
 const Stack = createNativeStackNavigator();
 
 export const CustomerProfileNavigation = () => {
     return (
         <Stack.Navigator
-            screenOptions={{ headerShown: false, }}
+            screenOptions={({ route }) => ({
+                headerTintColor: colorTheme.greenText,
+                headerShown: false
+            })}
         >
             <Stack.Screen name='ProfileMain' component={ProfileScreen} />
             <Stack.Screen name='ProfileDetail' component={ProfileDetail} />

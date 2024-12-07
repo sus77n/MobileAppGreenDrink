@@ -14,12 +14,14 @@ import {
 } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { adminId, getUser, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
+import { adminId, getUser, LoadingScreen, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
 import { getFirestore } from "@react-native-firebase/firestore";
 
 const LoginScreen = ({ navigation, route }) => {
-  const [email, setEmail] = useState("admin@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("minh1@gmail.com");
+  const [password, setPassword] = useState("7890");
+  const [loading, setLoading] = useState(false);
+
   const { isLogout } = route.params ? route.params : false;
   if (isLogout) {
     console.log("check:", isLogout);
@@ -34,7 +36,6 @@ const LoginScreen = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    // Ensure that your webClientId is correctly set.
     GoogleSignin.configure({
       webClientId: webClientId,
     });
@@ -42,33 +43,26 @@ const LoginScreen = ({ navigation, route }) => {
 
   async function onGoogleButtonPress() {
     try {
-      // Check for Google Play services
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
-      // Sign in with Google
       const signInResult = await GoogleSignin.signIn();
       console.log("Google Sign-In Result:", signInResult);
 
-      // Check if idToken is available
       let idToken = signInResult.idToken;
       if (!idToken) {
-        idToken = signInResult.data?.idToken; // For versions that return a different structure
+        idToken = signInResult.data?.idToken;
       }
 
-      // if (!idToken) {
-      //   throw new Error("Google Sign-In failed: No ID token returned.");
-      // }
+      if (!idToken) {
+        throw new Error("Google Sign-In failed: No ID token returned.");
+      }
 
-      // Create a Google credential with the ID token
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-      // Sign in to Firebase with the credential
       const userCredential = await auth().signInWithCredential(googleCredential);
-      console.log("Firebase User:", userCredential.user);
-      setUserStorage(userCredential.user);
 
-      // Show success message and navigate
       Alert.alert("Success", "Signed in with Google successfully!");
+      setUserStorage(userCredential.user);
 
       const { uid } = userCredential.user;
       if (uid === adminId) {
@@ -83,58 +77,69 @@ const LoginScreen = ({ navigation, route }) => {
     }
   }
 
-  const loginFunc = () => {
+  const loginFunc = async () => {
+    setLoading(true);
 
-    if (!email || !password) {
-      Alert.alert("Invalid", "Should fill all the blanks")
-      return;
-    }
+    try {
+      if (!email || !password) {
+        throw new Error("All fields must be filled.");
+      }
 
-    getFirestore().collection("customers").where("email", "==", email).get()
-      .then((querySnapshot) => {
 
-        if (querySnapshot.empty) {
-          throw new Error("Email does not exist");
-        }
-  
-        querySnapshot.forEach(async (doc) => {
-          const userData = doc.data();
-          const userKey = doc.id;
-  
-          if (password !== userData.password) {
-            throw new Error("Wrong password");
-          }
-  
-           await setUserStorage({ ...userData, key: userKey });
-  
-          if (userKey === adminId) {
-            navigation.navigate("ManagerTab");
-          } else {
-            console.log("User");
-            navigation.navigate("UserTab");
-          }
-  
-          Alert.alert("", "Login successfully", [
-            {
-              text: "Ok",
-              onPress: () => {
-                setEmail("");
-                setPassword("");
-              },
-            },
-          ]);
-        });
-      })
-      .catch((e) => {
-        console.log(e.message);
-        Alert.alert("Error", e.message);
-        setEmail(""); 
-        setPassword("");
+      console.log("email: ", email);
+      const querySnapshot = await getFirestore()
+        .collection("customers")
+        .where("email", "==", email)
+        .get();
+
+      if (querySnapshot.empty) {
+        throw new Error("Email does not exist.");
+      }
+
+      let userData = null;
+      let userKey = null;
+
+      querySnapshot.forEach(doc => {
+        userData = doc.data();
+        userKey = doc.id;
+        console.log("user: ", userData);
+
       });
+
+      if (!userData || password !== userData.password) {
+        throw new Error("Incorrect password.");
+      }
+
+      await setUserStorage({ ...userData, key: userKey });
+
+      if (userKey === adminId) {
+        navigation.navigate("ManagerTab");
+      } else {
+        navigation.navigate("UserTab");
+      }
+
+      Alert.alert("", "Login successfully", [
+        {
+          text: "Ok",
+          onPress: () => {
+            setEmail("");
+            setPassword("");
+          },
+        },
+      ]);
+
+    } catch (error) {
+      console.error(error.message);
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <SafeAreaView style={styles.layout}>
+      <LoadingScreen visible={loading} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -166,7 +171,7 @@ const LoginScreen = ({ navigation, route }) => {
             />
             <View style={styles.loginButtonContainer}>
               <Text style={styles.forgotPassword}>Forgot password?</Text>
-              <TouchableOpacity style={styles.buttonLogin} onPress={loginFunc}>
+              <TouchableOpacity style={styles.buttonLogin} onPress={() => loginFunc()}>
                 <Text style={styles.textButtonLogin}>Login</Text>
               </TouchableOpacity>
             </View>

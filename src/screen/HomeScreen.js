@@ -17,23 +17,7 @@ import { colorTheme, getUser, resetUserAfterChange } from '../component/store';
 
 const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
-  // const [test, setTest] = useState('')
-
-  // const getData = async () =>{
-  //   const drinkCollection = await firestore().collection('categories').get();
-  //   console.log(drinkCollection.docs[0].data());
-  //   setTest(drinkCollection.docs[0].data())
-  // }
-
-  // useEffect(() =>{
-  //   getData();
-  //   console.log(test);
-  //   console.log(test.image);
-  // },[]);
-  // const userGet = async () =>{
-  //   await getUser();
-  //   setUser(userGet);
-  // }
+  const [loading, setLoading] = useState(false);
 
   const fetchUser = async () => {
     const userData = await getUser(); // Await the result of getUser

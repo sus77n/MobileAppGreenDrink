@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from '@react-native-firebase/firestore';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export const colorTheme = {
@@ -175,3 +175,38 @@ export const calculateTotal = async (drinks) => {
   // Update the total state
   setTotal(newTotal);
 };
+
+export const LoadingScreen = ({ visible }) => {
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    load: {
+      width: 80,
+      height: 80,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colorTheme.grayBackground,
+      borderRadius: 10,
+    },
+  })
+
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType='fade'
+      statusBarTranslucent
+    >
+      <View style={styles.container}>
+        <View style={styles.load}>
+          <ActivityIndicator size="large" color={colorTheme.greenBackground}></ActivityIndicator>
+        </View>
+      </View>
+    </Modal>
+  )
+}

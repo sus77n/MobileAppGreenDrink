@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Dimensions,Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { colorTheme, PayInStoreTop } from "../component/store";
 const NewsScreen = ({navigation, route}) =>{
     return(
@@ -11,16 +11,20 @@ const NewsScreen = ({navigation, route}) =>{
     )
 }
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colorTheme.white,
-    },
-    content: {
-        color: 'black',
-        margin: 15,
-        fontSize: 17,
-    }
-})
+  container: {
+    flex: 1,
+    backgroundColor: colorTheme.white,
+  },
+  content: {
+    color: 'black',
+    margin: scale(15),  // Scaled margin
+    fontSize: scale(17), // Scaled font size
+  }
+});
+
 
 export default NewsScreen;

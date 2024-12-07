@@ -1,73 +1,85 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
+import { Dimensions,Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
 import { colorTheme } from '../component/store';
 import firestore from '@react-native-firebase/firestore';
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colorTheme.white,
-        padding: 20,
-    },
-    input: {
-        height: 40,
-        borderColor: colorTheme.greenBackground,
-        borderWidth: 1,
-        marginBottom: 15,
-        paddingLeft: 10,
-        borderRadius: 5,
-    },
-    button: {
-        backgroundColor: colorTheme.greenBackground,
-        paddingVertical: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginVertical: 10,
-    },
-    buttonText: {
-        color: colorTheme.white,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    pickerContainer: {
-        borderColor: colorTheme.greenBackground,
-        borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 15,
-    },
-    picker: {
-        height: 50,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-    },
-    previewButton: {
-        backgroundColor: colorTheme.greenBackground,
-        paddingVertical: 10,
-        borderRadius: 5,
-        flex: 1,
-        alignItems: 'center',
-    },
-    saveButton: {
-        backgroundColor: colorTheme.greenBackground,
-        paddingVertical: 10,
-        borderRadius: 5,
-        flex: 1,
-        marginLeft: 10,
-        alignItems: 'center',
-    },
-    cancelButton: {
-        backgroundColor: 'red', // You can choose a color for the cancel button
-        paddingVertical: 10,
-        borderRadius: 5,
-        flex: 1,
-        marginLeft: 10,
-        alignItems: 'center',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: colorTheme.white,
+    padding: scale(20), // Adjusted for scale
+  },
+
+  input: {
+    height: scale(40), // Adjusted for scale
+    borderColor: colorTheme.greenBackground,
+    borderWidth: scale(1), // Adjusted for scale
+    marginBottom: scale(15), // Adjusted for scale
+    paddingLeft: scale(10), // Adjusted for scale
+    borderRadius: scale(5), // Adjusted for scale
+  },
+
+  button: {
+    backgroundColor: colorTheme.greenBackground,
+    paddingVertical: scale(10), // Adjusted for scale
+    borderRadius: scale(5), // Adjusted for scale
+    alignItems: 'center',
+    marginVertical: scale(10), // Adjusted for scale
+  },
+
+  buttonText: {
+    color: colorTheme.white,
+    fontSize: scale(16), // Adjusted for scale
+    fontWeight: '600',
+  },
+
+  pickerContainer: {
+    borderColor: colorTheme.greenBackground,
+    borderWidth: scale(1), // Adjusted for scale
+    borderRadius: scale(5), // Adjusted for scale
+    marginBottom: scale(15), // Adjusted for scale
+  },
+
+  picker: {
+    height: scale(50), // Adjusted for scale
+  },
+
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: scale(20), // Adjusted for scale
+  },
+
+  previewButton: {
+    backgroundColor: colorTheme.greenBackground,
+    paddingVertical: scale(10), // Adjusted for scale
+    borderRadius: scale(5), // Adjusted for scale
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  saveButton: {
+    backgroundColor: colorTheme.greenBackground,
+    paddingVertical: scale(10), // Adjusted for scale
+    borderRadius: scale(5), // Adjusted for scale
+    flex: 1,
+    marginLeft: scale(10), // Adjusted for scale
+    alignItems: 'center',
+  },
+
+  cancelButton: {
+    backgroundColor: 'red',
+    paddingVertical: scale(10), // Adjusted for scale
+    borderRadius: scale(5), // Adjusted for scale
+    flex: 1,
+    marginLeft: scale(10), // Adjusted for scale
+    alignItems: 'center',
+  },
 });
+
 
 const EditStoreScreen = ({ navigation, route }) => {
     const { store } = route.params;

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 import { colorTheme, TopGoBack } from "../component/store";
 const ManageTransDetail = ({ navigation, route }) => {
     const {transaction} = route.params
@@ -68,45 +68,109 @@ const ManageTransDetail = ({ navigation, route }) => {
     );
 };
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colorTheme.white,
-    },
-    header: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: "4%",
-        color: colorTheme.greenText,
-    },
-    block: {
-        marginBottom: "4%",
-        borderTopWidth: 1,
-        borderTopColor: colorTheme.grayLine,
-        padding: "4%"
-    },
-    row: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: "3%"
-    },
-    text: {
-        fontSize: 14,
-        color: '#666',
-    },
-    title: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: "4%",
-    },
-    totalAmount: {
-        fontSize: 16,
-        color: colorTheme.black,
-        fontWeight: 'bold',
-    },
-    list: {
-        marginBottom: "5%"
-    },
+  container: {
+    flex: 1,
+    backgroundColor: colorTheme.grayBackground,
+  },
+
+  cardSection: {
+    backgroundColor: colorTheme.darkGrayBackground,
+    paddingVertical: scale(15),  // Scaled padding
+    margin: scale(17),          // Scaled margin
+    borderRadius: scale(10),    // Scaled border radius
+  },
+  cardTitleWrap: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    paddingBottom: scale(15),   // Scaled padding bottom
+    paddingLeft: scale(20),     // Scaled padding left
+    borderColor: colorTheme.grayLine,
+  },
+  cardTitle: {
+    color: colorTheme.orangeText,
+    fontWeight: '700',
+    fontSize: scale(20),        // Scaled font size
+  },
+  iconMember: {},
+
+  cardMain: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: scale(10),         // Scaled padding
+  },
+
+  rewards: {
+    paddingLeft: scale(20),     // Scaled padding left
+  },
+
+  subTitle: {
+    color: colorTheme.grayText,
+    fontSize: scale(16),        // Scaled font size
+    paddingBottom: scale(7),    // Scaled padding bottom
+  },
+
+  rewardWrap: {
+    flexDirection: 'row',
+  },
+
+  amountReward: {
+    color: colorTheme.white,
+    fontSize: scale(25),        // Scaled font size
+  },
+
+  twenty: {
+    color: colorTheme.orangeText,
+    fontSize: scale(20),        // Scaled font size
+    fontWeight: '700',
+  },
+
+  star: {
+    marginRight: scale(20),     // Scaled margin right
+  },
+
+  amountStars: {
+    color: colorTheme.orangeText,
+    fontSize: scale(25),        // Scaled font size
+    fontWeight: '700',
+  },
+  
+  bar: {
+    marginLeft: scale(30),      // Scaled margin left
+  },
+
+  note: {
+    color: colorTheme.grayText,
+    fontSize: scale(12),        // Scaled font size
+    marginLeft: scale(30),      // Scaled margin left
+    marginTop: scale(10),       // Scaled margin top
+  },
+
+  membership: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: scale(20),// Scaled margin horizontal
+  },
+  membershipDetailWrap: {
+    width: scale(180),          // Scaled width
+    borderWidth: 1,
+    borderRadius: scale(20),    // Scaled border radius
+    paddingHorizontal: scale(20), // Scaled padding horizontal
+  },
+  membershipTitle: {
+    fontSize: scale(17),        // Scaled font size
+    fontWeight: '500',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
+  membershipContent: {
+    color: colorTheme.black,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
 });
+
 export default ManageTransDetail;

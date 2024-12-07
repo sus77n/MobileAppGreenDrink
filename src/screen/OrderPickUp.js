@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import {colorTheme, getUser, TopGoBack} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -123,7 +124,7 @@ const OrderPickUp = ({navigation, route}) => {
   const renderCategories = ({item: cate}) => {
     return (
       <TouchableOpacity
-        style={[styles.drinkTag, {marginBottom: 10}]}
+        style={[styles.drinkTag,]}
         onPress={() => navigation.navigate('TypeDrink', {cate, user, order, total, keyOrder})}>
         <View style={styles.imageWrapTag}>
           <Image source={{uri: cate.img}} style={styles.img} />
@@ -227,6 +228,9 @@ const OrderPickUp = ({navigation, route}) => {
   );
 };
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -278,11 +282,11 @@ const styles = StyleSheet.create({
   },
   name: {
     width: '60%',
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
     color: colorTheme.greenText,
-    left: '-5%',
+    left: '-3%',
   },
   nameWrapEven: {
     zIndex: 0,
@@ -320,7 +324,7 @@ const styles = StyleSheet.create({
   },
   nameTag: {
     width: '70%',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
     left: '19%',
@@ -345,5 +349,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
 
 export default OrderPickUp;

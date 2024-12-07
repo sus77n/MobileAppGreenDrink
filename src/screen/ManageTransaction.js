@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions,FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {colorTheme, TopGoBack} from '../component/store';
 
@@ -96,33 +96,51 @@ const ManageTransaction = ({navigation}) => {
   );
 };
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: colorTheme.white},
+  container: {
+    flex: 1,
+    backgroundColor: colorTheme.white,
+  },
   header: {
     backgroundColor: '#ccc',
-    padding: 10,
-    fontSize: 16,
+    padding: scale(10), // Scaled padding
+    fontSize: scale(16), // Scaled font size
     fontWeight: 'bold',
     color: colorTheme.white,
   },
   transactionContainer: {
-    marginHorizontal: 20,
+    marginHorizontal: scale(20), // Scaled margin
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: scale(15), // Scaled vertical padding
     borderBottomWidth: 1,
     borderBottomColor: colorTheme.grayLine,
   },
-  left: {flex: 1},
-  right: {alignItems: 'flex-end'},
-  description: {fontSize: 14, fontWeight: 'bold', color: colorTheme.black},
-  date: {fontSize: 12, color: '#aaa'},
-  amount: {
-    fontSize: 14,
+  left: {
+    flex: 1,
+  },
+  right: {
+    alignItems: 'flex-end',
+  },
+  description: {
+    fontSize: scale(14), // Scaled font size
     fontWeight: 'bold',
     color: colorTheme.black,
-    marginBottom: 5,
+  },
+  date: {
+    fontSize: scale(12), // Scaled font size
+    color: '#aaa',
+  },
+  amount: {
+    fontSize: scale(14), // Scaled font size
+    fontWeight: 'bold',
+    color: colorTheme.black,
+    marginBottom: scale(5), // Scaled margin
   },
 });
+
 
 export default ManageTransaction;

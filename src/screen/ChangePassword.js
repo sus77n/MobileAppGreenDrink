@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions,Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { colorTheme, TopGoBack } from "../component/store";
 import { getFirestore } from "@react-native-firebase/firestore";
 
@@ -58,6 +58,8 @@ const ChangePassword = ({ navigation, route }) => {
 
 
 }
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
     container: {
@@ -65,48 +67,48 @@ const styles = StyleSheet.create({
         backgroundColor: colorTheme.white,
     },
     wrapper: {
-        paddingHorizontal: "6%",
+        paddingHorizontal: scale(22.5), 
     },
     label: {
-        fontSize: 12,
+        fontSize: scale(12),
         color: colorTheme.grayText,
-        marginTop: 8,
+        marginTop: scale(8),
     },
     textField: {
         borderBottomColor: colorTheme.grayLine,
-        borderBottomWidth: 1,
-        paddingHorizontal: "2%",
-        fontSize: 16,
+        borderBottomWidth: scale(1),
+        paddingHorizontal: scale(7.5), 
+        fontSize: scale(16),
         fontWeight: "500",
-        marginBottom: "3%",
-        marginTop: "-2%",
+        marginBottom: scale(11.25), 
+        marginTop: scale(-7.5), 
     },
     text: {
         color: colorTheme.black,
         fontWeight: "500",
-        fontSize: 16,
+        fontSize: scale(16),
     },
     dateInput: {
-        borderBottomWidth: 1,
+        borderBottomWidth: scale(1),
         borderBlockColor: colorTheme.grayLine,
-        paddingHorizontal: "2%",
-        paddingVertical: "2%",
+        paddingHorizontal: scale(7.5), 
+        paddingVertical: scale(7.5),
         flexDirection: "row",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
     },
     title: {
         color: colorTheme.greenText,
-        marginTop: "6%",
-        fontSize: 16,
+        marginTop: scale(22.5),
+        fontSize: scale(16),
     },
     saveBtn: {
-        width: "60%",
-        borderWidth: 2,
-        borderRadius: 20,
+        width: scale(225), 
+        borderWidth: scale(2),
+        borderRadius: scale(20),
         borderColor: colorTheme.greenBackground,
-        marginHorizontal: "auto",
-        paddingVertical: '2%',
-        marginTop: "5%"
+        marginHorizontal: "auto", 
+        paddingVertical: scale(7.5), 
+        marginTop: scale(18.75), 
     },
     saveTextbtn: {
         color: colorTheme.greenBackground,
@@ -114,6 +116,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "500",
     },
-})
+});
+
 
 export default ChangePassword;

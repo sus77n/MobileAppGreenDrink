@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import { colorTheme, PayInStoreTop } from '../component/store';
 import * as Progress from 'react-native-progress';
@@ -89,46 +90,49 @@ const MembershipDetail = ({ navigation }) => {
   );
 };
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colorTheme.grayBackground,
   },
-  
+
   cardSection: {
     backgroundColor: colorTheme.darkGrayBackground,
-    paddingVertical: 15,
-    margin: 17,
-    borderRadius: 10,
+    paddingVertical: scale(15),  // Scaled padding
+    margin: scale(17),          // Scaled margin
+    borderRadius: scale(10),    // Scaled border radius
   },
   cardTitleWrap: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    paddingBottom: 15,
-    paddingLeft: 20,
+    paddingBottom: scale(15),   // Scaled padding bottom
+    paddingLeft: scale(20),     // Scaled padding left
     borderColor: colorTheme.grayLine,
   },
   cardTitle: {
     color: colorTheme.orangeText,
     fontWeight: '700',
-    fontSize: 20,
+    fontSize: scale(20),        // Scaled font size
   },
   iconMember: {},
 
   cardMain: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 10,
+    padding: scale(10),         // Scaled padding
   },
 
   rewards: {
-    paddingLeft: 20,
+    paddingLeft: scale(20),     // Scaled padding left
   },
 
   subTitle: {
     color: colorTheme.grayText,
-    fontSize: 16,
-    paddingBottom: 7,
+    fontSize: scale(16),        // Scaled font size
+    paddingBottom: scale(7),    // Scaled padding bottom
   },
 
   rewardWrap: {
@@ -137,55 +141,62 @@ const styles = StyleSheet.create({
 
   amountReward: {
     color: colorTheme.white,
-    fontSize: 25,
+    fontSize: scale(25),        // Scaled font size
   },
 
   twenty: {
     color: colorTheme.orangeText,
-    fontSize: 20,
+    fontSize: scale(20),        // Scaled font size
     fontWeight: '700',
   },
 
   star: {
-    marginRight: 20,
+    marginRight: scale(20),     // Scaled margin right
   },
 
   amountStars: {
     color: colorTheme.orangeText,
-    fontSize: 25,
+    fontSize: scale(25),        // Scaled font size
     fontWeight: '700',
   },
-  bar:{
-    marginLeft: 30,
+
+  bar: {
+    marginLeft: scale(30),      // Scaled margin left
   },
-  note:{
+
+  note: {
     color: colorTheme.grayText,
-    fontSize: 12,
-    marginLeft: 30,
-    marginTop: 10,
+    fontSize: scale(12),        // Scaled font size
+    marginLeft: scale(30),      // Scaled margin left
+    marginTop: scale(10),       // Scaled margin top
   },
-  membership:{
+
+  membership: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 20,
+    marginHorizontal: scale(20),// Scaled margin horizontal
   },
-  membershipDetailWrap:{
-    width: 180,
+
+  membershipDetailWrap: {
+    width: scale(180),          // Scaled width
     borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 20,
+    borderRadius: scale(20),    // Scaled border radius
+    paddingHorizontal: scale(20), // Scaled padding horizontal
   },
-  membershipTitle:{
-    fontSize: 17,
+
+  membershipTitle: {
+    fontSize: scale(17),        // Scaled font size
     fontWeight: '500',
     marginLeft: 'auto',
     marginRight: 'auto'
   },
-  membershipContent:{
+
+  membershipContent: {
     color: colorTheme.black,
     marginLeft: 'auto',
     marginRight: 'auto'
   }
 });
+
 
 export default MembershipDetail;

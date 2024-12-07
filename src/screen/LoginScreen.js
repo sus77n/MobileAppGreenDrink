@@ -11,10 +11,11 @@ import {
   ScrollView,
   Platform,
   Alert,
+  Dimensions, PixelRatio,
 } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { adminId, getUser, LoadingScreen, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
+import { adminId, colorTheme, getUser, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
 import { getFirestore } from "@react-native-firebase/firestore";
 
 const LoginScreen = ({ navigation, route }) => {
@@ -193,6 +194,8 @@ const LoginScreen = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size; 
 
 const styles = StyleSheet.create({
   layout: {
@@ -210,10 +213,10 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 35,
+    fontSize: scale(35),
     width: "70%",
-    marginLeft: 30,
-    marginTop: 100,
+    marginLeft: scale(30),
+    marginTop: scale(100),
     fontWeight: "700",
     color: "#eeefab",
   },
@@ -221,30 +224,30 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: "white",
     height: "100%",
-    borderRadius: 50,
-    marginTop: -100,
-    paddingHorizontal: 30,
-    paddingVertical: 40,
+    borderRadius: scale(50),
+    marginTop: scale(-100),
+    paddingHorizontal: scale(30),
+    paddingVertical: scale(40),
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scale(2) },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
     elevation: 5,
   },
 
   textLogin: {
-    color: "#568f56",
+    color: colorTheme.greenText,
     fontWeight: "500",
-    fontSize: 27,
-    marginBottom: 20,
+    fontSize: scale(27),
+    marginBottom: scale(20),
   },
 
   textInput: {
-    height: 50,
+    height: scale(50),
     borderBottomWidth: 1,
-    borderBottomColor: "#568f56",
-    marginBottom: 20,
-    fontSize: 16,
+    borderBottomColor: colorTheme.greenText,
+    marginBottom: scale(20),
+    fontSize: scale(16),
     color: "#333",
   },
 
@@ -252,29 +255,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 80,
+    height: scale(80),
   },
 
   forgotPassword: {
     color: "#568f56",
-    fontSize: 14,
-    marginBottom: 15,
+    fontSize: scale(14),
+    marginBottom: scale(15),
     justifyContent: "center",
   },
 
   buttonLogin: {
-    backgroundColor: "#568f56",
-    paddingVertical: 15,
-    borderRadius: 25,
+    backgroundColor: colorTheme.greenText,
+    paddingVertical: scale(15),
+    borderRadius: scale(25),
     alignItems: "center",
-    width: 100,
-    height: 50,
+    width: scale(100),
   },
 
   textButtonLogin: {
     color: "#FFF",
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: scale(15),
   },
 
   signUpContainer: {
@@ -283,36 +285,37 @@ const styles = StyleSheet.create({
   },
 
   buttonSignUp: {
-    width: 100,
-    height: 50,
+    width: scale(100),
+    height: scale(50),
     borderWidth: 1,
-    borderColor: "#568f56",
-    borderRadius: 25,
+    borderColor: colorTheme.greenText,
+    borderRadius: scale(25),
     justifyContent: "center",
     alignItems: "center",
   },
 
   textButtonSignUp: {
-    color: "#568f56",
+    color:colorTheme.greenText,
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: scale(16),
   },
 
   buttonGoogle: {
-    width: 240,
-    height: 50,
+    width: scale(200),
+    height: scale(50),
     borderWidth: 1,
-    borderColor: "#568f56",
-    borderRadius: 25,
+    borderColor: colorTheme.greenText,
+    borderRadius: scale(25),
     justifyContent: "center",
     alignItems: "center",
   },
 
   textButtonGg: {
-    color: "#568f56",
+    color: colorTheme.greenText,
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: scale(16),
   },
 });
+
 
 export default LoginScreen;

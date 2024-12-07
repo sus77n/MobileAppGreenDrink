@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   ImageBackground,
@@ -8,24 +8,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, getUser} from '../component/store';
+import { colorTheme, getUser, LoadingScreen } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 
-const ProductDetail = ({navigation, route}) => {
-  const {drink, user, order, totalCurrent, keyOrder} = route.params;
+const ProductDetail = ({ navigation, route }) => {
+  const { drink, user, order, totalCurrent, keyOrder } = route.params;
   const [selectedSize, setSelectedSize] = useState('S');
   const [sweetness, setSweetness] = useState('Regular');
   const [listOrder, setListOrder] = useState(order.drinks);
   const [total, setTotal] = useState(totalCurrent);
+  const [loading, setLoading] = useState(false);
 
-  const calculateTotal = async drinks => {
+  const calculateTotal = async (drinks) => {
     let newTotal = 0;
 
     const drinkKeys = Object.keys(drinks);
+
     for (const i of drinkKeys) {
       const drinkData = drinks[i];
-      const {key, quantity} = drinkData;
+      const { key, quantity } = drinkData;
       try {
         const drinkSnapshot = await firestore()
           .collection('drinks')
@@ -37,7 +39,7 @@ const ProductDetail = ({navigation, route}) => {
           newTotal += basePrice * quantity;
         }
       } catch (error) {
-        console.error(`Error fetching drink data for ${drinkId}:`, error);
+        console.error(`Error fetching drink data for ${key}:`, error);
       }
     }
     console.log('New total calculated:', newTotal);
@@ -90,9 +92,9 @@ const ProductDetail = ({navigation, route}) => {
           const updatedOrderData = updatedOrderSnapshot.data();
 
           setListOrder(updatedOrderData.drinks); // Update listOrder state
-          console.log("updatedDrinks"+updatedOrderData.drinks);
+          console.log("updatedDrinks" + updatedOrderData.drinks);
 
-          await calculateTotal(updatedOrderData.drinks); 
+          await calculateTotal(updatedOrderData.drinks);
         } else {
           // Add a new drink
           await orderRef.update({
@@ -109,7 +111,7 @@ const ProductDetail = ({navigation, route}) => {
           const updatedOrderData = updatedOrderSnapshot.data();
 
           setListOrder(updatedOrderData.drinks); // Update listOrder state
-          console.log("updatedDrinks"+updatedOrderData.drinks);
+          console.log("updatedDrinks" + updatedOrderData.drinks);
 
           await calculateTotal(updatedOrderData.drinks); // Recalculate the total price
         }
@@ -123,9 +125,10 @@ const ProductDetail = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LoadingScreen visible={loading} />
       <ImageBackground
         source={require('../../assets/img/detailBackgroun.png')}
-        style={{width: '101%', height: '115%'}}>
+        style={{ width: '101%', height: '115%' }}>
         {/* Back Button */}
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon
@@ -145,7 +148,7 @@ const ProductDetail = ({navigation, route}) => {
               <Text style={styles.descrip}>{drink.description}</Text>
             </View>
             <View style={styles.topRight}>
-              <Image source={{uri: drink.img}} style={styles.img} />
+              <Image source={{ uri: drink.img }} style={styles.img} />
               <Text style={styles.price}>đ{drink.price}</Text>
             </View>
           </View>
@@ -168,8 +171,8 @@ const ProductDetail = ({navigation, route}) => {
                       size === 'S'
                         ? require('../../assets/img/sizeS.png')
                         : size === 'M'
-                        ? require('../../assets/img/sizeM.png')
-                        : require('../../assets/img/sizeL.png')
+                          ? require('../../assets/img/sizeM.png')
+                          : require('../../assets/img/sizeL.png')
                     }
                   />
                 </TouchableOpacity>
@@ -223,7 +226,7 @@ const ProductDetail = ({navigation, route}) => {
               addOrUpdateDrinkWithCheck(
                 keyOrder,
                 drink.key,
-                {size: selectedSize, sweetness: sweetness},
+                { size: selectedSize, sweetness: sweetness },
                 1,
               )
             }>
@@ -234,7 +237,7 @@ const ProductDetail = ({navigation, route}) => {
             onPress={() => {
               console.log('Order before navigation:', order);
               if (order) {
-                navigation.navigate('ReviewOrder', {order, total, user});
+                navigation.navigate('ReviewOrder', { order, total, user });
               } else {
                 console.warn('Order is not ready yet!');
               }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -9,15 +9,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, PayInStoreTop, resetUserAfterChange} from '../component/store';
+import { colorTheme, LoadingScreen, PayInStoreTop, resetUserAfterChange } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
 
-const ReviewOrder = ({navigation, route}) => {
-  const {order, total, user} = route.params;
+const ReviewOrder = ({ navigation, route }) => {
+  const { order, total, user } = route.params;
   const [drinkDetails, setDrinkDetails] = useState({});
   const [quantities, setQuantities] = useState({});
   const [listDrinks, setListDrinks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Fetch drink details from Firestore
   useEffect(() => {
@@ -25,14 +26,14 @@ const ReviewOrder = ({navigation, route}) => {
       try {
         const drinkKeys = Object.keys(order.drinks); // Get all the drink keys from order.drinks
         const drinksData = []; // Array to store the drink details
-  
+
         // Create a batch of async operations to fetch drinks in parallel
         const drinkFetchPromises = drinkKeys.map(async (drinkKey) => {
           const drinkData = order.drinks[drinkKey]; // Get the drink object using the key
-  
+
           // Fetch the drink details from the Firestore 'drinks' collection
           const doc = await firestore().collection('drinks').doc(drinkData.key).get();
-  
+
           if (doc.exists) {
             const drinkDetails = doc.data();
             drinksData.push({
@@ -43,25 +44,25 @@ const ReviewOrder = ({navigation, route}) => {
               custom: drinkData.custom, // Customization details
             });
             console.log("each item: " + drinkData.key + drinkDetails.name);
-            
+
           } else {
             console.warn(`Drink with key ${drinkData.key} not found in Firestore.`);
           }
         });
-  
+
         // Wait for all the drink fetch promises to resolve
         await Promise.all(drinkFetchPromises);
-        console.log("drinks data"+drinksData);
+        console.log("drinks data" + drinksData);
         // Update the state with the fetched data
         setListDrinks(drinksData);
       } catch (error) {
         console.error('Error fetching drinks from Firestore:', error);
       }
     };
-  
+
     fetchDrinks(); // Call the function to fetch drinks
   }, [order.drinks]);
-  
+
 
   // Update quantity for a specific drink
   const updateQuantity = (key, increment) => {
@@ -75,12 +76,13 @@ const ReviewOrder = ({navigation, route}) => {
     console.log('order list:', order.drinks); // Logs the full array
   }, []);
 
-  const renderItem = ({item: drink}) => {
+  const renderItem = ({ item: drink }) => {
     // const details = drinkDetails[drink.key];
     // if (!details) return null;
 
     return (
       <View>
+        <LoadingScreen visible={loading} />
         <View style={styles.itemContainer}>
           <View style={styles.infoContainer}>
             <Text style={styles.itemName}>
@@ -95,7 +97,7 @@ const ReviewOrder = ({navigation, route}) => {
           <View style={styles.controls}>
             <TouchableOpacity
               style={styles.controlButton}
-              onPress={() => {}}>
+              onPress={() => { }}>
               <Icon
                 name="minus-circle"
                 color={colorTheme.greenBackground}
@@ -105,7 +107,7 @@ const ReviewOrder = ({navigation, route}) => {
             <Text style={styles.quantity}>{drink.quantity}</Text>
             <TouchableOpacity
               style={styles.controlButton}
-              onPress={() => {}}>
+              onPress={() => { }}>
               <Icon
                 name="plus-circle"
                 color={colorTheme.greenBackground}
@@ -115,7 +117,7 @@ const ReviewOrder = ({navigation, route}) => {
           </View>
           <View>
             <Text style={styles.totalPrice}>
-            đ{(drink.price * drink.quantity).toLocaleString()}
+              đ{(drink.price * drink.quantity).toLocaleString()}
             </Text>
           </View>
         </View>
@@ -125,47 +127,47 @@ const ReviewOrder = ({navigation, route}) => {
 
   const updateBalance = () => {
     try {
-        getFirestore().collection("customers").doc(user.key)
-            .update(
-                {
-                    balance: user.balance - total,
-                    stars: user.stars + total/20000,
-                    totalStars: user.totalStars + total/20000,
-                }
-            )
-            // .then(() => {
-            //     Alert.alert('Success', 'User updated successfully');
-            //     navigation.navigate('Home');
-            // })
-            resetUserAfterChange(user.key)
+      getFirestore().collection("customers").doc(user.key)
+        .update(
+          {
+            balance: user.balance - total,
+            stars: user.stars + total / 20000,
+            totalStars: user.totalStars + total / 20000,
+          }
+        )
+      // .then(() => {
+      //     Alert.alert('Success', 'User updated successfully');
+      //     navigation.navigate('Home');
+      // })
+      resetUserAfterChange(user.key)
     } catch (error) {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
-        console.error('Error updating user:', error.massage);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+      console.error('Error updating user:', error.massage);
     }
-}
-const addTransaction = async () => {
-  try {
-    const db = firestore();
-
-    // Create the transaction document
-    const newTransaction = {
-      customerID: user.key,  // Provided customerID
-      createdAt: new Date(),  // Set the current timestamp
-      drinks: listDrinks,  // Drink details as shown in the screenshot
-      status: "Uncompleted",  // Example status, adjust as necessary
-      transID: `T${new Date().getTime()}`,  // Unique transaction ID based on the timestamp
-      type: "OrderPickUp",  // Example type, adjust as necessary
-      price: total,  // Price from the drink details
-      priceBeforePromotion: total  // Price before promotion
-    };
-
-    // Adding the new document to the transactions collection
-    await db.collection('transactions').add(newTransaction);
-    console.log("Transaction added successfully.");
-  } catch (e) {
-    console.error("Error adding transaction: ", e);
   }
-};
+  const addTransaction = async () => {
+    try {
+      const db = firestore();
+
+      // Create the transaction document
+      const newTransaction = {
+        customerID: user.key,  // Provided customerID
+        createdAt: new Date(),  // Set the current timestamp
+        drinks: listDrinks,  // Drink details as shown in the screenshot
+        status: "Uncompleted",  // Example status, adjust as necessary
+        transID: `T${new Date().getTime()}`,  // Unique transaction ID based on the timestamp
+        type: "OrderPickUp",  // Example type, adjust as necessary
+        price: total,  // Price from the drink details
+        priceBeforePromotion: total  // Price before promotion
+      };
+
+      // Adding the new document to the transactions collection
+      await db.collection('transactions').add(newTransaction);
+      console.log("Transaction added successfully.");
+    } catch (e) {
+      console.error("Error adding transaction: ", e);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -198,16 +200,16 @@ const addTransaction = async () => {
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
           <Text style={styles.orderTotalValue}>
-           đ{total.toLocaleString()}
+            đ{total.toLocaleString()}
           </Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.cardButton} onPress={() =>
-        Alert.alert('','Are you sure to pay ?',[
+        Alert.alert('', 'Are you sure to pay ?', [
           {
             text: "Ok",
-            onPress: () =>{
+            onPress: () => {
               updateBalance()
               addTransaction()
               Alert.alert("Enjoy your drink!")
@@ -220,8 +222,8 @@ const addTransaction = async () => {
           }
         ])
       }>
-          <Text style={styles.cardButtonText}>Pay</Text>
-        </TouchableOpacity>
+        <Text style={styles.cardButtonText}>Pay</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };

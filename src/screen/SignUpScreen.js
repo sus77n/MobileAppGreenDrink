@@ -3,7 +3,7 @@ import {
   Alert,
   ImageBackground,
   SafeAreaView,
-  Dimensions, PixelRatio, 
+  Dimensions, PixelRatio,
   StyleSheet,
   Text,
   TextInput,
@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
-import { colorTheme } from '../component/store';
+import { colorTheme, LoadingScreen } from '../component/store';
 import bcrypt from "bcryptjs";
 
 const SignUpScreen = ({ navigation }) => {
@@ -25,6 +25,7 @@ const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const signUpFunc = async () => {
 
@@ -76,6 +77,7 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.layout}>
+      <LoadingScreen visible={loading} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -95,7 +97,7 @@ const SignUpScreen = ({ navigation }) => {
                   <Picker.Item color={colorTheme.greenText} label="Ms" value="Ms" />
                   <Picker.Item color={colorTheme.greenText} label="Mr" value="Mr" />
                 </Picker>
-  
+
                 <Text style={styles.textLogin}>Username:</Text>
                 <TextInput
                   style={styles.textInput}
@@ -144,7 +146,7 @@ const SignUpScreen = ({ navigation }) => {
 };
 
 const { width, height } = Dimensions.get('window');
-const scale = size => (width / 375) * size; 
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   layout: {

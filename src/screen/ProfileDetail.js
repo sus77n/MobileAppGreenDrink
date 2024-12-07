@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { colorTheme, resetUserAfterChange, TopGoBack } from "../component/store";
+import { colorTheme, LoadingScreen, resetUserAfterChange, TopGoBack } from "../component/store";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,6 +15,7 @@ const ProfileDetail = ({ navigation, route }) => {
     // const [showDatePicker, setShowDatePicker] = useState(false);
     const [email, setEmail] = useState(user.email);
     const [phone, setPhone] = useState(user.phone);
+    const [loading, setLoading] = useState(false);
 
     // const handleDateChange = (event, selectedDate) => {
     //     setShowDatePicker(false);
@@ -24,6 +25,7 @@ const ProfileDetail = ({ navigation, route }) => {
     // };
 
     const updateInformation = () => {
+        setLoading(true);
         try {
 
             if (!username || !email || !phone) {
@@ -41,11 +43,13 @@ const ProfileDetail = ({ navigation, route }) => {
                 )
                 .then(() => {
                     resetUserAfterChange(user.key);
+                    setLoading(false);
                     Alert.alert('Success', 'User updated successfully');
                     navigation.goBack();
                 })
 
         } catch (error) {
+            setLoading(false);
             Alert.alert('Error', 'Something went wrong. Please try again.');
             console.error('Error updating user:', error.massage);
         }
@@ -53,6 +57,7 @@ const ProfileDetail = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
+            <LoadingScreen visible={loading} />
             <TopGoBack text={"Edit Personal Information"} navigation={navigation} />
             <View style={styles.wrapper}>
                 <Text style={styles.title}>General Information</Text>

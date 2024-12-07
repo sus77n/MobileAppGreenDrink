@@ -1,7 +1,8 @@
 import React from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colorTheme, TopGoBack } from "../component/store";
+import { colorTheme, LoadingScreen, TopGoBack } from "../component/store";
 const TransactionScreen = ({ navigation }) => {
+    const [loading, setLoading] = useState(false);
 
     const transactions = [
         {
@@ -38,7 +39,8 @@ const TransactionScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <TopGoBack text={"Transaction History"} navigation={navigation}/>
+            <LoadingScreen visible={loading} />
+            <TopGoBack text={"Transaction History"} navigation={navigation} />
 
             <Text style={styles.header}>Nov 2024</Text>
 

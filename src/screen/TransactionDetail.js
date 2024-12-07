@@ -1,7 +1,9 @@
 import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { colorTheme, TopGoBack } from "../component/store";
+import { colorTheme, LoadingScreen, TopGoBack } from "../component/store";
 const TransactionDetail = ({ navigation }) => {
+    const [loading, setLoading] = useState(false);
+
     const transaction = {
         store: 'Hikari Bình Dương',
         date: '03/11/2024 09:19:19',
@@ -23,6 +25,7 @@ const TransactionDetail = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <LoadingScreen visible={loading} />
             <TopGoBack text={"Transaction Details"} navigation={navigation} />
 
             <View style={styles.block}>

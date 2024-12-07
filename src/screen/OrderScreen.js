@@ -8,33 +8,37 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, getUser} from '../component/store';
+import { colorTheme, getUser, LoadingScreen } from '../component/store';
 
-const OrderScreen = ({navigation}) => {
+const OrderScreen = ({ navigation }) => {
   const [selectedType, setSelectedTye] = useState('OrderPickUp');
-
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const fetchUser = async () => {
     try {
       const userData = await getUser(); // Correct function call
-      setUser(userData); 
+      setUser(userData);
       console.log('User order screen:', userData); // Debug log
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
   };
-  
+
 
   useEffect(() => {
     const loadScreen = navigation.addListener('focus', () => {
-      fetchUser(); // Fetch user when the screen is focused
+      setLoading(true);
+      fetchUser();
+      setLoading(false);
     });
-    return () => loadScreen(); // Cleanup listener
-  }, [navigation]); // Add navigation as a dependency
-  
+    return () => loadScreen();
+  }, []);
+
 
   return (
     <SafeAreaView style={styles.container}>
+      <LoadingScreen visible={loading} />
       <View style={styles.greetingSection}>
         <Text style={styles.greetingText}>Welcome to Mobile Order</Text>
         <TouchableOpacity>
@@ -44,7 +48,7 @@ const OrderScreen = ({navigation}) => {
       <TouchableOpacity
         style={styles.card}
         onPress={() => {
-          navigation.navigate('OrderPickUp',{user});
+          navigation.navigate('OrderPickUp', { user });
         }}>
         <Text style={styles.cardTitle}>Order & Pick-up</Text>
         <Image source={require('../../assets/img/iconOrderPickUp.png')} />
@@ -61,26 +65,26 @@ const OrderScreen = ({navigation}) => {
         <Text style={styles.reorderTitle}>Order again</Text>
         <View style={styles.buttonGroup}>
           <TouchableOpacity style={
-                    selectedType === 'OrderPickUp'
-                      ? styles.button
-                      : styles.unactiveButton
-                  } onPress={() => setSelectedTye('OrderPickUp')}>
+            selectedType === 'OrderPickUp'
+              ? styles.button
+              : styles.unactiveButton
+          } onPress={() => setSelectedTye('OrderPickUp')}>
             <Text style={
-                    selectedType === 'OrderPickUp'
-                      ? styles.buttonText
-                      : styles.unactiveButtonText
-                  }>Order & Pick-up</Text>
+              selectedType === 'OrderPickUp'
+                ? styles.buttonText
+                : styles.unactiveButtonText
+            }>Order & Pick-up</Text>
           </TouchableOpacity>
           <TouchableOpacity style={
-                    selectedType === 'Delivery'
-                      ? styles.button
-                      : styles.unactiveButton
-                  } onPress={() => setSelectedTye('Delivery')}>
+            selectedType === 'Delivery'
+              ? styles.button
+              : styles.unactiveButton
+          } onPress={() => setSelectedTye('Delivery')}>
             <Text style={
-                    selectedType === 'Delivery'
-                      ? styles.buttonText
-                      : styles.unactiveButtonText
-                  }>Delivery</Text>
+              selectedType === 'Delivery'
+                ? styles.buttonText
+                : styles.unactiveButtonText
+            }>Delivery</Text>
           </TouchableOpacity>
         </View>
         <ScrollView>
@@ -96,7 +100,7 @@ const OrderScreen = ({navigation}) => {
             </View>
             <View style={styles.right}>
               <Text style={styles.price}>đ700,000</Text>
-              <TouchableOpacity style={styles.reorderButton} onPress={() => {}}>
+              <TouchableOpacity style={styles.reorderButton} onPress={() => { }}>
                 <Text style={styles.reorderButtonText}>Reorder</Text>
               </TouchableOpacity>
             </View>
@@ -113,7 +117,7 @@ const OrderScreen = ({navigation}) => {
             </View>
             <View style={styles.right}>
               <Text style={styles.price}>đ700,000</Text>
-              <TouchableOpacity style={styles.reorderButton} onPress={() => {}}>
+              <TouchableOpacity style={styles.reorderButton} onPress={() => { }}>
                 <Text style={styles.reorderButtonText}>Reorder</Text>
               </TouchableOpacity>
             </View>

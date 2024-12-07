@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { colorTheme } from "../component/store";
+import { colorTheme, LoadingScreen } from "../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 
@@ -20,6 +20,7 @@ const StoreScreen = ({ navigation }) => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     });
+    const [loading, setLoading] = useState(false);
 
     const renderLocation = ({ item: location }) => {
         return (
@@ -76,6 +77,7 @@ const StoreScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <LoadingScreen visible={loading} />
             <Text style={styles.title}>Find a store</Text>
             <View style={styles.coverMap}>
                 <MapView

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colorTheme, getUser, setUserStorage, TopGoBack } from "../component/store";
+import { colorTheme, getUser, LoadingScreen, setUserStorage, TopGoBack } from "../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProfileScreen = ({ navigation }) => {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         const fetchUser = async () => {
             try {
                 const user = await getUser();
@@ -18,6 +20,7 @@ const ProfileScreen = ({ navigation }) => {
         };
 
         fetchUser();
+        setLoading(false);
     }, []);
 
     const logoutHandler = () => {
@@ -35,6 +38,7 @@ const ProfileScreen = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
+            <LoadingScreen visible={loading} />
             <View style={styles.header}>
                 <Icon name='crown' style={styles.crownIcon} size={50} color={'white'} />
                 <Icon name='account-circle-outline' size={100} color={'white'} />

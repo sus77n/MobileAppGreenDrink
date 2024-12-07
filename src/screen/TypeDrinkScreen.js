@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -9,18 +9,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, getUser, TopGoBack} from '../component/store';
+import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
-const TypeDrinkScreen = ({navigation, route}) => {
-  const {cate, user, order, total, keyOrder} = route.params;
-
-  const [loading, setLoading] = useState(true);
+const TypeDrinkScreen = ({ navigation, route }) => {
+  const { cate, user, order, total, keyOrder } = route.params;
+  const [loading, setLoading] = useState(false);
   const [drinks, setDrinks] = useState([]);
 
   useEffect(() => {
     console.log(keyOrder);
-    
+
     const subscriber = firestore()
       .collection('drinks')
       .onSnapshot(querySnapshot => {
@@ -42,15 +41,15 @@ const TypeDrinkScreen = ({navigation, route}) => {
     return () => subscriber();
   }, []);
 
-  const renderDrink = ({item: drink, index}) => {
+  const renderDrink = ({ item: drink, index }) => {
     return (
       <TouchableOpacity
         style={styles.drinkRow}
         onPress={() =>
-          navigation.navigate('ProductDetail', {drink, user, order,totalCurrent: total, keyOrder})
+          navigation.navigate('ProductDetail', { drink, user, order, totalCurrent: total, keyOrder })
         }>
         <View style={styles.imageWrap}>
-          <Image source={{uri: drink.img}} style={styles.img} />
+          <Image source={{ uri: drink.img }} style={styles.img} />
         </View>
         <View
           style={[
@@ -68,7 +67,7 @@ const TypeDrinkScreen = ({navigation, route}) => {
               name="heart-o"
               color={colorTheme.greenText}
               size={20}
-              style={{marginRight: '8%'}}
+              style={{ marginRight: '8%' }}
             />
           </TouchableOpacity>
         </View>
@@ -78,6 +77,7 @@ const TypeDrinkScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LoadingScreen visible={loading} />
       <TopGoBack navigation={navigation} text={cate.name} />
       <View style={styles.searchSection}></View>
       <FlatList
@@ -91,7 +91,7 @@ const TypeDrinkScreen = ({navigation, route}) => {
         onPress={() => {
           console.log('Order before navigation:', order);
           if (order) {
-            navigation.navigate('ReviewOrder', {order, total, user});
+            navigation.navigate('ReviewOrder', { order, total, user });
           } else {
             console.warn('Order is not ready yet!');
           }
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     paddingVertical: '11%',
   },
   cart: {
-    position:'absolute',
+    position: 'absolute',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',

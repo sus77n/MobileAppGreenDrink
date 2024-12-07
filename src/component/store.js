@@ -118,6 +118,13 @@ export const setUserStorage = async (user) => {
     console.log('Error when store user: ' + error);
   }
 }
+export const resetUserStorage = async () => {
+  try {
+    await AsyncStorage.clear();
+  } catch (error) {
+    console.log('Error when store user: ' + error);
+  }
+}
 
 export const getTimeNow = () => {
   const now = new Date();

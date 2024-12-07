@@ -45,7 +45,7 @@ const ProfileDetail = ({ navigation, route }) => {
                     resetUserAfterChange(user.key);
                     setLoading(false);
                     Alert.alert('Success', 'User updated successfully');
-                    navigation.goBack();
+                    navigation.pop();
                 })
 
         } catch (error) {

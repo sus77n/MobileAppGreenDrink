@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colorTheme, getUser, LoadingScreen, setUserStorage, TopGoBack } from "../component/store";
+import { colorTheme, getUser, LoadingScreen, resetUserStorage, setUserStorage, TopGoBack } from "../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProfileScreen = ({ navigation }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const fetchUser = async () => {
+        try {
+            const user = await getUser();
+            setUser(user);
+            console.log("User:", user);
+        } catch (error) {
+            console.error("Error fetching user:", error);
+        }
+    };
     useEffect(() => {
         setLoading(true);
-        const fetchUser = async () => {
-            try {
-                const user = await getUser();
-                setUser(user);
-                console.log("User:", user);
-            } catch (error) {
-                console.error("Error fetching user:", error);
-            }
-        };
-
-        fetchUser();
-        setLoading(false);
+        const loadScreen = navigation.addListener("focus", () => {
+            fetchUser();
+            setLoading(false);
+        });
+        return () => loadScreen();
     }, []);
 
     const logoutHandler = () => {
         try {
-            setUserStorage(null);
-
+            resetUserStorage();
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Login' }],

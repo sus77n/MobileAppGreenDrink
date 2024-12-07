@@ -12,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colorTheme, getUser, resetUserAfterChange } from '../component/store';
+import { colorTheme, getUser, LoadingScreen, resetUserAfterChange } from '../component/store';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -32,9 +32,7 @@ const HomeScreen = ({ navigation }) => {
   
   if (user === null) {
     return (
-      <SafeAreaView style={styles.loading}>
-        <ActivityIndicator color={colorTheme.greenBackground} size={'large'} ></ActivityIndicator>
-      </SafeAreaView>
+      <LoadingScreen visible={loading} />
     )
   } else {
   return (

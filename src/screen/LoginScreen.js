@@ -15,12 +15,12 @@ import {
 } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { adminId, colorTheme, getUser, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
+import { adminId, colorTheme, getUser, LoadingScreen, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
 import { getFirestore } from "@react-native-firebase/firestore";
 
 const LoginScreen = ({ navigation, route }) => {
-  const [email, setEmail] = useState("minh1@gmail.com");
-  const [password, setPassword] = useState("7890");
+  const [email, setEmail] = useState("admin@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [loading, setLoading] = useState(false);
 
   const { isLogout } = route.params ? route.params : false;

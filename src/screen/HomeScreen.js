@@ -12,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colorTheme, getUser } from '../component/store';
+import { colorTheme, getUser, resetUserAfterChange } from '../component/store';
 
 
 const HomeScreen = ({ navigation }) => {

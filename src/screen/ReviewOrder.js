@@ -9,12 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, PayInStoreTop} from '../component/store';
+import {colorTheme, PayInStoreTop, resetUserAfterChange} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { getFirestore } from '@react-native-firebase/firestore';
 
 const ReviewOrder = ({navigation, route}) => {
-  const {order, total} = route.params;
+  const {order, total, user} = route.params;
   const [drinkDetails, setDrinkDetails] = useState({});
   const [quantities, setQuantities] = useState({});
 
@@ -102,6 +102,54 @@ const ReviewOrder = ({navigation, route}) => {
       </View>
     );
   };
+
+  const updateBalance = () => {
+    try {
+        getFirestore().collection("customers").doc(user.key)
+            .update(
+                {
+                    balance: user.balance - total,
+                    stars: user.stars + total/20000,
+                    totalStars: user.totalStars + total/20000,
+                }
+            )
+            // .then(() => {
+            //     Alert.alert('Success', 'User updated successfully');
+            //     navigation.navigate('Home');
+            // })
+            resetUserAfterChange(user.key)
+    } catch (error) {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+        console.error('Error updating user:', error.massage);
+    }
+}
+const drinks= ()=> {
+
+};
+const addTransaction = async (drinkDetails, customerID) => {
+  try {
+    const db = firestore();
+
+    // Create the transaction document
+    const newTransaction = {
+      customerID: user.key,  // Provided customerID
+      createdAt: new Date(),  // Set the current timestamp
+      drinks: drinks,  // Drink details as shown in the screenshot
+      status: "Uncompleted",  // Example status, adjust as necessary
+      transID: `T${new Date().getTime()}`,  // Unique transaction ID based on the timestamp
+      type: "OrderPickUp",  // Example type, adjust as necessary
+      price: total,  // Price from the drink details
+      priceBeforePromotion: total  // Price before promotion
+    };
+
+    // Adding the new document to the transactions collection
+    await db.collection('transactions').add(newTransaction);
+    console.log("Transaction added successfully.");
+  } catch (e) {
+    console.error("Error adding transaction: ", e);
+  }
+};
+
   return (
     <SafeAreaView style={styles.container}>
       <PayInStoreTop navigation={navigation} text={'Review Order'} />
@@ -143,7 +191,9 @@ const ReviewOrder = ({navigation, route}) => {
           {
             text: "Ok",
             onPress: () =>{
-              console.log('Ok Pressed')
+              updateBalance()
+              Alert.alert("Enjoy your drink!")
+              navigation.popToTop()
             }
           },
           {

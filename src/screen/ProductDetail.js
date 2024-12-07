@@ -13,18 +13,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 
 const ProductDetail = ({navigation, route}) => {
-  const {drink} = route.params;
+  const {drink, user, order, totalCurrent, keyOrder} = route.params;
   const [selectedSize, setSelectedSize] = useState('S');
   const [sweetness, setSweetness] = useState('Regular');
-
-  const [order, setOrder] = useState({});
-  const [listOrder, setListOrder] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [listOrder, setListOrder] = useState(order.drinks);
+  const [total, setTotal] = useState(totalCurrent);
 
   const calculateTotal = async drinks => {
     let newTotal = 0;
 
-    const drinkKeys = Object.keys(drinks); 
+    const drinkKeys = Object.keys(drinks);
     for (const i of drinkKeys) {
       const drinkData = drinks[i];
       const {key, quantity} = drinkData;
@@ -42,42 +40,12 @@ const ProductDetail = ({navigation, route}) => {
         console.error(`Error fetching drink data for ${drinkId}:`, error);
       }
     }
+    console.log('New total calculated:', newTotal);
     setTotal(newTotal);
   };
-
   useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUser(); 
-      console.log('User Pickup:', userData);
-      try {
-        const documentSnapshot = await firestore()
-          .collection('orders')
-          .doc(userData.orderKey)
-          .get();
-
-        if (documentSnapshot.exists) {
-          const data = documentSnapshot.data();
-          const key = documentSnapshot.id; 
-          console.log('Order Data:', data);
-
-          // Combine the data with the document key
-          const dataWithKey = {...data, key};
-          setOrder(dataWithKey);
-          if (data.drinks) {
-            setListOrder(data.drinks);
-            await calculateTotal(data.drinks);
-          } else {
-            console.log('Drinks field is undefined or does not exist.');
-          }
-        } else {
-          console.log('No such document!');
-        }
-      } catch (error) {
-        console.error('Error fetching order data:', error);
-      }
-    };
-    fetchUser();
-  }, [listOrder]);
+    console.log('Total:', total);
+  }, [total]);
 
   useEffect(() => {
     if (listOrder) {
@@ -91,18 +59,25 @@ const ProductDetail = ({navigation, route}) => {
     return base64Key;
   };
 
-  const addOrUpdateDrinkWithCheck = async (orderId, drinkId, customization, quantity) => {
+  const addOrUpdateDrinkWithCheck = async (
+    orderId,
+    drinkId,
+    customization,
+    quantity,
+  ) => {
+    console.log(orderId);
+
     try {
       const drinkKey = generateDrinkKey(drinkId, customization);
-  
+
       // Reference the specific order document
       const orderRef = firestore().collection('orders').doc(orderId);
       const orderSnapshot = await orderRef.get();
-  
+
       if (orderSnapshot.exists) {
         const orderData = orderSnapshot.data();
         const existingDrink = orderData.drinks?.[drinkKey];
-  
+
         if (existingDrink) {
           // If the drink already exists, update the quantity
           existingDrink.quantity += quantity;
@@ -110,6 +85,14 @@ const ProductDetail = ({navigation, route}) => {
             [`drinks.${drinkKey}`]: existingDrink,
           });
           console.log('Drink quantity updated!');
+          // Re-fetch the updated order data to update the state
+          const updatedOrderSnapshot = await orderRef.get();
+          const updatedOrderData = updatedOrderSnapshot.data();
+
+          setListOrder(updatedOrderData.drinks); // Update listOrder state
+          console.log("updatedDrinks"+updatedOrderData.drinks);
+
+          await calculateTotal(updatedOrderData.drinks); 
         } else {
           // Add a new drink
           await orderRef.update({
@@ -122,13 +105,13 @@ const ProductDetail = ({navigation, route}) => {
           console.log('New drink added!');
 
           // Re-fetch the updated order data to update the state
-      const updatedOrderSnapshot = await orderRef.get();
-      const updatedOrderData = updatedOrderSnapshot.data();
+          const updatedOrderSnapshot = await orderRef.get();
+          const updatedOrderData = updatedOrderSnapshot.data();
 
-      if (updatedOrderData && updatedOrderData.drinks) {
-        setListOrder(updatedOrderData.drinks); // Update listOrder state
-        await calculateTotal(updatedOrderData.drinks); // Recalculate the total price
-      }
+          setListOrder(updatedOrderData.drinks); // Update listOrder state
+          console.log("updatedDrinks"+updatedOrderData.drinks);
+
+          await calculateTotal(updatedOrderData.drinks); // Recalculate the total price
         }
       } else {
         console.log('Order not found!');
@@ -137,7 +120,6 @@ const ProductDetail = ({navigation, route}) => {
       console.error('Error adding or updating drink:', error);
     }
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -237,11 +219,29 @@ const ProductDetail = ({navigation, route}) => {
           {/* Add to Cart Section */}
           <TouchableOpacity
             style={styles.addIcon}
-            onPress={() => addOrUpdateDrinkWithCheck(order.key, drink.key, {size: selectedSize,sweetness: sweetness}, 1)}>
+            onPress={() =>
+              addOrUpdateDrinkWithCheck(
+                keyOrder,
+                drink.key,
+                {size: selectedSize, sweetness: sweetness},
+                1,
+              )
+            }>
             <Icon name="plus" size={25} color={colorTheme.white} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cart} onPress={() => navigation.navigate('ReviewOrder',{order})}>
-            <Text style={styles.total}>Total: đ{total}</Text>
+          <TouchableOpacity
+            style={styles.cart}
+            onPress={() => {
+              console.log('Order before navigation:', order);
+              if (order) {
+                navigation.navigate('ReviewOrder', {order, total, user});
+              } else {
+                console.warn('Order is not ready yet!');
+              }
+            }}>
+            <Text style={styles.total}>
+              Total: {total ? `đ${total}` : 'Calculating...'}
+            </Text>
             <Icon name="shopping-cart" size={30} color={colorTheme.white} />
           </TouchableOpacity>
         </View>

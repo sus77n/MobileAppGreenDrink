@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -8,10 +8,31 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme} from '../component/store';
+import {colorTheme, getUser} from '../component/store';
 
 const OrderScreen = ({navigation}) => {
   const [selectedType, setSelectedTye] = useState('OrderPickUp');
+
+  const [user, setUser] = useState(null);
+  const fetchUser = async () => {
+    try {
+      const userData = await getUser(); // Correct function call
+      setUser(userData); 
+      console.log('User order screen:', userData); // Debug log
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+  
+
+  useEffect(() => {
+    const loadScreen = navigation.addListener('focus', () => {
+      fetchUser(); // Fetch user when the screen is focused
+    });
+    return () => loadScreen(); // Cleanup listener
+  }, [navigation]); // Add navigation as a dependency
+  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.greetingSection}>
@@ -23,7 +44,7 @@ const OrderScreen = ({navigation}) => {
       <TouchableOpacity
         style={styles.card}
         onPress={() => {
-          navigation.navigate('OrderPickUp');
+          navigation.navigate('OrderPickUp',{user});
         }}>
         <Text style={styles.cardTitle}>Order & Pick-up</Text>
         <Image source={require('../../assets/img/iconOrderPickUp.png')} />

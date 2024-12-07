@@ -13,13 +13,15 @@ import {colorTheme, getUser, TopGoBack} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, {getFirestore} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const OrderPickUp = ({navigation}) => {
+const OrderPickUp = ({navigation, route}) => {
+  const {user} = route.params
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [seasonalDrink, setSeasonalDrink] = useState([]);
 
   //fetch order
   const [order, setOrder] = useState('');
+  const[keyOrder, setKeyOrder] = useState('');
   const [listOrder, setListOrder] = useState([]);
   const [total, setTotal] = useState(0);
 
@@ -56,19 +58,19 @@ const OrderPickUp = ({navigation}) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userData = await getUser(); // Fetch the user data
-      console.log('User Pickup:', userData);
+      console.log('User Pickup:', user);
 
       try {
         const documentSnapshot = await firestore()
           .collection('orders')
-          .doc(userData.orderKey)
+          .doc(user.orderKey)
           .get();
 
         if (documentSnapshot.exists) {
           const data = documentSnapshot.data();
           console.log('Order Data:', data);
           setOrder(data);
+          setKeyOrder(user.orderKey)
 
           if (data.drinks) {
             console.log('Drinks:', data.drinks);
@@ -122,7 +124,7 @@ const OrderPickUp = ({navigation}) => {
     return (
       <TouchableOpacity
         style={[styles.drinkTag, {marginBottom: 10}]}
-        onPress={() => navigation.navigate('TypeDrink', {cate})}>
+        onPress={() => navigation.navigate('TypeDrink', {cate, user, order, total, keyOrder})}>
         <View style={styles.imageWrapTag}>
           <Image source={{uri: cate.img}} style={styles.img} />
         </View>
@@ -213,7 +215,7 @@ const OrderPickUp = ({navigation}) => {
         onPress={() => {
           console.log('Order before navigation:', order);
           if (order) {
-            navigation.navigate('ReviewOrder', {order, total});
+            navigation.navigate('ReviewOrder', {order, total, user,});
           } else {
             console.warn('Order is not ready yet!');
           }

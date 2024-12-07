@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import {Dimensions, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
 import { colorTheme } from '../component/store';
 import { getFirestore } from '@react-native-firebase/firestore';
 
@@ -77,6 +77,8 @@ const HomeStoreScreen = ({navigation}) => {
     </SafeAreaView>
   );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   container: {
@@ -84,57 +86,57 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.grayBackground,
   },
   listContainer: {
-    paddingHorizontal: '5%',
+    paddingHorizontal: scale(20),
   },
   greetingSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 20,
+    marginBottom: scale(20),
+    paddingHorizontal: scale(20),
     backgroundColor: colorTheme.white,
-    paddingVertical: '4%',
+    paddingVertical: scale(15),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: scale(1) },
     shadowOpacity: 0.8,
-    shadowRadius: 2,
+    shadowRadius: scale(2),
     elevation: 5,
   },
   greetingText: {
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: 'bold',
     color: colorTheme.greenText,
   },
   transactionCard: {
     backgroundColor: '#fff',
-    padding: '5%',
-    marginBottom: '3%',
-    borderRadius: 8,
+    padding: scale(20),
+    marginBottom: scale(10),
+    borderRadius: scale(8),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: scale(1) },
     shadowOpacity: 0.8,
-    shadowRadius: 2,
+    shadowRadius: scale(2),
     elevation: 5,
   },
   transactionId: {
-    fontSize: 12,
+    fontSize: scale(12),
     fontWeight: 'bold',
   },
-  statusText:{
+  statusText: {
     color: colorTheme.black,
     fontWeight: '600',
-    marginTop: '3%',
+    marginTop: scale(10),
   },
   buttonContainer: {
     flexDirection: 'row',
-    marginTop: '3%',
+    marginTop: scale(10),
   },
   button: {
-    backgroundColor: '#7ec479',
-    paddingVertical: '4%',
-    paddingHorizontal: '6%',
-    borderRadius: 5,
-    marginRight: '4%',
+    backgroundColor: colorTheme.greenBackground,
+    paddingVertical: scale(15),
+    paddingHorizontal: scale(25),
+    borderRadius: scale(5),
+    marginRight: scale(15),
   },
   buttonText: {
     color: '#fff',
@@ -143,8 +145,9 @@ const styles = StyleSheet.create({
   completedText: {
     color: 'green',
     fontWeight: 'bold',
-    marginTop: '3%',
+    marginTop: scale(10),
   },
 });
+
 
 export default HomeStoreScreen;

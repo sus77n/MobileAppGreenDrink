@@ -1,46 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Image, SafeAreaView, TextInput, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import {   Dimensions, Alert, Button, Image, SafeAreaView, TextInput, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Import Picker
 import firestore from '@react-native-firebase/firestore';
 import { colorTheme, TopGoBack } from '../component/store';  // Assuming colorTheme is available from your existing code
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
 const styles = StyleSheet.create({
-  //can not use '%', because the avoid keyboard view
   container: {
     flex: 1,
     backgroundColor: colorTheme.white,
-    padding: 20,
   },
   input: {
-    height: 40,
+    height: scale(40),
     borderColor: colorTheme.greenBackground,
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingLeft: 10,
-    borderRadius: 5,
+    borderWidth: scale(1),
+    marginTop: scale(15),
+    paddingLeft: scale(10),
+    borderRadius: scale(5),
+    marginHorizontal: scale(20),
   },
   button: {
     backgroundColor: colorTheme.greenBackground,
-    paddingVertical: 10,
-    borderRadius: 5,
+    paddingVertical: scale(10),
+    borderRadius: scale(5),
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: scale(15),
+    marginHorizontal: scale(20),
   },
   buttonText: {
     color: colorTheme.white,
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: '600',
   },
   pickerContainer: {
     borderColor: colorTheme.greenBackground,
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
+    borderWidth: scale(1),
+    borderRadius: scale(5),
+    marginTop: scale(15),
+    marginHorizontal: scale(20),
   },
   picker: {
-    height: 50,
+    height: scale(50),
   },
 });
+
 
 const AddProduct = ({ navigation }) => {
   const [name, setName] = useState('');

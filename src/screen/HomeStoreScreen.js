@@ -1,13 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
 import { colorTheme } from '../component/store';
+import { getFirestore } from '@react-native-firebase/firestore';
+
 
 const HomeStoreScreen = ({navigation}) => {
-  const [transactions, setTransactions] = useState([
-    { id: 'T1000001', status: 'Received' },
-    { id: 'T1000002', status: 'Completed' },
-    { id: 'T1000003', status: 'Received' },
-  ]);
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    const subscriber = getFirestore()
+      .collection('transactions')
+      .onSnapshot(querySnapshot => {
+        const transactions = [];
+
+        querySnapshot.forEach(documentSnapshot => {
+          transactions.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
+        });
+
+        setTransactions(transactions);
+      });
+      console.log(transactions);
+      
+
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+  }, []);
 
   const handleTransactionStatus = (transactionId, newStatus) => {
     const updatedTransactions = transactions.map(transaction => {
@@ -21,11 +41,11 @@ const HomeStoreScreen = ({navigation}) => {
 
   const renderTransactionItem = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageDetailTrans')}>
-        <Text style={styles.transactionId}>Transaction ID: {item.id}</Text>
+      <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageDetailTrans', {transaction: item})}>
+        <Text style={styles.transactionId}>Transaction ID: {item.transID}</Text>
         <Text style={styles.statusText}>Status: {item.status}</Text>
         <View style={styles.buttonContainer}>
-          {item.status === 'Received' && (
+          {item.status === 'Uncompleted' && (
             <TouchableOpacity
               style={styles.button}
               onPress={() => handleTransactionStatus(item.id, 'Completed')}

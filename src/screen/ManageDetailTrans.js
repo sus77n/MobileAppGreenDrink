@@ -12,34 +12,35 @@ import CheckBox from '@react-native-community/checkbox'; // Correct import for C
 import {colorTheme, TopGoBack} from '../component/store';
 
 const ManageDetailTrans = ({navigation,route}) => {
-  const transaction = {
-    id: 'T1000001',
-    customerName: 'John Doe',
-    phoneNumber: '123456789',
-    createdAt: '2024-12-01 10:30 AM',
-    priceBeforePromotion: 50,
-    totalPrice: 45, // after promotion
-    drinks: [
-      {
-        id: '1',
-        name: 'Coffee',
-        size: 'S',
-        sweetness: 'Regular',
-        quantity: 2,
-        price: 5,
-        completed: false,
-      },
-      {
-        id: '2',
-        name: 'Tea',
-        size: 'M',
-        sweetness: 'Less sweet',
-        quantity: 1,
-        price: 4,
-        completed: false,
-      },
-    ],
-  };
+  // const transaction = {
+  //   id: 'T1000001',
+  //   customerName: 'John Doe',
+  //   phoneNumber: '123456789',
+  //   createdAt: '2024-12-01 10:30 AM',
+  //   priceBeforePromotion: 50,
+  //   totalPrice: 45, // after promotion
+  //   drinks: [
+  //     {
+  //       id: '1',
+  //       name: 'Coffee',
+  //       size: 'S',
+  //       sweetness: 'Regular',
+  //       quantity: 2,
+  //       price: 5,
+  //       completed: false,
+  //     },
+  //     {
+  //       id: '2',
+  //       name: 'Tea',
+  //       size: 'M',
+  //       sweetness: 'Less sweet',
+  //       quantity: 1,
+  //       price: 4,
+  //       completed: false,
+  //     },
+  //   ],
+  // };
+  const {transaction} = route.params
 
   const [drinks, setDrinks] = useState(transaction.drinks); // Get drinks list
   const [totalPrice, setTotalPrice] = useState(transaction.totalPrice); // Store the total price
@@ -66,20 +67,23 @@ const ManageDetailTrans = ({navigation,route}) => {
       <View style={styles.drinkRow}>
         <View style={styles.drinkInfo}>
           <Text style={styles.drinkName}>
-            {item.quantity} x {item.name} - {item.size}
+            {item.quantity} x {item.name} - {item.custom.size}
           </Text>
-          <Text style={styles.drinkSweetness}>{item.sweetness}</Text>
+          <Text style={styles.drinkSweetness}>Sweetness: {item.custom.sweetness}</Text>
         </View>
         <View style={styles.priceDrinkContainer}>
           <Text style={styles.drinkPrice}>Amount</Text>
-          <Text style={styles.drinkPrice}>đ{item.price}</Text>
+          <Text style={styles.drinkPrice}>đ{(item.price).toLocaleString()}</Text>
+          <Text style={styles.totalPrice}>
+            đ{(item.price * item.quantity).toLocaleString()}
+            </Text>
         </View>
-        <CheckBox
+        {/* <CheckBox
         style={styles.checkbox}
         tintColors={{true: colorTheme.greenBackground, }}
           value={item.completed}
           onValueChange={() => handleDrinkCompletion(item.id)}
-        />
+        /> */}
       </View>
     );
   };
@@ -94,14 +98,14 @@ const ManageDetailTrans = ({navigation,route}) => {
         </Text>
         <Text>Phone: {transaction.phoneNumber}</Text>
         <Text>Transaction ID: {transaction.id}</Text>
-        <Text>Created At: {transaction.createdAt}</Text>
+        {/* <Text>Created At: {transaction.createdAt}</Text> */}
       </View>
 
       {/* Drink List */}
       <FlatList
         data={drinks}
         renderItem={renderDrinkItem}
-        keyExtractor={item => item.id.toString()}
+        // keyExtractor={({item}) => item.key}
         contentContainerStyle={styles.drinksList}
       />
 
@@ -113,17 +117,20 @@ const ManageDetailTrans = ({navigation,route}) => {
                 <Text style={styles.totalText}>Total Price:</Text>
             </View>
             <View>
-                <Text style={styles.totalText}>${transaction.priceBeforePromotion}</Text>
-                 <Text style={styles.totalText}>${totalPrice}</Text>
+                <Text style={styles.totalText}>đ{transaction.priceBeforePromotion.toLocaleString()}</Text>
+                 <Text style={styles.totalText}>đ{transaction.price.toLocaleString()}</Text>
             </View>
         </View>
         <TouchableOpacity
           style={styles.completeButton}
           onPress={() =>
-            Alert.alert(
+            {
+              Alert.alert(
               'Transaction Completed',
               'All drinks are marked as completed',
             )
+            navigation.goback()
+            }
           }>
           <Text style={styles.completeButtonText}>Complete Transaction</Text>
         </TouchableOpacity>

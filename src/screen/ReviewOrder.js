@@ -17,31 +17,51 @@ const ReviewOrder = ({navigation, route}) => {
   const {order, total, user} = route.params;
   const [drinkDetails, setDrinkDetails] = useState({});
   const [quantities, setQuantities] = useState({});
+  const [listDrinks, setListDrinks] = useState([]);
 
   // Fetch drink details from Firestore
   useEffect(() => {
-    const fetchDrinkDetails = async () => {
+    const fetchDrinks = async () => {
       try {
-        const details = {};
-        const quantityMap = {};
-        for (const drink of Object.values(order.drinks)) {
-          const doc = await firestore().collection('drinks').doc(drink.key).get();
+        const drinkKeys = Object.keys(order.drinks); // Get all the drink keys from order.drinks
+        const drinksData = []; // Array to store the drink details
+  
+        // Create a batch of async operations to fetch drinks in parallel
+        const drinkFetchPromises = drinkKeys.map(async (drinkKey) => {
+          const drinkData = order.drinks[drinkKey]; // Get the drink object using the key
+  
+          // Fetch the drink details from the Firestore 'drinks' collection
+          const doc = await firestore().collection('drinks').doc(drinkData.key).get();
+  
           if (doc.exists) {
-            details[drink.key] = doc.data();
-            quantityMap[drink.key] = drink.quantity || 1; // Initialize quantity
+            const drinkDetails = doc.data();
+            drinksData.push({
+              key: drinkData.key, // Use the key from order
+              name: drinkDetails.name,
+              price: drinkDetails.price,
+              quantity: drinkData.quantity || 1, // Default to 1 if quantity is not set
+              custom: drinkData.custom, // Customization details
+            });
+            console.log("each item: " + drinkData.key + drinkDetails.name);
+            
           } else {
-            console.warn(`Drink with key ${drink.key} not found`);
+            console.warn(`Drink with key ${drinkData.key} not found in Firestore.`);
           }
-        }
-        setDrinkDetails(details);
-        setQuantities(quantityMap);
+        });
+  
+        // Wait for all the drink fetch promises to resolve
+        await Promise.all(drinkFetchPromises);
+        console.log("drinks data"+drinksData);
+        // Update the state with the fetched data
+        setListDrinks(drinksData);
       } catch (error) {
-        console.error('Error fetching drink details:', error);
+        console.error('Error fetching drinks from Firestore:', error);
       }
     };
-
-    fetchDrinkDetails();
+  
+    fetchDrinks(); // Call the function to fetch drinks
   }, [order.drinks]);
+  
 
   // Update quantity for a specific drink
   const updateQuantity = (key, increment) => {
@@ -56,20 +76,20 @@ const ReviewOrder = ({navigation, route}) => {
   }, []);
 
   const renderItem = ({item: drink}) => {
-    const details = drinkDetails[drink.key];
-    if (!details) return null;
+    // const details = drinkDetails[drink.key];
+    // if (!details) return null;
 
     return (
       <View>
         <View style={styles.itemContainer}>
           <View style={styles.infoContainer}>
             <Text style={styles.itemName}>
-              {details.name}
+              {drink.name}
             </Text>
             <Text style={styles.itemDetails}>Drink size: {drink.custom.size}</Text>
             <Text style={styles.itemDetails}>Sweetness: {drink.custom.sweetness}</Text>
           </View>
-          <Text style={styles.itemPrice}>đ{details.price.toLocaleString()}</Text>
+          <Text style={styles.itemPrice}>đ{drink.price.toLocaleString()}</Text>
         </View>
         <View style={styles.controls}>
           <View style={styles.controls}>
@@ -95,7 +115,7 @@ const ReviewOrder = ({navigation, route}) => {
           </View>
           <View>
             <Text style={styles.totalPrice}>
-            đ{(details.price * drink.quantity).toLocaleString()}
+            đ{(drink.price * drink.quantity).toLocaleString()}
             </Text>
           </View>
         </View>
@@ -123,10 +143,7 @@ const ReviewOrder = ({navigation, route}) => {
         console.error('Error updating user:', error.massage);
     }
 }
-const drinks= ()=> {
-
-};
-const addTransaction = async (drinkDetails, customerID) => {
+const addTransaction = async () => {
   try {
     const db = firestore();
 
@@ -134,7 +151,7 @@ const addTransaction = async (drinkDetails, customerID) => {
     const newTransaction = {
       customerID: user.key,  // Provided customerID
       createdAt: new Date(),  // Set the current timestamp
-      drinks: drinks,  // Drink details as shown in the screenshot
+      drinks: listDrinks,  // Drink details as shown in the screenshot
       status: "Uncompleted",  // Example status, adjust as necessary
       transID: `T${new Date().getTime()}`,  // Unique transaction ID based on the timestamp
       type: "OrderPickUp",  // Example type, adjust as necessary
@@ -169,7 +186,7 @@ const addTransaction = async (drinkDetails, customerID) => {
         <Text style={styles.header}>Order items</Text>
 
         <FlatList
-          data={Object.values(order.drinks)}
+          data={listDrinks}
           renderItem={renderItem}
           keyExtractor={(item) => item.key}
         />
@@ -181,7 +198,7 @@ const addTransaction = async (drinkDetails, customerID) => {
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
           <Text style={styles.orderTotalValue}>
-           đ{total}
+           đ{total.toLocaleString()}
           </Text>
         </View>
       </View>
@@ -192,6 +209,7 @@ const addTransaction = async (drinkDetails, customerID) => {
             text: "Ok",
             onPress: () =>{
               updateBalance()
+              addTransaction()
               Alert.alert("Enjoy your drink!")
               navigation.popToTop()
             }

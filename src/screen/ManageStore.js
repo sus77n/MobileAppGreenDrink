@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  Dimensions,
 } from 'react-native';
 import 'react-native-gesture-handler';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -198,6 +199,9 @@ const ManagerStore = ({ navigation }) => {
   );
 };
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -205,28 +209,26 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
-
   },
   coverMap: {
-    height: '50%',
+    height: scale(300), 
     width: '100%',
-    borderRadius: 5,
+    borderRadius: scale(5),
     shadowColor: colorTheme.black,
     shadowOffset: {
       width: 0,
       height: 0,
     },
     shadowOpacity: 0.30,
-    shadowRadius: 4.65,
-
-    elevation: 8,
+    shadowRadius: scale(4.65), 
+    elevation: scale(8), 
   },
   title: {
-    fontSize: 22,
+    fontSize: scale(22), 
     fontWeight: 'bold',
     color: '#4CAF50',
-    marginLeft: '5%',
-    marginVertical: "2%"
+    marginLeft: scale(15),
+    marginVertical: scale(10), 
   },
   loaderContainer: {
     flex: 1,
@@ -237,50 +239,51 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationCard: {
-    marginVertical: '3%',
+    marginVertical: scale(12), 
     backgroundColor: colorTheme.grayBackground,
-    borderRadius: 10,
-    paddingHorizontal: '5%',
-    paddingVertical: '5%',
+    borderRadius: scale(10), 
+    paddingHorizontal: scale(18), 
+    paddingVertical: scale(18), 
   },
   address: {
-    fontSize: 15,
+    fontSize: scale(15), 
     fontWeight: '700',
     color: colorTheme.greenText,
-    marginVertical: '3%',
+    marginVertical: scale(12), 
   },
   contactBtn: {
     backgroundColor: colorTheme.grayBackground,
-    paddingVertical: '4%',
-    paddingHorizontal: '5%',
-    borderRadius: 5,
+    paddingVertical: scale(12),
+    paddingHorizontal: scale(18), 
+    borderRadius: scale(5), 
     borderWidth: 1,
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
   },
   contactText: {
-    fontSize: 14,
+    fontSize: scale(14), 
     color: colorTheme.greenBackground,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: "2%"
+    marginVertical: scale(10), 
   },
   editBtn: {
     backgroundColor: colorTheme.greenBackground,
-    borderRadius: 25,
+    borderRadius: scale(25), 
     justifyContent: "center",
-    paddingHorizontal: 9,
-    paddingVertical: 7,
+    paddingHorizontal: scale(9), 
+    paddingVertical: scale(7), 
   },
   btnRow: {
     flexDirection: "row",
     alignItems: 'center',
     justifyContent: "space-evenly",
-    width: 100,
+    width: scale(100), 
   },
 });
+
 
 export default ManagerStore;

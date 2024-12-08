@@ -9,10 +9,14 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import {colorTheme} from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
+
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   container: {
@@ -20,26 +24,26 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.white,
   },
   filter: {
-    paddingVertical: '3%',
+    paddingVertical: scale(12), 
     backgroundColor: colorTheme.white,
   },
   scrollContainer: {
     flexDirection: 'row',
-    paddingHorizontal: '2%',
+    paddingHorizontal: scale(8), 
   },
   filterButton: {
-    paddingVertical: 10, //can not use %, it can not slide to
-    paddingHorizontal: 20,
-    marginRight: 8,
-    borderRadius: 20,
-    borderWidth: 1,
+    paddingVertical: scale(10), 
+    paddingHorizontal: scale(20),
+    marginRight: scale(8),
+    borderRadius: scale(20),
+    borderWidth: scale(1),
     borderColor: colorTheme.greenBackground,
   },
   filterButtonSelected: {
     backgroundColor: colorTheme.greenBackground,
   },
   filterButtonText: {
-    fontSize: 14,
+    fontSize: scale(14), 
     color: colorTheme.greenText,
     fontWeight: '500',
   },
@@ -50,36 +54,36 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingVertical: '1%',
+    paddingVertical: scale(6), 
     borderColor: colorTheme.greenBackground,
     backgroundColor: colorTheme.white,
   },
   actionButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginRight: '4%',
-    borderRadius: 25,
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(12),
+    marginRight: scale(16), 
+    borderRadius: scale(25),
     backgroundColor: colorTheme.greenBackground,
   },
   main: {
-    paddingHorizontal: '4%',
-    paddingVertical: '3%',
+    paddingHorizontal: scale(15), 
+    paddingVertical: scale(12),
   },
   drinkRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   imageWrap: {
-    left: '3%',
+    left: scale(9), 
     zIndex: 1,
     backgroundColor: colorTheme.white,
-    paddingHorizontal: '7%',
-    paddingVertical: '4%',
-    borderRadius: 100,
+    paddingHorizontal: scale(28), 
+    paddingVertical: scale(16), 
+    borderRadius: scale(100),
   },
   img: {
-    width: 30,
-    height: 55,
+    width: scale(30), 
+    height: scale(55),
   },
   nameWrap: {
     zIndex: 0,
@@ -87,18 +91,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     width: '100%',
-    left: '-22%',
-    paddingVertical: '11%',
+    left: scale(-85), 
+    paddingVertical: scale(40), 
   },
   name: {
     width: '60%',
-    fontSize: 17,
+    fontSize: scale(14), // Scaling font size
     fontWeight: '600',
     textAlign: 'center',
     color: colorTheme.greenText,
-    left: '-1%',
+    left: scale(-1), // Adjusted for responsiveness
   },
 });
+
 
 const ManageProduct = ({navigation}) => {
   const [loading, setLoading] = useState(true);

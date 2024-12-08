@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import { colorTheme, getTimeNow, getUser, LoadingScreen, PayInStoreTop } from '../component/store';
 const CardScreen = ({ navigation, route }) => {
@@ -59,6 +60,8 @@ const CardScreen = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   container: {
@@ -71,12 +74,12 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colorTheme.greenBackground,
-    marginRight: 15,
-    marginLeft: 15,
-    marginTop: 15,
-    borderRadius: 10,
+    marginRight: scale(15),
+    marginLeft: scale(15),
+    marginTop: scale(15),
+    borderRadius: scale(10),
     flexDirection: 'row',
-    padding: 20,
+    padding: scale(20),
     justifyContent: 'flex-start',
   },
 
@@ -85,66 +88,74 @@ const styles = StyleSheet.create({
   },
 
   goldCard: {
-    marginRight: 30,
+    marginRight: scale(30),
   },
 
   money: {
-    fontSize: 20,
+    fontSize: scale(20),
     fontWeight: 'bold',
     color: colorTheme.white,
   },
+
   subtitle: {
-    fontSize: 12,
+    fontSize: scale(12),
     color: colorTheme.white,
   },
 
   addButton: {
     backgroundColor: colorTheme.grayBackground,
-    paddingVertical: 7,
-    width: 120,
-    borderRadius: 25,
-    borderWidth: 2,
+    paddingVertical: scale(7),
+    width: scale(120),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: scale(15),
     alignSelf: 'center',
-    marginBottom: 10,
+    marginBottom: scale(10),
   },
+
   addButtonText: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: colorTheme.greenBackground,
     fontWeight: '600',
   },
 
   voucherSection: {
-    paddingHorizontal: 15,
+    paddingHorizontal: scale(15),
   },
+
   voucherTitle: {
     fontWeight: '700',
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: scale(20),
+    marginBottom: scale(10),
   },
+
   voucherMain: {
     backgroundColor: colorTheme.orangeBackground,
     flexDirection: 'row',
-    padding: 10,
-    borderRadius: 10,
+    padding: scale(10),
+    borderRadius: scale(10),
   },
+
   voucherCard: {
     backgroundColor: colorTheme.white,
-    padding: 5,
-    borderRadius: 10,
+    padding: scale(5),
+    borderRadius: scale(10),
     flexDirection: 'row',
-    width: 240,
+    width: scale(240),
   },
+
   voucherIcon: {
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 10,
+    marginTop: scale(10),
+    marginLeft: scale(5),
+    marginRight: scale(10),
   },
+
   cardTitleWrap: {
-    width: 150,
+    width: scale(150),
   },
+
   cardTitle: {
     color: colorTheme.black,
     fontWeight: '600',
@@ -153,7 +164,10 @@ const styles = StyleSheet.create({
     color: colorTheme.grayText,
   },
 
-  barCode: {},
+  barCode: {
+    // No specific styles defined, so leaving empty
+  },
 });
+
 
 export default CardScreen;

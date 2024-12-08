@@ -1,74 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
+import { Dimensions,Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { colorTheme, LoadingScreen } from '../component/store';
 import firestore from '@react-native-firebase/firestore';
 
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colorTheme.white,
-    padding: 20,
+    padding: scale(20), // 20px adjusted for scale
   },
+
   input: {
-    height: 40,
+    height: scale(40), // 40px adjusted for scale
     borderColor: colorTheme.greenBackground,
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingLeft: 10,
-    borderRadius: 5,
+    borderWidth: scale(1), // 1px adjusted for scale
+    marginBottom: scale(15), // 15px adjusted for scale
+    paddingLeft: scale(10), // 10px adjusted for scale
+    borderRadius: scale(5), // 5px adjusted for scale
   },
+
   button: {
     backgroundColor: colorTheme.greenBackground,
-    paddingVertical: 10,
-    borderRadius: 5,
+    paddingVertical: scale(10), // 10px adjusted for scale
+    borderRadius: scale(5), // 5px adjusted for scale
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: scale(10), // 10px adjusted for scale
   },
+
   buttonText: {
     color: colorTheme.white,
-    fontSize: 16,
+    fontSize: scale(16), // 16px adjusted for scale
     fontWeight: '600',
   },
+
   pickerContainer: {
     borderColor: colorTheme.greenBackground,
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
+    borderWidth: scale(1), // 1px adjusted for scale
+    borderRadius: scale(5), // 5px adjusted for scale
+    marginBottom: scale(15), // 15px adjusted for scale
   },
+
   picker: {
-    height: 50,
+    height: scale(50), // 50px adjusted for scale
   },
+
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: scale(20), // 20px adjusted for scale
   },
+
   previewButton: {
     backgroundColor: colorTheme.greenBackground,
-    paddingVertical: 10,
-    borderRadius: 5,
+    paddingVertical: scale(10), // 10px adjusted for scale
+    borderRadius: scale(5), // 5px adjusted for scale
     flex: 1,
     alignItems: 'center',
   },
+
   saveButton: {
     backgroundColor: colorTheme.greenBackground,
-    paddingVertical: 10,
-    borderRadius: 5,
+    paddingVertical: scale(10), // 10px adjusted for scale
+    borderRadius: scale(5), // 5px adjusted for scale
     flex: 1,
-    marginLeft: 10,
+    marginLeft: scale(10), // 10px adjusted for scale
     alignItems: 'center',
   },
+
   cancelButton: {
-    backgroundColor: 'red', // You can choose a color for the cancel button
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: 'red',
+    paddingVertical: scale(10), // 10px adjusted for scale
+    borderRadius: scale(5), // 5px adjusted for scale
     flex: 1,
-    marginLeft: 10,
+    marginLeft: scale(10), // 10px adjusted for scale
     alignItems: 'center',
   },
 });
+
 
 const EditProduct = ({ navigation, route }) => {
   const { drink } = route.params;

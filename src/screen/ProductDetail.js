@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View,  Dimensions,
 } from 'react-native';
 import { colorTheme, getUser, LoadingScreen } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -53,6 +53,8 @@ const ProductDetail = ({ navigation, route }) => {
     if (listOrder) {
       calculateTotal(listOrder);
     }
+    console.log(order);
+    
   }, [listOrder]);
 
   const generateDrinkKey = (drinkId, customization) => {
@@ -252,41 +254,41 @@ const ProductDetail = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   iconBack: {
-    marginLeft: '5%',
-    marginTop: '5%',
+    marginLeft: scale(20),
+    marginTop: scale(20),
   },
   wrapWhite: {
-    position: 'absolute',
-    width: '99%',
-    height: '60%',
+    width: scale(375),
+    height: height * 0.72, // Keeping the 60% proportional height
     flex: 1,
     backgroundColor: colorTheme.white,
-    marginTop: '70%',
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    marginTop: height * 0.25, // 70% of screen height
+    borderTopLeftRadius: scale(50),
+    borderTopRightRadius: scale(50),
   },
   top: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: '5%',
-    paddingTop: '10%',
-    paddingBottom: '5%',
+    paddingHorizontal: scale(20),
   },
   topLeft: {
     width: '60%',
-    alignItems: 'center',
+    alignItems: 'left',
+    marginLeft: scale(10),
   },
   name: {
     color: colorTheme.greenText,
-    fontSize: 25,
+    fontSize: scale(25),
     fontWeight: '700',
-    marginBottom: '10%',
+    marginBottom: scale(20),
   },
   descrip: {},
   topRight: {
@@ -295,83 +297,83 @@ const styles = StyleSheet.create({
   },
   img: {
     position: 'absolute',
-    marginTop: '-120%',
-    width: '90%',
-    height: '160%',
+    marginTop: scale(-40),
+    width: scale(100),
+    height: scale(180),
   },
   price: {
     color: colorTheme.orangeBackground,
     fontWeight: '700',
-    fontSize: 23,
-    marginTop: '60%',
+    fontSize: scale(23),
+    marginTop: scale(160),
   },
   sizeSetion: {
-    paddingHorizontal: '8%',
+    paddingHorizontal: scale(20),
   },
   titleSize: {
-    fontSize: 20,
+    fontSize: scale(20),
     fontWeight: '700',
     color: colorTheme.grayText,
   },
   sizeGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: '3%',
+    marginTop: scale(15),
   },
   sizeSquareActive: {
-    borderWidth: 2,
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     backgroundColor: colorTheme.greenBackground,
-    borderRadius: 15,
+    borderRadius: scale(15),
     alignItems: 'center',
     justifyContent: 'center',
-    width: '30%',
-    height: '75%',
+    width: scale(110),
+    height: scale(110),
   },
   sizeSquareUnactive: {
-    borderWidth: 2,
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     backgroundColor: colorTheme.white,
-    borderRadius: 15,
+    borderRadius: scale(15),
     alignItems: 'center',
     justifyContent: 'center',
-    width: '30%',
-    height: '75%',
+    width: scale(110),
+    height: scale(110),
   },
   sweetSection: {
-    paddingHorizontal: '8%',
-    marginTop: '-30%',
+    paddingHorizontal: scale(20),
+    marginTop: scale(10),
   },
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: '3%',
+    marginTop: scale(12),
   },
   button: {
     backgroundColor: '#7ec479',
-    paddingVertical: '3%',
-    width: '45%',
-    borderRadius: 25,
-    borderWidth: 2,
+    paddingVertical: scale(12),
+    width: scale(160),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
   },
   buttonText: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: '#fff',
     fontWeight: 'bold',
   },
   unactiveButton: {
     backgroundColor: colorTheme.white,
-    paddingVertical: '3%',
-    width: '45%',
-    borderRadius: 25,
-    borderWidth: 2,
+    paddingVertical: scale(12),
+    width: scale(160),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
   },
   unactiveButtonText: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: colorTheme.greenBackground,
     fontWeight: 'bold',
   },
@@ -381,28 +383,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: '8%',
-    paddingVertical: '5%',
-    bottom: '4%',
+    paddingHorizontal: scale(30),
+    paddingVertical: scale(20),
+    bottom: scale(108),
     backgroundColor: colorTheme.greenBackground,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: scale(40),
+    borderTopRightRadius: scale(40),
   },
   total: {
     color: colorTheme.white,
-    fontSize: 20,
+    fontSize: scale(20),
     fontWeight: '700',
   },
-
   addIcon: {
     position: 'absolute',
     backgroundColor: colorTheme.orangeBackground,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 25,
-    bottom: '19%',
-    right: '5%',
+    paddingHorizontal: scale(12),
+    paddingVertical: scale(10),
+    borderRadius: scale(25),
+    bottom: scale(190),
+    right: scale(20),
   },
 });
+
 
 export default ProductDetail;

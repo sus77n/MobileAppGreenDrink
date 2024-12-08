@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import { colorTheme, getUser, LoadingScreen } from '../component/store';
 
@@ -127,10 +128,12 @@ const OrderScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 15,
+    paddingTop: scale(15),
     backgroundColor: colorTheme.white,
     flex: 1,
   },
@@ -138,42 +141,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 10,
-    paddingHorizontal: 20,
+    marginBottom: scale(20),
+    marginTop: scale(10),
+    paddingHorizontal: scale(20),
   },
   greetingText: {
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: 'bold',
     color: '#568f56',
   },
-
   card: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colorTheme.grayBackground,
-    borderRadius: 10,
-    marginHorizontal: '4%',
-    marginVertical: '2%',
-    paddingHorizontal: '12%',
-    paddingVertical: '5%',
+    borderRadius: scale(10),
+    marginHorizontal: scale(15),
+    marginVertical: scale(8),
+    paddingHorizontal: scale(35),
+    paddingVertical: scale(35),
   },
-
   cardTitle: {
-    fontSize: 18,
+    fontSize: scale(18),
     color: colorTheme.black,
   },
-
   reorderSection: {
     flex: 1,
-    padding: '5%',
+    padding: scale(20),
   },
-
   reorderTitle: {
-    fontSize: 17,
+    fontSize: scale(17),
     fontWeight: '700',
-    marginBottom: '2%',
+    marginBottom: scale(20),
   },
   buttonGroup: {
     flexDirection: 'row',
@@ -181,80 +180,82 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#7ec479',
-    paddingVertical: '3%',
-    width: '45%',
-    borderRadius: 25,
-    borderWidth: 2,
+    paddingVertical: scale(12),
+    width: scale(160),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
   },
   buttonText: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: '#fff',
     fontWeight: 'bold',
   },
   unactiveButton: {
     backgroundColor: colorTheme.white,
-    paddingVertical: '3%',
-    width: '45%',
-    borderRadius: 25,
-    borderWidth: 2,
+    paddingVertical: scale(12),
+    width: scale(160),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
   },
   unactiveButtonText: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: colorTheme.greenBackground,
     fontWeight: 'bold',
   },
   reorderCard: {
-    marginVertical: '3%',
+    marginTop: scale(20),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colorTheme.grayBackground,
-    borderRadius: 10,
-    paddingHorizontal: '5%',
-    paddingVertical: '5%',
+    borderRadius: scale(10),
+    paddingHorizontal: scale(20),
+    paddingVertical: scale(20),
   },
   type: {
-    fontSize: 12,
+    fontSize: scale(12),
   },
   address: {
-    fontSize: 15,
+    fontSize: scale(15),
     fontWeight: '700',
     color: colorTheme.black,
-    marginVertical: '3%',
+    marginVertical: scale(12),
   },
   drinks: {},
   left: {
     width: '60%',
   },
   imageDrink: {
-    height: 80,
+    height: scale(80),
   },
   right: {},
   price: {
-    fontSize: 16,
-    marginLeft: '20%',
+    fontSize: scale(16),
+    marginLeft: scale(20),
     color: colorTheme.black,
     fontWeight: '600',
   },
   reorderButton: {
     backgroundColor: colorTheme.grayBackground,
-    paddingVertical: '5%',
-    paddingHorizontal: '10%',
-    borderRadius: 25,
-    borderWidth: 2,
+    paddingVertical: scale(10),
+    paddingHorizontal: scale(40),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
-    bottom: '-30%',
+    bottom: scale(-60),
+    marginLeft: scale(-40),
   },
   reorderButtonText: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: colorTheme.greenBackground,
     fontWeight: 'bold',
   },
 });
+
 
 export default OrderScreen;

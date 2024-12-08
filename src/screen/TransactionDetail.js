@@ -1,8 +1,10 @@
-import React from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import {   Dimensions,FlatList, StyleSheet, Text, View } from "react-native";
 import { colorTheme, LoadingScreen, TopGoBack } from "../component/store";
 const TransactionDetail = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
+
+    
 
     const transaction = {
         store: 'Hikari Bình Dương',
@@ -60,10 +62,10 @@ const TransactionDetail = ({ navigation }) => {
                     <Text style={styles.title}>Total</Text>
                     <Text style={styles.totalAmount}>{transaction.total}</Text>
                 </View>
-                <View style={styles.row}>
+                {/* <View style={styles.row}>
                     <Text style={styles.text}>Payment</Text>
                     <Text style={styles.text}>{transaction.paymentMethod}</Text>
-                </View>
+                </View> */}
                 <View style={styles.row}>
                     <Text style={styles.text}>Star(s) earned</Text>
                     <Text style={styles.text}>{transaction.starsEarned}</Text>
@@ -72,6 +74,8 @@ const TransactionDetail = ({ navigation }) => {
         </View>
     );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
     container: {
@@ -79,39 +83,41 @@ const styles = StyleSheet.create({
         backgroundColor: colorTheme.white,
     },
     header: {
-        fontSize: 18,
+        fontSize: scale(18),
         fontWeight: 'bold',
-        marginBottom: "4%",
+        marginBottom: scale(20), 
         color: colorTheme.greenText,
     },
     block: {
-        marginBottom: "4%",
+        marginBottom: scale(10), 
         borderTopWidth: 1,
         borderTopColor: colorTheme.grayLine,
-        padding: "4%"
+        paddingHorizontal:scale(20),
+        paddingVertical: scale(15),
     },
     row: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginBottom: "3%"
+        marginBottom: scale(10), 
     },
     text: {
-        fontSize: 14,
+        fontSize: scale(14),
         color: '#666',
     },
     title: {
-        fontSize: 14,
+        fontSize: scale(14),
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: "4%",
+        marginBottom: scale(10), 
     },
     totalAmount: {
-        fontSize: 16,
+        fontSize: scale(16),
         color: colorTheme.black,
         fontWeight: 'bold',
     },
     list: {
-        marginBottom: "5%"
+        marginBottom: scale(10), 
     },
 });
+
 export default TransactionDetail;

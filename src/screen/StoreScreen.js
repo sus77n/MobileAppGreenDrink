@@ -5,7 +5,7 @@ import {
     View,
     ActivityIndicator,
     FlatList,
-    TouchableOpacity,
+    TouchableOpacity,  Dimensions,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { colorTheme, LoadingScreen } from "../component/store";
@@ -123,6 +123,8 @@ const StoreScreen = ({ navigation }) => {
         </View>
     );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
     container: {
@@ -133,16 +135,16 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
     },
     coverMap: {
-        height: "50%",
+        height: scale(height * 0.4), 
         width: "100%",
-        marginVertical: "4%",
+        marginVertical: scale(10), 
     },
     title: {
-        fontSize: 22,
+        fontSize: scale(20),
         fontWeight: "bold",
         color: "#4CAF50",
-        marginLeft: "5%",
-        marginTop: "5%",
+        marginLeft: scale(width * 0.05), 
+        marginTop: scale(10), 
     },
     loaderContainer: {
         flex: 1,
@@ -153,37 +155,39 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     locationCard: {
-        marginVertical: '3%',
+        marginVertical: scale(10), 
         backgroundColor: colorTheme.grayBackground,
-        borderRadius: 10,
-        paddingHorizontal: '5%',
-        paddingVertical: '5%',
+        borderRadius: scale(10),
+        paddingHorizontal: scale(15), 
+        paddingVertical: scale(10),
+        marginHorizontal: scale(10),
     },
     address: {
-        fontSize: 15,
-        fontWeight: '700',
+        fontSize: scale(15),
+        fontWeight: "700",
         color: colorTheme.greenText,
-        marginVertical: '3%',
+        marginVertical: scale(10), 
     },
     contactBtn: {
         backgroundColor: colorTheme.grayBackground,
-        paddingVertical: '4%',
-        paddingHorizontal: '5%',
-        borderRadius: 5,
-        borderWidth: 1,
+        paddingVertical: scale(10), 
+        paddingHorizontal: scale(20),
+        borderRadius: scale(5),
+        borderWidth: scale(1),
         borderColor: colorTheme.greenBackground,
-        alignItems: 'center',
+        alignItems: "center",
     },
     contactText: {
-        fontSize: 14,
+        fontSize: scale(14),
         color: colorTheme.greenBackground,
     },
     row: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingTop: "4%",
+        paddingTop: scale(height * 0.04), // Converts "4%" of height
     },
 });
+
 
 export default StoreScreen;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {  Dimensions, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { colorTheme, LoadingScreen, resetUserAfterChange, TopGoBack } from "../component/store";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -90,6 +90,8 @@ const ProfileDetail = ({ navigation, route }) => {
 
 
 }
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
     container: {
@@ -97,48 +99,50 @@ const styles = StyleSheet.create({
         backgroundColor: colorTheme.white,
     },
     wrapper: {
-        paddingHorizontal: "6%",
+        paddingHorizontal: scale(22), // 6% of 375px
     },
     label: {
-        fontSize: 12,
+        fontSize: scale(15),
         color: colorTheme.grayText,
-        marginTop: 8,
+        marginTop: scale(5),
+        fontWeight:"500"
     },
     textField: {
         borderBottomColor: colorTheme.grayLine,
         borderBottomWidth: 1,
-        paddingHorizontal: "2%",
-        fontSize: 16,
+        paddingHorizontal: scale(8), 
+        fontSize: scale(16),
         fontWeight: "500",
-        marginBottom: "3%",
-        marginTop: "-2%",
+        marginBottom: scale(12), 
+        marginTop: scale(0), 
     },
     text: {
         color: colorTheme.black,
         fontWeight: "500",
-        fontSize: 16,
+        fontSize: scale(16),
     },
     dateInput: {
         borderBottomWidth: 1,
         borderBlockColor: colorTheme.grayLine,
-        paddingHorizontal: "2%",
-        paddingVertical: "2%",
+        paddingHorizontal: scale(8), 
+        paddingVertical: scale(8), 
         flexDirection: "row",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
     },
     title: {
         color: colorTheme.greenText,
-        marginTop: "6%",
-        fontSize: 16,
+        marginTop: scale(12),
+        fontSize: scale(16),
+        fontWeight: "700",
     },
     saveBtn: {
-        width: "60%",
         borderWidth: 2,
-        borderRadius: 20,
+        borderRadius: scale(50),
         borderColor: colorTheme.greenBackground,
-        marginHorizontal: "auto",
-        paddingVertical: '2%',
-        marginTop: "5%"
+        alignSelf: 'center', 
+        paddingVertical: scale(15), 
+        width: scale(200),
+        marginTop: scale(20), 
     },
     saveTextbtn: {
         color: colorTheme.greenBackground,
@@ -146,6 +150,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "500",
     },
-})
+});
+
 
 export default ProfileDetail;

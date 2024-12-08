@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View,  Dimensions,
 } from 'react-native';
 import { colorTheme, LoadingScreen, PayInStoreTop, resetUserAfterChange } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -86,9 +86,8 @@ const ReviewOrder = ({ navigation, route }) => {
         <View style={styles.itemContainer}>
           <View style={styles.infoContainer}>
             <Text style={styles.itemName}>
-              {drink.name}
+              {drink.name} - {drink.custom.size}
             </Text>
-            <Text style={styles.itemDetails}>Drink size: {drink.custom.size}</Text>
             <Text style={styles.itemDetails}>Sweetness: {drink.custom.sweetness}</Text>
           </View>
           <Text style={styles.itemPrice}>đ{drink.price.toLocaleString()}</Text>
@@ -227,6 +226,8 @@ const ReviewOrder = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   container: {
@@ -237,59 +238,60 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.grayBackground,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    margin: 15,
-    borderRadius: 15,
+    paddingHorizontal: scale(20),
+    paddingVertical: scale(20),
+    margin: scale(15),
+    marginBottom: scale(0),
+    borderRadius: scale(15),
   },
   title: {
-    fontSize: 17,
-    marginBottom: 10,
+    fontSize: scale(17),
+    marginBottom: scale(10),
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: scale(20),
     color: colorTheme.black,
     fontWeight: '600',
   },
   iconArrow: {
     marginTop: 'auto',
     marginBottom: 'auto',
-    marginRight: 20,
+    marginRight: scale(20),
   },
   itemSection: {
     backgroundColor: '#fff',
-    padding: 20,
+    padding: scale(20),
   },
   header: {
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: scale(15),
     color: colorTheme.black,
   },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: scale(10),
   },
   infoContainer: {
     flex: 1,
   },
   itemName: {
-    fontSize: 14,
+    fontSize: scale(14),
     fontWeight: 'bold',
     color: '#333',
   },
   itemDetails: {
-    fontSize: 12,
+    fontSize: scale(12),
     color: '#666',
-    marginVertical: 5,
+    marginVertical: scale(5),
   },
   itemPrice: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: '#333',
   },
   totalPrice: {
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'right',
@@ -298,64 +300,65 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginLeft: 35,
-    marginBottom: 15,
+    marginLeft: scale(35),
+    marginBottom: scale(15),
   },
   quantity: {
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: 'bold',
-    marginHorizontal: 10,
+    marginHorizontal: scale(10),
   },
   divider: {
-    height: 1,
+    height: scale(1),
     backgroundColor: '#ddd',
-    marginVertical: 15,
+    marginVertical: scale(15),
   },
   totalContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   orderTotalLabel: {
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: 'bold',
   },
   orderTotalValue: {
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: 'bold',
     color: '#333',
   },
   reorderButton: {
     backgroundColor: colorTheme.white,
-    paddingVertical: 7,
-    width: 80,
-    borderRadius: 25,
-    borderWidth: 1,
+    paddingVertical: scale(7),
+    width: scale(80),
+    borderRadius: scale(25),
+    borderWidth: scale(1),
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
     alignSelf: 'flex-end',
-    marginRight: 20,
+    marginRight: scale(20),
   },
   reorderButtonText: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: colorTheme.greenBackground,
     fontWeight: 'bold',
   },
   cardButton: {
     position: 'absolute',
-    width: 170,
+    width: scale(170),
     backgroundColor: '#7ec479',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    bottom: 10,
-    right: 20,
+    paddingVertical: scale(15),
+    paddingHorizontal: scale(20),
+    borderRadius: scale(25),
+    bottom: scale(10),
+    right: scale(20),
   },
   cardButtonText: {
-    fontSize: 16,
+    fontSize: scale(16),
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },
 });
+
 
 export default ReviewOrder;

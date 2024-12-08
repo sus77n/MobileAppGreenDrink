@@ -21,16 +21,9 @@ const ManageTransaction = ({navigation}) => {
             .collection('drinks')
             .get();
   
-          // Convert drinks subcollection to an array
-          const drinks = drinksSnapshot.docs.map(drinkDoc => ({
-            id: drinkDoc.id,
-            ...drinkDoc.data(),
-          }));
-  
           return {
             id: documentSnapshot.id,
             ...transactionData, 
-            drinks,
             amount: `₫${transactionData.price?.toLocaleString()}`,
             priceBeforePromotion: `₫${transactionData.priceBeforePromotion?.toLocaleString()}`,
             date: new Date(transactionData.createdAt.toDate()),

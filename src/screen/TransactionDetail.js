@@ -1,49 +1,42 @@
-import React, { useState } from "react";
-import {   Dimensions,FlatList, StyleSheet, Text, View } from "react-native";
-import { colorTheme, LoadingScreen, TopGoBack } from "../component/store";
-const TransactionDetail = ({ navigation }) => {
-    const [loading, setLoading] = useState(false);
-
-    
-
-    const transaction = {
-        store: 'Hikari Bình Dương',
-        date: '03/11/2024 09:19:19',
-        transactionId: '00000001',
-        items: [
-            { id: '1', name: '1x Aaaaaaaaaaaaaaaaaaa bbbbbb', amount: '₫100,000' },
-        ],
-        total: '₫100,000',
-        paymentMethod: 'Cash',
-        starsEarned: 5,
-    };
-
+import React, { useEffect, useState } from "react";
+import { Dimensions,FlatList, StyleSheet, Text, View } from "react-native";
+import { colorTheme, TopGoBack } from "../component/store";
+import { getFirestore } from "@react-native-firebase/firestore";
+const TransactionDetail = ({ navigation, route }) => {
+    const {transaction, user} = route.params
     const renderItem = ({ item }) => (
         <View style={styles.row}>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemAmount}>{item.amount}</Text>
+            <View>
+            <Text style={styles.itemName}>{item.quantity} x {item.name} - {item.custom.size}</Text>
+            <Text style={{marginLeft: 22,}}>{item.custom.sweetness}</Text>
+            </View>
+            <Text style={styles.itemAmount}>{item.price}</Text>
         </View>
     );
 
     return (
         <View style={styles.container}>
-            <LoadingScreen visible={loading} />
             <TopGoBack text={"Transaction Details"} navigation={navigation} />
 
             <View style={styles.block}>
-                <Text style={styles.header}>Order & Pick-up Purchase</Text>
+                <Text style={styles.header}>{transaction.type}</Text>
+                <View style={styles.row}>
+                    <Text style={styles.text}>Transaction ID</Text>
+                    <Text style={styles.text}>{transaction.transID}</Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={styles.text}>Customer name:</Text>
+                    <Text style={styles.text}>{user.username}</Text>
+                </View>
                 <View style={styles.row}>
                     <Text style={styles.text}>Store</Text>
-                    <Text style={styles.text}>{transaction.store}</Text>
+                    <Text style={styles.text}></Text>
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.text}>Date & time</Text>
-                    <Text style={styles.text}>{transaction.date}</Text>
+                    <Text style={styles.text}>{transaction.date.toLocaleString()}</Text>
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.text}>Transaction ID</Text>
-                    <Text style={styles.text}>{transaction.transactionId}</Text>
-                </View>
+                
             </View>
 
             {/* Items List */}
@@ -51,24 +44,20 @@ const TransactionDetail = ({ navigation }) => {
                 <Text style={styles.title}>Item(s)</Text>
                 <FlatList
                     style={styles.list}
-                    data={transaction.items}
+                    data={transaction.drinks}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.name}
                 />
             </View>
 
             <View style={styles.block}>
+            <View style={styles.row}>
+                    <Text style={styles.text}>Price before promotion</Text>
+                    <Text style={styles.text}>{transaction.priceBeforePromotion}</Text>
+                </View>
                 <View style={styles.row}>
                     <Text style={styles.title}>Total</Text>
-                    <Text style={styles.totalAmount}>{transaction.total}</Text>
-                </View>
-                {/* <View style={styles.row}>
-                    <Text style={styles.text}>Payment</Text>
-                    <Text style={styles.text}>{transaction.paymentMethod}</Text>
-                </View> */}
-                <View style={styles.row}>
-                    <Text style={styles.text}>Star(s) earned</Text>
-                    <Text style={styles.text}>{transaction.starsEarned}</Text>
+                    <Text style={styles.totalAmount}>{transaction.amount}</Text>
                 </View>
             </View>
         </View>
@@ -83,17 +72,16 @@ const styles = StyleSheet.create({
         backgroundColor: colorTheme.white,
     },
     header: {
-        fontSize: scale(18),
+        fontSize: scale(18), 
         fontWeight: 'bold',
-        marginBottom: scale(20), 
+        marginBottom: scale(18),
         color: colorTheme.greenText,
     },
     block: {
         marginBottom: scale(10), 
         borderTopWidth: 1,
         borderTopColor: colorTheme.grayLine,
-        paddingHorizontal:scale(20),
-        paddingVertical: scale(15),
+        padding: scale(20), 
     },
     row: {
         flexDirection: "row",
@@ -101,22 +89,22 @@ const styles = StyleSheet.create({
         marginBottom: scale(10), 
     },
     text: {
-        fontSize: scale(14),
+        fontSize: scale(14), 
         color: '#666',
     },
     title: {
-        fontSize: scale(14),
+        fontSize: scale(14), 
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: scale(10), 
+        marginBottom: scale(15), 
     },
     totalAmount: {
-        fontSize: scale(16),
+        fontSize: scale(16), 
         color: colorTheme.black,
         fontWeight: 'bold',
     },
     list: {
-        marginBottom: scale(10), 
+        marginBottom: scale(10),
     },
 });
 

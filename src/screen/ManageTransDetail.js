@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
-import {Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Dimensions,FlatList, StyleSheet, Text, View } from "react-native";
 import { colorTheme, TopGoBack } from "../component/store";
+import { getFirestore } from "@react-native-firebase/firestore";
 const ManageTransDetail = ({ navigation, route }) => {
     const {transaction} = route.params
+    const [user, setUser] = useState({})
    
     const renderItem = ({ item }) => (
         <View style={styles.row}>
@@ -14,9 +16,25 @@ const ManageTransDetail = ({ navigation, route }) => {
         </View>
     );
 
-    useEffect(() =>{
-        ;
-    },[])
+    useEffect(() => {
+      const fetchCustomer = async () => {
+        try {
+          const documentSnapshot = await getFirestore()
+            .collection('customers')
+            .doc(transaction.customerID)
+            .get();
+          if (documentSnapshot.exists) {
+            const data = documentSnapshot.data();
+            setUser(data);
+          } else {
+            console.log('No such document!');
+          }
+        } catch {
+          console.error('Error fetching user data:', error);
+        }
+      };
+      fetchCustomer()
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -27,6 +45,10 @@ const ManageTransDetail = ({ navigation, route }) => {
                 <View style={styles.row}>
                     <Text style={styles.text}>Transaction ID</Text>
                     <Text style={styles.text}>{transaction.transID}</Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={styles.text}>Customer name:</Text>
+                    <Text style={styles.text}>{user.username}</Text>
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.text}>Store</Text>
@@ -59,118 +81,53 @@ const ManageTransDetail = ({ navigation, route }) => {
                     <Text style={styles.title}>Total</Text>
                     <Text style={styles.totalAmount}>{transaction.amount}</Text>
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.text}>Payment</Text>
-                    <Text style={styles.text}>{transaction.paymentMethod}</Text>
-                </View>
             </View>
         </View>
     );
 };
-
 const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colorTheme.grayBackground,
-  },
-
-  cardSection: {
-    backgroundColor: colorTheme.darkGrayBackground,
-    paddingVertical: scale(15),  // Scaled padding
-    margin: scale(17),          // Scaled margin
-    borderRadius: scale(10),    // Scaled border radius
-  },
-  cardTitleWrap: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    paddingBottom: scale(15),   // Scaled padding bottom
-    paddingLeft: scale(20),     // Scaled padding left
-    borderColor: colorTheme.grayLine,
-  },
-  cardTitle: {
-    color: colorTheme.orangeText,
-    fontWeight: '700',
-    fontSize: scale(20),        // Scaled font size
-  },
-  iconMember: {},
-
-  cardMain: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: scale(10),         // Scaled padding
-  },
-
-  rewards: {
-    paddingLeft: scale(20),     // Scaled padding left
-  },
-
-  subTitle: {
-    color: colorTheme.grayText,
-    fontSize: scale(16),        // Scaled font size
-    paddingBottom: scale(7),    // Scaled padding bottom
-  },
-
-  rewardWrap: {
-    flexDirection: 'row',
-  },
-
-  amountReward: {
-    color: colorTheme.white,
-    fontSize: scale(25),        // Scaled font size
-  },
-
-  twenty: {
-    color: colorTheme.orangeText,
-    fontSize: scale(20),        // Scaled font size
-    fontWeight: '700',
-  },
-
-  star: {
-    marginRight: scale(20),     // Scaled margin right
-  },
-
-  amountStars: {
-    color: colorTheme.orangeText,
-    fontSize: scale(25),        // Scaled font size
-    fontWeight: '700',
-  },
-  
-  bar: {
-    marginLeft: scale(30),      // Scaled margin left
-  },
-
-  note: {
-    color: colorTheme.grayText,
-    fontSize: scale(12),        // Scaled font size
-    marginLeft: scale(30),      // Scaled margin left
-    marginTop: scale(10),       // Scaled margin top
-  },
-
-  membership: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: scale(20),// Scaled margin horizontal
-  },
-  membershipDetailWrap: {
-    width: scale(180),          // Scaled width
-    borderWidth: 1,
-    borderRadius: scale(20),    // Scaled border radius
-    paddingHorizontal: scale(20), // Scaled padding horizontal
-  },
-  membershipTitle: {
-    fontSize: scale(17),        // Scaled font size
-    fontWeight: '500',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  membershipContent: {
-    color: colorTheme.black,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: colorTheme.white,
+    },
+    header: {
+        fontSize: scale(18), 
+        fontWeight: 'bold',
+        marginBottom: scale(18),
+        color: colorTheme.greenText,
+    },
+    block: {
+        marginBottom: scale(10), 
+        borderTopWidth: 1,
+        borderTopColor: colorTheme.grayLine,
+        padding: scale(20), 
+    },
+    row: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: scale(10), 
+    },
+    text: {
+        fontSize: scale(14), 
+        color: '#666',
+    },
+    title: {
+        fontSize: scale(14), 
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: scale(15), 
+    },
+    totalAmount: {
+        fontSize: scale(16), 
+        color: colorTheme.black,
+        fontWeight: 'bold',
+    },
+    list: {
+        marginBottom: scale(10),
+    },
 });
 
 export default ManageTransDetail;

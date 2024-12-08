@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     headerSection: {
         fontWeight: "bold",
         fontSize: scale(18),
-        color: "#000",
+        color: colorTheme.grayText,
     },
     bodySection: {
         paddingHorizontal: scale(20),
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     rowText: {
         fontSize: scale(16),
         fontWeight: "500",
-        color: "#000",
+        color: colorTheme.black,
     },
     logOutBtn: {
         width: scale(200), 

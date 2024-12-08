@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -9,90 +9,89 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, getUser, TopGoBack} from '../component/store';
+import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import firestore, {getFirestore} from '@react-native-firebase/firestore';
+import firestore, { getFirestore } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const OrderPickUp = ({navigation, route}) => {
-  const {user} = route.params
+const OrderPickUp = ({ navigation, route }) => {
+  const { user } = route.params
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [seasonalDrink, setSeasonalDrink] = useState([]);
 
-  //fetch order
   const [order, setOrder] = useState('');
-  const[keyOrder, setKeyOrder] = useState('');
+  const [keyOrder, setKeyOrder] = useState('');
   const [listOrder, setListOrder] = useState([]);
   const [total, setTotal] = useState(0);
 
   const calculateTotal = async drinks => {
+    setLoading(true)
     let newTotal = 0;
 
-    // Fetch the base price for each drink
-    const drinkKeys = Object.keys(drinks); // Assuming `drinks` is an object with drink keys
+    const drinkKeys = Object.keys(drinks);
     for (const i of drinkKeys) {
       const drinkData = drinks[i];
-      const {key, custom, quantity} = drinkData;
+      const { key, custom, quantity } = drinkData;
 
       try {
-        // Fetch the drink document from Firestore
         const drinkSnapshot = await firestore()
           .collection('drinks')
           .doc(key)
           .get();
         if (drinkSnapshot.exists) {
           const drinkInfo = drinkSnapshot.data();
-          const basePrice = drinkInfo.price || 0; // Fallback to 0 if price isn't available
+          const basePrice = drinkInfo.price || 0;
 
-          // Add to total
           newTotal += basePrice * quantity;
         }
       } catch (error) {
         console.error(`Error fetching drink data for ${drinkId}:`, error);
+      } finally {
+        setLoading(false)
       }
     }
-
-    // Update the total state
     setTotal(newTotal);
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      console.log('User Pickup:', user);
+  const fetchUser = async () => {
+    setLoading(true);
+    console.log('User Pickup:', user);
 
-      try {
-        const documentSnapshot = await firestore()
-          .collection('orders')
-          .doc(user.orderKey)
-          .get();
+    try {
+      const documentSnapshot = await firestore()
+        .collection('orders')
+        .doc(user.orderKey)
+        .get();
 
-        if (documentSnapshot.exists) {
-          const data = documentSnapshot.data();
-          console.log('Order Data:', data);
-          setOrder(data);
-          setKeyOrder(user.orderKey)
+      if (documentSnapshot.exists) {
+        const data = documentSnapshot.data();
+        console.log('Order Data:', data);
+        setOrder(data);
+        setKeyOrder(user.orderKey)
 
-          if (data.drinks) {
-            console.log('Drinks:', data.drinks);
-            setListOrder(data.drinks);
+        if (data.drinks) {
+          console.log('Drinks:', data.drinks);
+          setListOrder(data.drinks);
 
-            // Calculate total for the current drinks
-            await calculateTotal(data.drinks);
-          } else {
-            console.log('Drinks field is undefined or does not exist.');
-          }
+          await calculateTotal(data.drinks);
         } else {
-          console.log('No such document!');
+          console.log('Drinks field is undefined or does not exist.');
         }
-      } catch (error) {
-        console.error('Error fetching order data:', error);
+      } else {
+        console.log('No such document!');
       }
-    };
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      console.error('Error fetching order data:', error);
+    }
+  };
 
-    fetchUser();
+  useEffect(() => {
+    const loadScreen = navigation.addListener("focus", () => fetchUser());
+    return () => loadScreen();
   }, []);
 
-  // Listen for changes to listOrder and recalculate total
   useEffect(() => {
     if (listOrder) {
       calculateTotal(listOrder);
@@ -116,17 +115,19 @@ const OrderPickUp = ({navigation, route}) => {
         setLoading(false);
       });
 
-    // Unsubscribe from events when no longer in use
-    return () => subscriber();
+    return () => {
+      setLoading(true);
+      subscriber()
+    };
   }, []);
 
-  const renderCategories = ({item: cate}) => {
+  const renderCategories = ({ item: cate }) => {
     return (
       <TouchableOpacity
-        style={[styles.drinkTag, {marginBottom: 10}]}
-        onPress={() => navigation.navigate('TypeDrink', {cate, user, order, total, keyOrder})}>
+        style={[styles.drinkTag, { marginBottom: 10 }]}
+        onPress={() => navigation.navigate('TypeDrink', { cate, user, order, total, keyOrder })}>
         <View style={styles.imageWrapTag}>
-          <Image source={{uri: cate.img}} style={styles.img} />
+          <Image source={{ uri: cate.img }} style={styles.img} />
         </View>
         <View style={styles.nameWrapTag}>
           <Text style={styles.nameTag}>{cate.name}</Text>
@@ -153,16 +154,19 @@ const OrderPickUp = ({navigation, route}) => {
         setLoading(false);
       });
 
-    // Unsubscribe from events when no longer in use
-    return () => subscriber();
+    return () => {
+      setLoading(true)
+      subscriber()
+    };
   }, []);
-  const renderDrink = ({item: drink, index}) => {
+
+  const renderDrink = ({ item: drink, index }) => {
     return (
       <TouchableOpacity
         style={styles.drinkRow}
-        onPress={() => navigation.navigate('ProductDetail', {drink})}>
+        onPress={() => navigation.navigate('ProductDetail', { drink })}>
         <View style={styles.imageWrap}>
-          <Image source={{uri: drink.img}} style={styles.img} />
+          <Image source={{ uri: drink.img }} style={styles.img} />
         </View>
         <View
           style={[
@@ -180,7 +184,7 @@ const OrderPickUp = ({navigation, route}) => {
               name="heart-o"
               color={colorTheme.greenText}
               size={20}
-              style={{marginRight: '8%'}}
+              style={{ marginRight: '8%' }}
             />
           </TouchableOpacity>
         </View>
@@ -190,6 +194,7 @@ const OrderPickUp = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LoadingScreen visible={loading} />
       <TopGoBack navigation={navigation} text={'Order & Pick-up'} />
       <View style={styles.searchSection}></View>
       <View style={styles.main}>
@@ -215,7 +220,7 @@ const OrderPickUp = ({navigation, route}) => {
         onPress={() => {
           console.log('Order before navigation:', order);
           if (order) {
-            navigation.navigate('ReviewOrder', {order, total, user,});
+            navigation.navigate('ReviewOrder', { order, total, user, });
           } else {
             console.warn('Order is not ready yet!');
           }
@@ -300,7 +305,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: '2%',
     width: '48%',
-    marginHorizontal: '1%', 
+    marginHorizontal: '1%',
   },
   imageWrapTag: {
     zIndex: 1,

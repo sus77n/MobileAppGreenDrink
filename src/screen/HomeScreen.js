@@ -20,109 +20,114 @@ const HomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   const fetchUser = async () => {
+    setLoading(true)
     const userData = await getUser(); // Await the result of getUser
     setUser(userData); // Update the state with the resolved user
     console.log('User home screen:', userData);
+    setLoading(false)
   };
 
   useEffect(() => {
-    const loadScreen = navigation.addListener("focus", () =>  {fetchUser()});
-    return () => loadScreen();
+    const loadScreen = navigation.addListener("focus", () => { fetchUser() });
+    return () => {
+      loadScreen()
+    };
   }, []);
-  
+
   if (user === null) {
     return (
       <LoadingScreen visible={loading} />
     )
   } else {
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        {/* Greeting Section */}
-        <View style={styles.greetingSection}>
-          <Text style={styles.greetingText}>Good morning, {user.formOfAddress}.{user.username}! 🌞</Text>
-          <TouchableOpacity>
-            <Text style={styles.mailIcon}>📩</Text>
-          </TouchableOpacity>
-        </View>
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          {/* Greeting Section */}
+          <View style={styles.greetingSection}>
+            <Text style={styles.greetingText}>Good morning, {user.formOfAddress}.{user.username}! 🌞</Text>
+            <TouchableOpacity>
+              <Text style={styles.mailIcon}>📩</Text>
+            </TouchableOpacity>
+          </View>
 
-        {/* Balance and Stars Section */}
-        <View style={styles.balanceStarsSection}>
-          <View style={styles.balanceCardWrapper}>
-            <View style={styles.balanceCard}>
-              <Text style={styles.balanceTitle}>BALANCE</Text>
-              <Text style={styles.balanceAmount}>đ{user.balance}</Text>
-              <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>Add money</Text>
+          {/* Balance and Stars Section */}
+          <View style={styles.balanceStarsSection}>
+            <View style={styles.balanceCardWrapper}>
+              <View style={styles.balanceCard}>
+                <Text style={styles.balanceTitle}>BALANCE</Text>
+                <Text style={styles.balanceAmount}>đ{user.balance}</Text>
+                <TouchableOpacity style={styles.addButton}>
+                  <Text style={styles.addButtonText}>Add money</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('Card')}>
+                <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
               </TouchableOpacity>
             </View>
+
+            <View style={styles.starsCardWrapper}>
+              <View style={styles.starsCard}>
+                <Text style={styles.starsTitle}>STARS</Text>
+                <Text style={styles.starsAmount}>{user.stars}</Text>
+                <Text style={styles.starsSubtitle}>
+                  {20 - user.stars} star(s) until next reward
+                </Text>
+              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('MembershipDetail')}>
+                <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Vouchers Section */}
+          <View style={styles.voucherSection}>
+            <Image
+              style={styles.iconGift}
+              source={require('../../assets/img/iconGift.png')}
+              resizeMode='contain'
+            />
+            <Text style={styles.voucherText}>
+              You have 1 available voucher(s)
+            </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Card')}>
               <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.starsCardWrapper}>
-            <View style={styles.starsCard}>
-              <Text style={styles.starsTitle}>STARS</Text>
-              <Text style={styles.starsAmount}>{user.stars}</Text>
-              <Text style={styles.starsSubtitle}>
-              {20 - user.stars} star(s) until next reward
-              </Text>
-            </View>
-            <TouchableOpacity onPress={() => navigation.navigate('MembershipDetail')}> 
-              <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
+          {/* Order Again Section */}
+          <View style={styles.orderAgainSection}>
+            <Text style={styles.orderAgainTitle}>ORDER AGAIN?</Text>
+            <Text style={styles.orderAgainDetails} numberOfLines={1} ellipsizeMode='tail'>
+              2 Item(s) | x1 Green Tea Cream Frappuccino L, x1 Americano Cold M
+            </Text>
+            <TouchableOpacity style={styles.reorderButton} onPress={() => navigation.navigate('ReviewOrderScreen')}>
+              <Text style={styles.reorderButtonText}>Reorder</Text>
             </TouchableOpacity>
           </View>
-        </View>
 
-        {/* Vouchers Section */}
-        <View style={styles.voucherSection}>
-          <Image
-            style={styles.iconGift}
-            source={require('../../assets/img/iconGift.png')}
-            resizeMode='contain'
-          />
-          <Text style={styles.voucherText}>
-            You have 1 available voucher(s)
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Card')}>
-            <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
+          {/* Suggested Drinks Section */}
+          <TouchableOpacity style={styles.drinksSection} onPress={() => navigation.navigate('NewsScreen')}>
+            <View style={styles.drinkCard}>
+              <Image
+
+                source={{ uri: 'https://drive.usercontent.google.com/download?id=1m4CPS1rwv1rDRXYvxPQLInG5e3bH69XG&export=view&authuser=0' }}
+                style={styles.drinkImage}
+              />
+              <Text style={styles.drinkTitle}>hh</Text>
+              <Text style={styles.drinkDescription}>
+                Bursting with the tang of freshly squeezed lemons, paired with a
+                fizzing soda base.
+              </Text>
+            </View>
           </TouchableOpacity>
-        </View>
-
-        {/* Order Again Section */}
-        <View style={styles.orderAgainSection}>
-          <Text style={styles.orderAgainTitle}>ORDER AGAIN?</Text>
-          <Text style={styles.orderAgainDetails} numberOfLines={1} ellipsizeMode='tail'>
-            2 Item(s) | x1 Green Tea Cream Frappuccino L, x1 Americano Cold M
-          </Text>
-          <TouchableOpacity style={styles.reorderButton}  onPress={() => navigation.navigate('ReviewOrderScreen')}>
-            <Text style={styles.reorderButtonText}>Reorder</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Suggested Drinks Section */}
-        <TouchableOpacity style={styles.drinksSection} onPress={() => navigation.navigate('NewsScreen')}>
-          <View style={styles.drinkCard}>
-            <Image
-
-              source={{uri: 'https://drive.usercontent.google.com/download?id=1m4CPS1rwv1rDRXYvxPQLInG5e3bH69XG&export=view&authuser=0'}}
-              style={styles.drinkImage}
-            />
-            <Text style={styles.drinkTitle}>hh</Text>
-            <Text style={styles.drinkDescription}>
-              Bursting with the tang of freshly squeezed lemons, paired with a
-              fizzing soda base.
-            </Text>
-          </View>
-        </TouchableOpacity>
-        {/* Card Section */}
-      </ScrollView>
-      <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
+          {/* Card Section */}
+        </ScrollView>
+        <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
           <Text style={styles.cardButtonText}>₫{user.balance} on card</Text>
         </TouchableOpacity>
-    </SafeAreaView>
-  );}
+      </SafeAreaView>
+    );
+  }
 };
 
 const styles = StyleSheet.create({

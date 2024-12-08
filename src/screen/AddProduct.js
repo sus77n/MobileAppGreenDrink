@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {   Dimensions, Alert, Button, Image, SafeAreaView, TextInput, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { Dimensions, Alert, Button, Image, SafeAreaView, TextInput, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Import Picker
 import firestore from '@react-native-firebase/firestore';
-import { colorTheme, TopGoBack } from '../component/store';  // Assuming colorTheme is available from your existing code
+import { colorTheme, LoadingScreen, TopGoBack } from '../component/store';  // Assuming colorTheme is available from your existing code
 
 const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
@@ -54,33 +54,36 @@ const AddProduct = ({ navigation }) => {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch categories from Firestore when component mounts
   useEffect(() => {
     const subscriber = firestore()
       .collection('categories')
       .onSnapshot(querySnapshot => {
+        setLoading(true)
         const categoriesList = [];
         querySnapshot.forEach(documentSnapshot => {
           categoriesList.push({
-            label: documentSnapshot.data().name, // Assuming 'name' is the category name
+            label: documentSnapshot.data().name,
             value: documentSnapshot.data().name,
           });
         });
         setCategories(categoriesList);
+        setLoading(false)
       });
 
-    // Unsubscribe on component unmount
-    return () => subscriber();
+    return () => {
+      subscriber()
+    };
   }, []);
 
   const handleSubmit = () => {
+    setLoading(true);
     if (!name || !price || !img || !description || !category) {
       Alert.alert('Error', 'Please fill in all the fields');
       return;
     }
 
-    // Add product to Firestore
     firestore()
       .collection('drinks')
       .add({
@@ -91,10 +94,12 @@ const AddProduct = ({ navigation }) => {
         category,
       })
       .then(() => {
+        setLoading(false);
         Alert.alert('Success', 'Product added successfully');
         navigation.goBack();  // Navigate back after submitting
       })
       .catch((error) => {
+        setLoading(false);
         Alert.alert('Error', 'Something went wrong. Please try again.');
         console.error('Error adding product:', error);
       });
@@ -102,7 +107,8 @@ const AddProduct = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <TopGoBack navigation={navigation} text={'Add new drink'}/>
+      <LoadingScreen visible={loading} />
+      <TopGoBack navigation={navigation} text={'Add new drink'} />
       <TextInput
         style={styles.input}
         placeholder="Product Name"

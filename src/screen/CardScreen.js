@@ -7,20 +7,28 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, getTimeNow, getUser, PayInStoreTop} from '../component/store';
-const CardScreen = ({navigation, route}) => {
+import { colorTheme, getTimeNow, getUser, LoadingScreen, PayInStoreTop } from '../component/store';
+const CardScreen = ({ navigation, route }) => {
   const [user, setUser] = useState({});
-  
+  const [loading, setLoading] = useState(false);
+
+  const fetchUser = async () => {
+    const userData = await getUser();
+    setUser(userData);                
+    setLoading(false)
+  };
   useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUser(); 
-      setUser(userData); 
+    const loadScreen = navigation.addListener("focus", () => { fetchUser() });
+    return () => {
+      setLoading(true)
+      fetchUser()
     };
-    fetchUser();
   }, []);
+
   return (
     <SafeAreaView style={styles.container}>
-      <PayInStoreTop navigation={navigation} text={'Pay In Store'}/>
+      <LoadingScreen visible={loading} />
+      <PayInStoreTop navigation={navigation} text={'Pay In Store'} />
       <View style={styles.card}>
         <Image
           source={require('../../assets/img/goldCard.png')}
@@ -36,16 +44,16 @@ const CardScreen = ({navigation, route}) => {
         <Text style={styles.addButtonText}>Add money</Text>
       </TouchableOpacity>
       <View style={styles.voucherSection}>
-          <Text style={styles.voucherTitle}>VOUCHERS</Text>
-          <View style={styles.voucherMain}>
-            <View style={styles.voucherCard}>
-              <Image source={require('../../assets/img/voucherIcon.png')} style={styles.voucherIcon}/>
-              <View style={styles.cardTitleWrap}>
-                <Text style={styles.cardTitle}>Discount on 20% on Teacher Day</Text>
-                <Text style={styles.cardSubtitle}>Expires on 20/11/2024</Text>
-              </View>
+        <Text style={styles.voucherTitle}>VOUCHERS</Text>
+        <View style={styles.voucherMain}>
+          <View style={styles.voucherCard}>
+            <Image source={require('../../assets/img/voucherIcon.png')} style={styles.voucherIcon} />
+            <View style={styles.cardTitleWrap}>
+              <Text style={styles.cardTitle}>Discount on 20% on Teacher Day</Text>
+              <Text style={styles.cardSubtitle}>Expires on 20/11/2024</Text>
             </View>
           </View>
+        </View>
       </View>
       <View style={styles.barCode}></View>
     </SafeAreaView>
@@ -59,8 +67,8 @@ const styles = StyleSheet.create({
   },
 
   voucherIcon: {
-    
-  } ,  
+
+  },
   card: {
     backgroundColor: colorTheme.greenBackground,
     marginRight: 15,
@@ -116,32 +124,32 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 10,
   },
-  voucherMain:{
+  voucherMain: {
     backgroundColor: colorTheme.orangeBackground,
     flexDirection: 'row',
     padding: 10,
-    borderRadius:10,
+    borderRadius: 10,
   },
-  voucherCard:{
+  voucherCard: {
     backgroundColor: colorTheme.white,
     padding: 5,
     borderRadius: 10,
     flexDirection: 'row',
     width: 240,
   },
-  voucherIcon:{
+  voucherIcon: {
     marginTop: 10,
     marginLeft: 5,
     marginRight: 10,
   },
-  cardTitleWrap:{
+  cardTitleWrap: {
     width: 150,
   },
-  cardTitle:{
+  cardTitle: {
     color: colorTheme.black,
     fontWeight: '600',
   },
-  cardSubtitle:{
+  cardSubtitle: {
     color: colorTheme.grayText,
   },
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dimensions,Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
-import { colorTheme } from '../component/store';
+import { colorTheme, LoadingScreen } from '../component/store';
 import firestore from '@react-native-firebase/firestore';
 
 const { width, height } = Dimensions.get('window');
@@ -76,12 +76,14 @@ const AddStore = ({ navigation, }) => {
     const [contact, setContact] = useState("");
     const [latitude, setLatitude] = useState();
     const [longitude, setLongitude] = useState();
+    const [loading, setLoading] = useState(false);
 
     const handlePreview = () => {
         console.log('Preview product:', { name, address, contact, latitude, longitude });
     };
 
     const handleSave = () => {
+        setLoading(true);
         if (!name || !address || !contact || !latitude || !longitude) {
             Alert.alert('Error', 'Please fill in all the fields');
             return;
@@ -104,10 +106,12 @@ const AddStore = ({ navigation, }) => {
                 longitude: parseFloat(longitude),
             })
             .then(() => {
+                setLoading(false)
                 Alert.alert('Success', 'Store saved successfully');
                 navigation.goBack();
             })
             .catch((error) => {
+                setLoading(false)
                 Alert.alert('Error', 'Something went wrong. Please try again.');
                 console.error('Error adding product:', error);
             });
@@ -123,6 +127,7 @@ const AddStore = ({ navigation, }) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <LoadingScreen visible={loading} />
             <TextInput
                 style={styles.input}
                 placeholder="Store Name"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { colorTheme } from '../component/store';  
+import { colorTheme, LoadingScreen } from '../component/store';
 import firestore from '@react-native-firebase/firestore';
 
 
@@ -71,13 +71,16 @@ const styles = StyleSheet.create({
 });
 
 const EditProduct = ({ navigation, route }) => {
-  const { drink } = route.params; 
+  const { drink } = route.params;
   const [name, setName] = useState(drink.name);
   const [price, setPrice] = useState(drink.price.toString());
   const [img, setImg] = useState(drink.img);
   const [description, setDescription] = useState(drink.description);
   const [category, setCategory] = useState(drink.category);
   const [categories, setCategories] = useState([]);
+  const [hasEdit, setHasEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const subscriber = firestore()
       .collection('categories')
@@ -85,28 +88,53 @@ const EditProduct = ({ navigation, route }) => {
         const categoriesList = [];
         querySnapshot.forEach(documentSnapshot => {
           categoriesList.push({
-            label: documentSnapshot.data().name, // Assuming 'name' is the category name
+            label: documentSnapshot.data().name,
             value: documentSnapshot.data().name,
           });
         });
         setCategories(categoriesList);
+        setLoading(false);
       });
 
-    return () => subscriber();
+    return () => {
+      setLoading(true)
+      subscriber()
+    };
   }, []);
+
+  useEffect(() => {
+    const original = {
+      name: name,
+      price: price,
+      img: img,
+      description: description,
+      category: category,
+    };
+
+    const current = { name, price, img, description, category };
+
+    const isEdited = Object.keys(original).some(
+      (key) => original[key] !== current[key]
+    );
+
+    setHasEdit(isEdited);
+  }, [name, price, img, description, category]);
+
   const handlePreview = () => {
     console.log('Preview product:', { name, price, img, description, category });
   };
+
   const handleSave = () => {
+    setLoading(true);
     if (!name || !price || !img || !description || !category) {
       Alert.alert('Error', 'Please fill in all the fields');
       return;
     }
-    const numericPrice = parseFloat(price); 
-  if (isNaN(numericPrice)) {
-    Alert.alert('Error', 'Please enter a valid price');
-    return;
-  }
+    const numericPrice = parseFloat(price);
+    if (isNaN(numericPrice)) {
+      Alert.alert('Error', 'Please enter a valid price');
+      return;
+    }
     firestore()
       .collection('drinks')
       .doc(drink.key)
@@ -118,24 +146,31 @@ const EditProduct = ({ navigation, route }) => {
         category,
       })
       .then(() => {
+        setLoading(false);
         Alert.alert('Success', 'Product updated successfully');
-        navigation.goBack(); 
+        navigation.goBack();
       })
       .catch((error) => {
+        setLoading(false);
         Alert.alert('Error', 'Something went wrong. Please try again.');
         console.error('Error updating product:', error);
       });
   };
 
   const handleCancel = () => {
-    Alert.alert('Cancel', 'Are you sure you want to discard changes?', [
-      { text: 'Yes', onPress: () => navigation.goBack() },
-      { text: 'No' },
-    ]);
+    if (hasEdit) {
+      Alert.alert('Cancel', 'Are you sure you want to discard changes?', [
+        { text: 'Yes', onPress: () => navigation.goBack() },
+        { text: 'No' },
+      ]);
+    } else {
+      navigation.goBack();
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      <LoadingScreen visible={loading} />
       <TextInput
         style={styles.input}
         placeholder="Product Name"
@@ -156,7 +191,7 @@ const EditProduct = ({ navigation, route }) => {
         onChangeText={setImg}
       />
       <TextInput
-        style={[styles.input, {height: 100}]}
+        style={[styles.input, { height: 100 }]}
         placeholder="Description"
         value={description}
         onChangeText={setDescription}

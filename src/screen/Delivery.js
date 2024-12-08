@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -9,15 +9,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colorTheme, TopGoBack} from '../component/store';
+import { colorTheme, LoadingScreen, TopGoBack } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
-const Delivery = ({navigation}) => {
+const Delivery = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [seasonalDrink, setSeasonalDrink] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
     const subscriber = firestore()
       .collection('categories')
       .onSnapshot(querySnapshot => {
@@ -38,13 +39,13 @@ const Delivery = ({navigation}) => {
     return () => subscriber();
   }, []);
 
-  const renderCategories = ({item: cate}) => {
+  const renderCategories = ({ item: cate }) => {
     return (
       <TouchableOpacity
-        style={[styles.drinkTag, {marginBottom: 10}]}
-        onPress={() => navigation.navigate('TypeDrink', {cate})}>
+        style={[styles.drinkTag, { marginBottom: 10 }]}
+        onPress={() => navigation.navigate('TypeDrink', { cate })}>
         <View style={styles.imageWrapTag}>
-          <Image source={{uri: cate.img}} style={styles.img} />
+          <Image source={{ uri: cate.img }} style={styles.img} />
         </View>
         <View style={styles.nameWrapTag}>
           <Text style={styles.nameTag}>{cate.name}</Text>
@@ -54,6 +55,7 @@ const Delivery = ({navigation}) => {
   };
 
   useEffect(() => {
+    setLoading(true)
     const subscriber = firestore()
       .collection('drinks')
       .onSnapshot(querySnapshot => {
@@ -74,15 +76,15 @@ const Delivery = ({navigation}) => {
     // Unsubscribe from events when no longer in use
     return () => subscriber();
   }, []);
-  const renderDrink = ({item: drink, index}) => {
+  const renderDrink = ({ item: drink, index }) => {
     return (
       <TouchableOpacity
         style={styles.drinkRow}
         onPress={() =>
-          navigation.navigate('ProductDetail', {drink})
+          navigation.navigate('ProductDetail', { drink })
         }>
         <View style={styles.imageWrap}>
-          <Image source={{uri: drink.img}} style={styles.img} />
+          <Image source={{ uri: drink.img }} style={styles.img} />
         </View>
         <View
           style={[
@@ -100,7 +102,7 @@ const Delivery = ({navigation}) => {
               name="heart-o"
               color={colorTheme.greenText}
               size={20}
-              style={{marginRight: '8%'}}
+              style={{ marginRight: '8%' }}
             />
           </TouchableOpacity>
         </View>
@@ -110,6 +112,7 @@ const Delivery = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LoadingScreen visible={loading} />
       <TopGoBack navigation={navigation} text={'Order & Pick-up'} />
       <View style={styles.searchSection}></View>
       <View style={styles.main}>
@@ -118,7 +121,7 @@ const Delivery = ({navigation}) => {
           <FlatList
             data={seasonalDrink}
             renderItem={renderDrink}
-            keyExtractor={(item) =>item.id}
+            keyExtractor={(item) => item.id}
           />
 
         </View>
@@ -241,7 +244,7 @@ const styles = StyleSheet.create({
     color: colorTheme.greenText,
   },
   cart: {
-    position:'absolute',
+    position: 'absolute',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',

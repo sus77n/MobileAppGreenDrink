@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
-import { colorTheme } from '../component/store';
+import { colorTheme, LoadingScreen } from '../component/store';
 import firestore from '@react-native-firebase/firestore';
 
 
@@ -76,9 +76,9 @@ const EditStoreScreen = ({ navigation, route }) => {
     const [contact, setContact] = useState(store.contact);
     const [latitude, setLatitude] = useState(store.latitude.toString());
     const [longitude, setLongitude] = useState(store.longitude.toString());
-    const [hasEdit, setHasEdit] = useState(false); // Track edits
+    const [hasEdit, setHasEdit] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    // Helper to compare the current state with the original store
     useEffect(() => {
         const original = {
             name: store.name,
@@ -87,21 +87,22 @@ const EditStoreScreen = ({ navigation, route }) => {
             latitude: store.latitude,
             longitude: store.longitude,
         };
+
         const current = { name, address, contact, latitude, longitude };
 
-        // Check if there's any difference
         const isEdited = Object.keys(original).some(
             (key) => original[key] !== current[key]
         );
 
         setHasEdit(isEdited);
-    }, [name, address, contact, latitude, longitude]); // Recalculate on state changes
+    }, [name, address, contact, latitude, longitude]);
 
     const handlePreview = () => {
         console.log('Preview product:', { name, address, contact, latitude, longitude });
     };
 
     const handleSave = () => {
+        setLoading(true);
         if (!name || !address || !contact || !latitude || !longitude) {
             Alert.alert('Error', 'Please fill in all the fields');
             return;
@@ -117,17 +118,19 @@ const EditStoreScreen = ({ navigation, route }) => {
             .collection('storeLocations')
             .doc(store.key)
             .update({
-                name : name,
-                address : address,
-                contact : contact,
-                latitude : latitude,
-                longitude : longitude,
+                name: name,
+                address: address,
+                contact: contact,
+                latitude: latitude,
+                longitude: longitude,
             })
             .then(() => {
+                setLoading(false)
                 Alert.alert('Success', 'Store updated successfully');
                 navigation.goBack();
             })
             .catch((error) => {
+                setLoading(false)
                 Alert.alert('Error', 'Something went wrong. Please try again.');
                 console.error('Error updating product:', error);
             });
@@ -147,6 +150,7 @@ const EditStoreScreen = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <LoadingScreen visible={loading} />
             <TextInput
                 style={styles.input}
                 placeholder="Store Name"

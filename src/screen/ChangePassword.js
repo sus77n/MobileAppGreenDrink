@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { colorTheme, TopGoBack } from "../component/store";
+import { colorTheme, LoadingScreen, TopGoBack } from "../component/store";
 import { getFirestore } from "@react-native-firebase/firestore";
 
 const ChangePassword = ({ navigation, route }) => {
@@ -8,8 +8,10 @@ const ChangePassword = ({ navigation, route }) => {
 
     const [currentPassword, setCurrentPassword] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const updatePassword = async () => {
+        setLoading(true)
         try {
 
             if (!currentPassword || !password) {
@@ -28,11 +30,13 @@ const ChangePassword = ({ navigation, route }) => {
                     }
                 )
                 .then(() => {
+                    setLoading(false)
                     Alert.alert('Success', 'User updated successfully');
                     navigation.goBack();
                 })
 
         } catch (error) {
+            setLoading(false)
             Alert.alert("Error", error.toString())
             console.error(error);
         }
@@ -41,6 +45,7 @@ const ChangePassword = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
+            <LoadingScreen visible={loading} />
             <TopGoBack text={"Edit Password"} navigation={navigation} />
             <View style={styles.wrapper}>
                 <Text style={styles.title}>Change password</Text>

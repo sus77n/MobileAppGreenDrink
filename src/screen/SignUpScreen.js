@@ -30,7 +30,7 @@ const SignUpScreen = ({ navigation }) => {
   const signUpFunc = async () => {
 
     try {
-      if (!username || !email || !password || !phone) {
+      if (!username || !email || !password ) {
         throw new Error("Please fill all the information.");
       }
 

@@ -15,8 +15,8 @@ import {
 } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { adminId, colorTheme, getUser, LoadingScreen, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
-import { getFirestore } from "@react-native-firebase/firestore";
+import { adminId, colorTheme, getTimeNow, getUser, LoadingScreen, resetUserAfterChange, setUserStorage, webClientId } from "../component/store";
+import { getFirestore, firestore, doc } from "@react-native-firebase/firestore";
 
 const LoginScreen = ({ navigation, route }) => {
   const [email, setEmail] = useState("peter@gmail.com");
@@ -25,48 +25,69 @@ const LoginScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: webClientId,
+      webClientId: '1046745299175-5b64vsicc0k21kck5c2ctpr607v39270.apps.googleusercontent.com',
     });
   }, []);
 
-  async function onGoogleButtonPress() {
-    setLoading(true)
-    try {
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
-      const signInResult = await GoogleSignin.signIn();
-      console.log("Google Sign-In Result:", signInResult);
 
-      let idToken = signInResult.idToken;
-      if (!idToken) {
-        idToken = signInResult.data?.idToken;
-      }
+const onGoogleButtonPress = async () => {
+  setLoading(true)
+  try {
+    await GoogleSignin.hasPlayServices();
+    const googleData = await GoogleSignin.signIn();
+    const user = googleData.data.user;
+    
+    const { email, name, photo } = user;
 
-      if (!idToken) {
-        throw new Error("Google Sign-In failed: No ID token returned.");
-      }
+    const existed = await getFirestore().collection("customers")
+      .where("email", "==", email)
+      .get();
 
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    if (existed.empty) {
+      console.log(user);
+      await getFirestore().collection("customers").add({
+        username: name,
+        password: null,
+        email: email,
+        phone: null,
+        formOfAddress: "Mr",
+        balance: 0,
+        stars: 0,
+        totalStars: 0,
+        createAt: getTimeNow(),
+      });
+    } 
 
-      const userCredential = await auth().signInWithCredential(googleCredential);
+      // Returning user 
+      const querySnapshot = await getFirestore()
+      .collection("customers")
+      .where("email", "==", email)
+      .get();
 
-      setLoading(false);
-      Alert.alert("Success", "Signed in with Google successfully!");
-      setUserStorage(userCredential.user);
+      let userData = null;
+      let userKey = null;
 
-      const { uid } = userCredential.user;
-      if (uid === adminId) {
-        navigation.navigate("ManagerTab");
-      } else {
-        navigation.navigate("UserTab");
-      }
+      querySnapshot.forEach(doc => {
+        userData = doc.data();
+        userKey = doc.id;
+      });
 
-    } catch (error) {
-      setLoading(false)
-      console.error("Google Sign-In Error:", error);
-      Alert.alert("Error", error.message || "An error occurred during Google Sign-In.");
+      await setUserStorage({ ...userData, key: doc.id }); 
+
+    if (userKey === adminId) {
+      navigation.navigate("ManagerTab");
+    } else {
+      navigation.navigate("UserTab");
     }
+  } catch (error) {
+    console.error("Google Authentication Error:", error.message);
+    Alert.alert("Error", error.message);
   }
+  setLoading(false)
+};
+
+  
 
   const loginFunc = async () => {
     setLoading(true);
@@ -106,17 +127,8 @@ const LoginScreen = ({ navigation, route }) => {
       } else {
         navigation.navigate("UserTab");
       }
-
-      Alert.alert("", "Login successfully", [
-        {
-          text: "Ok",
-          onPress: () => {
-            setEmail("");
-            setPassword("");
-          },
-        },
-      ]);
-
+      setEmail("");
+      setPassword("");
     } catch (error) {
       console.error(error.message);
       Alert.alert("Error", error.message);

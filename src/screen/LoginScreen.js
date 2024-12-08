@@ -31,39 +31,38 @@ const LoginScreen = ({ navigation, route }) => {
 
 
 
-const onGoogleButtonPress = async () => {
-  setLoading(true)
-  try {
-    await GoogleSignin.hasPlayServices();
-    const googleData = await GoogleSignin.signIn();
-    const user = googleData.data.user;
-    
-    const { email, name, photo } = user;
+  const onGoogleButtonPress = async () => {
+    setLoading(true)
+    try {
+      await GoogleSignin.hasPlayServices();
+      const googleData = await GoogleSignin.signIn();
+      const user = googleData.data.user;
 
-    const existed = await getFirestore().collection("customers")
-      .where("email", "==", email)
-      .get();
+      const { email, name, photo } = user;
 
-    if (existed.empty) {
-      console.log(user);
-      await getFirestore().collection("customers").add({
-        username: name,
-        password: null,
-        email: email,
-        phone: null,
-        formOfAddress: "Mr",
-        balance: 0,
-        stars: 0,
-        totalStars: 0,
-        createAt: getTimeNow(),
-      });
-    } 
+      const existed = await getFirestore().collection("customers")
+        .where("email", "==", email)
+        .get();
 
-      // Returning user 
+      if (existed.empty) {
+        console.log(user);
+        await getFirestore().collection("customers").add({
+          username: name,
+          password: null,
+          email: email,
+          phone: null,
+          formOfAddress: "Mr",
+          balance: 0,
+          stars: 0,
+          totalStars: 0,
+          createAt: getTimeNow(),
+        });
+      }
+
       const querySnapshot = await getFirestore()
-      .collection("customers")
-      .where("email", "==", email)
-      .get();
+        .collection("customers")
+        .where("email", "==", email)
+        .get();
 
       let userData = null;
       let userKey = null;
@@ -73,21 +72,21 @@ const onGoogleButtonPress = async () => {
         userKey = doc.id;
       });
 
-      await setUserStorage({ ...userData, key: doc.id }); 
+      await setUserStorage({ ...userData, key: doc.id });
 
-    if (userKey === adminId) {
-      navigation.navigate("ManagerTab");
-    } else {
-      navigation.navigate("UserTab");
+      if (userKey === adminId) {
+        navigation.navigate("ManagerTab");
+      } else {
+        navigation.navigate("UserTab");
+      }
+    } catch (error) {
+      console.error("Google Authentication Error:", error.message);
+      Alert.alert("Error", error.message);
     }
-  } catch (error) {
-    console.error("Google Authentication Error:", error.message);
-    Alert.alert("Error", error.message);
-  }
-  setLoading(false)
-};
+    setLoading(false)
+  };
 
-  
+
 
   const loginFunc = async () => {
     setLoading(true);
@@ -96,13 +95,15 @@ const onGoogleButtonPress = async () => {
       if (!email || !password) {
         throw new Error("All fields must be filled.");
       }
-      
+
       const querySnapshot = await getFirestore()
         .collection("customers")
         .where("email", "==", email)
         .get();
 
       if (querySnapshot.empty) {
+        setEmail("");
+        setPassword("");
         throw new Error("Email does not exist.");
       }
 
@@ -117,6 +118,7 @@ const onGoogleButtonPress = async () => {
       });
 
       if (!userData || password !== userData.password) {
+        setPassword("");
         throw new Error("Incorrect password.");
       }
 

@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View,  Dimensions,
 } from 'react-native';
 import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -102,7 +102,8 @@ const TypeDrinkScreen = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
-
+const { width, height } = Dimensions.get('window');
+const scale = size => (width / 375) * size;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

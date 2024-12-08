@@ -19,22 +19,9 @@ import { adminId, colorTheme, getUser, LoadingScreen, resetUserAfterChange, setU
 import { getFirestore } from "@react-native-firebase/firestore";
 
 const LoginScreen = ({ navigation, route }) => {
-  const [email, setEmail] = useState("admin@gmail.com");
+  const [email, setEmail] = useState("peter@gmail.com");
   const [password, setPassword] = useState("123456");
   const [loading, setLoading] = useState(false);
-
-  const { isLogout } = route.params ? route.params : false;
-  if (isLogout) {
-    console.log("check:", isLogout);
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: "Login",
-        }
-      ]
-    })
-  }
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -43,6 +30,7 @@ const LoginScreen = ({ navigation, route }) => {
   }, []);
 
   async function onGoogleButtonPress() {
+    setLoading(true)
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
@@ -62,6 +50,7 @@ const LoginScreen = ({ navigation, route }) => {
 
       const userCredential = await auth().signInWithCredential(googleCredential);
 
+      setLoading(false);
       Alert.alert("Success", "Signed in with Google successfully!");
       setUserStorage(userCredential.user);
 
@@ -73,6 +62,7 @@ const LoginScreen = ({ navigation, route }) => {
       }
 
     } catch (error) {
+      setLoading(false)
       console.error("Google Sign-In Error:", error);
       Alert.alert("Error", error.message || "An error occurred during Google Sign-In.");
     }
@@ -85,9 +75,7 @@ const LoginScreen = ({ navigation, route }) => {
       if (!email || !password) {
         throw new Error("All fields must be filled.");
       }
-
-
-      console.log("email: ", email);
+      
       const querySnapshot = await getFirestore()
         .collection("customers")
         .where("email", "==", email)
@@ -195,7 +183,7 @@ const LoginScreen = ({ navigation, route }) => {
   );
 };
 const { width, height } = Dimensions.get('window');
-const scale = size => (width / 375) * size; 
+const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
   layout: {
@@ -295,7 +283,7 @@ const styles = StyleSheet.create({
   },
 
   textButtonSignUp: {
-    color:colorTheme.greenText,
+    color: colorTheme.greenText,
     fontWeight: "600",
     fontSize: scale(16),
   },

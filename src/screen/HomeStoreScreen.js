@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {Dimensions, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
-import { colorTheme } from '../component/store';
+import { Dimensions, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import { colorTheme, LoadingScreen } from '../component/store';
 import { getFirestore } from '@react-native-firebase/firestore';
 
 
-const HomeStoreScreen = ({navigation}) => {
+const HomeStoreScreen = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const subscriber = getFirestore()
@@ -19,13 +20,11 @@ const HomeStoreScreen = ({navigation}) => {
             key: documentSnapshot.id,
           });
         });
-
+        setLoading(false)
         setTransactions(transactions);
       });
-      console.log(transactions);
-      
-
-    // Unsubscribe from events when no longer in use
+    console.log(transactions);
+    setLoading(true)
     return () => subscriber();
   }, []);
 
@@ -41,7 +40,7 @@ const HomeStoreScreen = ({navigation}) => {
 
   const renderTransactionItem = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageDetailTrans', {transaction: item})}>
+      <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageDetailTrans', { transaction: item })}>
         <Text style={styles.transactionId}>Transaction ID: {item.transID}</Text>
         <Text style={styles.statusText}>Status: {item.status}</Text>
         <View style={styles.buttonContainer}>
@@ -65,9 +64,10 @@ const HomeStoreScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-         <View style={styles.greetingSection}>
-          <Text style={styles.greetingText}>Green Drink Store</Text>
-        </View>
+      <LoadingScreen visible={loading} />
+      <View style={styles.greetingSection}>
+        <Text style={styles.greetingText}>Green Drink Store</Text>
+      </View>
       <FlatList
         data={transactions}
         renderItem={renderTransactionItem}
@@ -77,6 +77,7 @@ const HomeStoreScreen = ({navigation}) => {
     </SafeAreaView>
   );
 };
+
 const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 

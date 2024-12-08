@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { colorTheme, LoadingScreen, TopGoBack } from "../component/store";
 import { getFirestore } from "@react-native-firebase/firestore";
 

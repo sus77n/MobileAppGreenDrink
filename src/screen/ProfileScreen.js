@@ -12,7 +12,9 @@ const ProfileScreen = ({ navigation }) => {
             const user = await getUser();
             setUser(user);
             console.log("User:", user);
+            setLoading(false);
         } catch (error) {
+            setLoading(false);
             console.error("Error fetching user:", error);
         }
     };
@@ -20,7 +22,6 @@ const ProfileScreen = ({ navigation }) => {
         setLoading(true);
         const loadScreen = navigation.addListener("focus", () => {
             fetchUser();
-            setLoading(false);
         });
         return () => loadScreen();
     }, []);

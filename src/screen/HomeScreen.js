@@ -22,8 +22,8 @@ const HomeScreen = ({ navigation }) => {
 
   const fetchUser = async () => {
     setLoading(true)
-    const userData = await getUser(); // Await the result of getUser
-    setUser(userData); // Update the state with the resolved user
+    const userData = await getUser();
+    setUser(userData);
     console.log('User home screen:', userData);
     setLoading(false)
   };

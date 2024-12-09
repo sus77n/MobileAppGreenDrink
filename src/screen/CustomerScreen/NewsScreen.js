@@ -1,13 +1,17 @@
 import React from "react";
-import { Dimensions,Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Dimensions,Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colorTheme, TopGoBack } from "../../component/store";
 const NewsScreen = ({navigation, route}) =>{
+    const {aNews} = route.params
+    console.log(aNews);
+    
     return(
-        <SafeAreaView style={styles.container}>
-        <TopGoBack navigation={navigation} text={'ss'}/>
-            <Image source={require('../../../assets/img/news1.jpg')} style={{width:"100%", marginTop:10}}/>
-            <Text style={styles.content}>Bursting with the tangy zing of freshly squeezed lemons, this sparkling soda blends a hint of sweet wildflower... aaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Text>
-        </SafeAreaView>
+        <ScrollView style={styles.container}>
+        <TopGoBack navigation={navigation} text={'News'}/>
+        <Image source={{uri: aNews.img}} style={styles.drinkImage} />
+        <Text style={styles.drinkTitle}>{aNews.title}</Text>
+            <Text style={styles.content}>{aNews.content}</Text>
+        </ScrollView>
     )
 }
 
@@ -21,9 +25,21 @@ const styles = StyleSheet.create({
   },
   content: {
     color: 'black',
-    margin: scale(15),  // Scaled margin
-    fontSize: scale(17), // Scaled font size
-  }
+    marginHorizontal: scale(15),  // Scaled margin
+    fontSize: scale(15), // Scaled font size
+  },
+  drinkImage: {
+    width: scale(400),
+    height: scale(300),
+    marginBottom: scale(20),
+  },
+  drinkTitle: {
+    fontSize: scale(20),
+    fontWeight: 'bold',
+    color: '#568f56',
+    textAlign: 'center',
+    marginBottom: scale(20),
+  },
 });
 
 

@@ -3,24 +3,39 @@ import {
   FlatList,
   Image,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View, Dimensions,
 } from 'react-native';
-import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../../component/store';
+import { colorTheme, getOrder, getUser, LoadingScreen, TopGoBack } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 const TypeDrinkScreen = ({ navigation, route }) => {
 
-  const { cate, user, total } = route.params;
-
+  const { cate, user } = route.params;
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [drinks, setDrinks] = useState([]);
 
+  const updateTotal = async () => {
+    try {
+      const order = await getOrder();
+      setTotal(order.total);
+    } catch (error) {
+      console.error("Error update total: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const subscriber = firestore()
+    const loadScreen = navigation.addListener("focus", async () => {
+      setLoading(true)
+      await updateTotal()
+    })
+
+    const getDrinks = firestore()
       .collection('drinks')
       .onSnapshot(querySnapshot => {
         const drinks = [];
@@ -38,7 +53,8 @@ const TypeDrinkScreen = ({ navigation, route }) => {
       });
 
     return () => {
-      subscriber();
+      loadScreen();
+      getDrinks();
     };
   }, []);
 
@@ -90,12 +106,7 @@ const TypeDrinkScreen = ({ navigation, route }) => {
       <TouchableOpacity
         style={styles.cart}
         onPress={() => {
-          console.log('Order before navigation:', order);
-          if (order) {
-            navigation.navigate('ReviewOrder', { order, total, user });
-          } else {
-            console.warn('Order is not ready yet!');
-          }
+          navigation.navigate('ReviewOrder', { user });
         }}>
         <Text style={styles.total}>Total: đ{total}</Text>
         <Icon name="shopping-cart" size={30} color={colorTheme.white} />

@@ -9,8 +9,9 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
+  Alert,
 } from 'react-native';
-import { colorTheme, getOrder, getUser, LoadingScreen, TopGoBack } from '../../component/store';
+import { cleanOrder, colorTheme, createOrder, getOrder, getUser, LoadingScreen, setOrder, TopGoBack } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,40 +21,90 @@ const OrderPickUp = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [seasonalDrink, setSeasonalDrink] = useState([]);
-
-  const [listOrder, setListOrder] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const getTotal = async () => {
-    const order = await getOrder();
-    if (order) {
-      setTotal(order.total);
-    } else {
-      setTotal(0);
+  const updateTotal = async () => {
+    try {
+      const order = await getOrder();
+      if (order === null) {
+        setTotal(0);
+        await createOrder("orderPickUp");
+        const check = await getOrder();
+        console.log("check: ", check);
+      } else {
+        setTotal(order.total);
+      }
+    } catch (error) {
+      console.error("Error update total: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  //get cate, all drinks, reset total money, create order
   useEffect(() => {
-      const getCategories = firestore()
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      setLoading(true);
+      fetchData();
+    });
+
+    const unsubscribeCategories = firestore()
       .collection('categories')
       .onSnapshot(querySnapshot => {
-        const categories = [];
-
-        querySnapshot.forEach(documentSnapshot => {
-          categories.push({
-            ...documentSnapshot.data(),
-            key: documentSnapshot.id,
-          });
-        });
-
+        const categories = querySnapshot.docs.map(documentSnapshot => ({
+          ...documentSnapshot.data(),
+          key: documentSnapshot.id,
+        }));
         setCategories(categories);
         setLoading(false);
       });
 
-    return async () => {
-      setLoading(true)
-      await getTotal();
-      getCategories()
+    const unsubscribeDrinks = firestore()
+      .collection('drinks')
+      .onSnapshot(querySnapshot => {
+        const drinks = querySnapshot.docs.map(documentSnapshot => ({
+          ...documentSnapshot.data(),
+          key: documentSnapshot.id,
+        }));
+        const filter = drinks.filter(item => item.category === 'Seasonal');
+        setSeasonalDrink(filter);
+        setLoading(false);
+      });
+
+    const fetchData = async () => {
+      await updateTotal();
+    };
+
+    return () => {
+      unsubscribeFocus();
+      unsubscribeCategories();
+      unsubscribeDrinks();
+    };
+  }, []);
+
+  useEffect(() => {
+    const beforeRemoveListener = navigation.addListener('beforeRemove', (event) => {
+      event.preventDefault();
+
+      Alert.alert(
+        'Cancel order',
+        'Your order will be cancelled. Are you sure?',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => { } },
+          {
+            text: 'Sure',
+            style: 'destructive',
+            onPress: async () => {
+              await cleanOrder();
+              navigation.dispatch(event.data.action)
+            }
+          },
+        ]
+      );
+    });
+
+    return () => {
+      beforeRemoveListener();
     };
   }, []);
 
@@ -61,7 +112,7 @@ const OrderPickUp = ({ navigation, route }) => {
     return (
       <TouchableOpacity
         style={[styles.drinkTag,]}
-        onPress={() => navigation.navigate('TypeDrink', { cate, user, total })}>
+        onPress={() => navigation.navigate('TypeDrink', { cate, user })}>
         <View style={styles.imageWrapTag}>
           <Image source={{ uri: cate.img }} style={styles.img} />
         </View>
@@ -72,35 +123,11 @@ const OrderPickUp = ({ navigation, route }) => {
     );
   };
 
-  useEffect(() => {
-    const getDrinks = firestore()
-      .collection('drinks')
-      .onSnapshot(querySnapshot => {
-        const drinks = [];
-
-        querySnapshot.forEach(documentSnapshot => {
-          drinks.push({
-            ...documentSnapshot.data(),
-            key: documentSnapshot.id,
-          });
-        });
-
-        const filter = drinks.filter(item => item.category === 'Seasonal');
-        setSeasonalDrink(filter);
-        setLoading(false);
-      });
-
-    return () => {
-      setLoading(true)
-      getDrinks()
-    };
-  }, []);
-
-  const renderDrink = ({ item: drink, index }) => {
+  const renderSeasonalDrinks = ({ item: drink, index }) => {
     return (
       <TouchableOpacity
         style={styles.drinkRow}
-        onPress={() => navigation.navigate('ProductDetail', { drink, listOrder })}>
+        onPress={() => navigation.navigate('ProductDetail', { drink })}>
         <View style={styles.imageWrap}>
           <Image source={{ uri: drink.img }} style={styles.img} />
         </View>
@@ -138,7 +165,7 @@ const OrderPickUp = ({ navigation, route }) => {
           <Text style={styles.type}>Seasonal Drink Menu</Text>
           <FlatList
             data={seasonalDrink}
-            renderItem={renderDrink}
+            renderItem={renderSeasonalDrinks}
             keyExtractor={item => item.id}
           />
         </View>
@@ -154,7 +181,7 @@ const OrderPickUp = ({ navigation, route }) => {
       <TouchableOpacity
         style={styles.cart}
         onPress={() => {
-
+          navigation.navigate('ReviewOrder', { total, user });
         }}>
         <Text style={styles.total}>Total: đ{total}</Text>
         <Icon name="shopping-cart" size={30} color={colorTheme.white} />

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -15,89 +15,52 @@ import {
   LoadingScreen,
   TopGoBack,
   resetUserAfterChange,
+  getOrder,
 } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import firestore, {getFirestore} from '@react-native-firebase/firestore';
+import firestore, { getFirestore } from '@react-native-firebase/firestore';
 
-const ReviewOrder = ({navigation, route}) => {
-  const {order, total, user} = route.params;
-  const [drinkDetails, setDrinkDetails] = useState({});
-  const [quantities, setQuantities] = useState({});
+const ReviewOrder = ({ navigation, route }) => {
+  const { user } = route.params;
   const [listDrinks, setListDrinks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [order, setOrder] = useState(null);
 
-  // Fetch drink details from Firestore
-  useEffect(() => {
-    const fetchDrinks = async () => {
-      try {
-        const drinkKeys = Object.keys(order.drinks);
-        const drinksData = [];
-
-        const drinkFetchPromises = drinkKeys.map(async drinkKey => {
-          const drinkData = order.drinks[drinkKey];
-
-          const doc = await firestore()
-            .collection('drinks')
-            .doc(drinkData.key)
-            .get();
-
-          if (doc.exists) {
-            const drinkDetails = doc.data();
-            drinksData.push({
-              key: drinkData.key,
-              name: drinkDetails.name,
-              price: drinkDetails.price,
-              quantity: drinkData.quantity || 1,
-              custom: drinkData.custom,
-            });
-            console.log('each item: ' + drinkData.key + drinkDetails.name);
-          } else {
-            console.warn(
-              `Drink with key ${drinkData.key} not found in Firestore.`,
-            );
-          }
-        });
-
-        await Promise.all(drinkFetchPromises);
-        console.log('drinks data' + drinksData);
-        setListDrinks(drinksData);
-      } catch (error) {
-        console.error('Error fetching drinks from Firestore:', error);
-      }
-    };
-
-    fetchDrinks();
-  }, [order.drinks]);
-
-  const updateQuantity = (key, increment) => {
-    setQuantities(prev => ({
-      ...prev,
-      [key]: Math.max(1, (prev[key] || 1) + increment),
-    }));
+  const fetchOrder = async () => {
+    setLoading(true);
+    try {
+      const order = await getOrder();
+      setOrder(order);
+      setListDrinks(order.drinks);
+    } catch (error) {
+      console.error("Error fetch order: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    console.log('order list:', order.drinks);
+    const loadScreen = navigation.addListener("focus", () => { fetchOrder() });
+    return () => { loadScreen() };
   }, []);
 
-  const renderItem = ({item: drink}) => {
+  const renderItem = ({ item: drink }) => {
     return (
       <View>
-        <LoadingScreen visible={loading} />
         <View style={styles.itemContainer}>
           <View style={styles.infoContainer}>
             <Text style={styles.itemName}>
-              {drink.name} - {drink.custom.size}
+              {drink.name} - {drink.customization.size}
             </Text>
             <Text style={styles.itemDetails}>
-              Sweetness: {drink.custom.sweetness}
+              Sweetness: {drink.customization.sweetness}
             </Text>
           </View>
           <Text style={styles.itemPrice}>đ{drink.price.toLocaleString()}</Text>
         </View>
         <View style={styles.controls}>
           <View style={styles.controls}>
-            <TouchableOpacity style={styles.controlButton} onPress={() => {}}>
+            <TouchableOpacity style={styles.controlButton} onPress={() => { }}>
               <Icon
                 name="minus-circle"
                 color={colorTheme.greenBackground}
@@ -105,7 +68,7 @@ const ReviewOrder = ({navigation, route}) => {
               />
             </TouchableOpacity>
             <Text style={styles.quantity}>{drink.quantity}</Text>
-            <TouchableOpacity style={styles.controlButton} onPress={() => {}}>
+            <TouchableOpacity style={styles.controlButton} onPress={() => { }}>
               <Icon
                 name="plus-circle"
                 color={colorTheme.greenBackground}
@@ -156,9 +119,9 @@ const ReviewOrder = ({navigation, route}) => {
         drinks: listDrinks,
         status: 'Uncompleted',
         transID: `T${new Date().getTime()}`,
-        type: 'OrderPickUp',
-        price: total,
-        priceBeforePromotion: total,
+        type: order.type,
+        price: order.total,
+        priceBeforePromotion: order.total,
       };
 
       await db.collection('transactions').add(newTransaction);
@@ -168,11 +131,20 @@ const ReviewOrder = ({navigation, route}) => {
     }
   };
 
+  if (!order) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <LoadingScreen visible={true} />
+      </SafeAreaView>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container}>
+      <LoadingScreen visible={loading} />
       <TopGoBack navigation={navigation} text={'Review Order'} />
       <View style={styles.typeSection}>
-        <View style={styles.leftTypeSection}>
+        <View>
           <Text style={styles.title}>Pick-up at</Text>
           <Text style={styles.subtitle}>Hikari</Text>
         </View>
@@ -196,7 +168,7 @@ const ReviewOrder = ({navigation, route}) => {
 
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
-          <Text style={styles.orderTotalValue}>đ{total.toLocaleString()}</Text>
+          <Text style={styles.orderTotalValue}>đ{order.total.toLocaleString()}</Text>
         </View>
       </View>
 
@@ -207,7 +179,7 @@ const ReviewOrder = ({navigation, route}) => {
             {
               text: 'Ok',
               onPress: () => {
-                if (user.balance >= total) {
+                if (user.balance >= order.total) {
                   updateBalance();
                   addTransaction();
                   Alert.alert('Enjoy your drink!');
@@ -228,7 +200,7 @@ const ReviewOrder = ({navigation, route}) => {
     </SafeAreaView>
   );
 };
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({

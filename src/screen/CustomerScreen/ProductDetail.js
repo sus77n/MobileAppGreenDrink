@@ -7,8 +7,9 @@ import {
   Text,
   TouchableOpacity,
   View, Dimensions,
+  Alert,
 } from 'react-native';
-import { colorTheme, getUser, LoadingScreen } from '../../component/store';
+import { addToOrder, colorTheme, getOrder, getUser, LoadingScreen } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 
@@ -17,57 +18,28 @@ const ProductDetail = ({ navigation, route }) => {
 
   const [selectedSize, setSelectedSize] = useState('S');
   const [sweetness, setSweetness] = useState('Regular');
-  const [listOrder, setListOrder] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const calculateTotal = async (drinks) => {
-    let newTotal = 0;
-
-    const drinkKeys = Object.keys(drinks);
-
-    for (const i of drinkKeys) {
-      const drinkData = drinks[i];
-      const { key, quantity } = drinkData;
-      try {
-        const drinkSnapshot = await firestore()
-          .collection('drinks')
-          .doc(key)
-          .get();
-        if (drinkSnapshot.exists) {
-          const drinkInfo = drinkSnapshot.data();
-          const basePrice = drinkInfo.price || 0;
-          newTotal += basePrice * quantity;
-        }
-      } catch (error) {
-        console.error(`Error fetching drink data for ${key}:`, error);
-      }
-    }
-    console.log('New total calculated:', newTotal);
-    setTotal(newTotal);
-  };
-  useEffect(() => {
-    console.log('Total:', total);
-  }, [total]);
-
-  useEffect(() => {
-    if (listOrder) {
-      calculateTotal(listOrder);
-    }
-
-  }, [listOrder]);
-
-  const generateDrinkKey = (drinkId, customization) => {
-    const customizationString = JSON.stringify(customization);
-    const base64Key = btoa(`${drinkId}_${customizationString}`);
-    return base64Key;
+  const updateTotal = async () => {
+    const order = await getOrder();
+    setTotal(order.total);
   };
 
-  const addOrUpdateDrinkWithCheck = async (
-    drinkId,
-    customization,
-    quantity,
-  ) => {
+  const addToOrderList = async ({ customization, quantity }) => {
+    setLoading(true)
+    try {
+      await addToOrder({ drink: { ...drink, quantity: quantity, customization: customization } });
+      Alert.alert("Successful", "Add to order Successfully")
+      setLoading(false)
+      await updateTotal();
+      navigation.pop();
+    } catch (error) {
+      console.error("Add productDetail error: ", error);
+      Alert.alert("Error", "Something went wrong. Try again!")
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
@@ -76,7 +48,7 @@ const ProductDetail = ({ navigation, route }) => {
       <ImageBackground
         source={require('../../../assets/img/detailBackgroun.png')}
         style={{ width: '101%', height: '115%' }}>
-        {/* Back Button */}
+
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon
             name="angle-left"
@@ -86,9 +58,7 @@ const ProductDetail = ({ navigation, route }) => {
           />
         </TouchableOpacity>
 
-        {/* Content */}
         <View style={styles.wrapWhite}>
-          {/* Top Section */}
           <View style={styles.top}>
             <View style={styles.topLeft}>
               <Text style={styles.name}>{drink.name}</Text>
@@ -100,7 +70,6 @@ const ProductDetail = ({ navigation, route }) => {
             </View>
           </View>
 
-          {/* Drink Size Section */}
           <View style={styles.sizeSetion}>
             <Text style={styles.titleSize}>Drink size</Text>
             <View style={styles.sizeGroup}>
@@ -127,7 +96,6 @@ const ProductDetail = ({ navigation, route }) => {
             </View>
           </View>
 
-          {/* Sweetness Section */}
           <View style={styles.sweetSection}>
             <Text style={styles.titleSize}>Sweetness</Text>
             <View style={styles.buttonGroup}>
@@ -166,27 +134,22 @@ const ProductDetail = ({ navigation, route }) => {
             </View>
           </View>
 
-          {/* Add to Cart Section */}
           <TouchableOpacity
             style={styles.addIcon}
             onPress={() =>
-              addOrUpdateDrinkWithCheck(
-                keyOrder,
-                drink.key,
-                { size: selectedSize, sweetness: sweetness },
-                1,
-              )
+              addToOrderList({
+                customization: { size: selectedSize, sweetness: sweetness },
+                quantity: 1,
+              })
             }>
             <Icon name="plus" size={25} color={colorTheme.white} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.cart}
             onPress={() => {
-
+              navigation.navigate('ReviewOrder', { user });
             }}>
-            <Text style={styles.total}>
-              Total: {total ? `đ${total}` : 'Calculating...'}
-            </Text>
+            <Text style={styles.total}>Total: đ{total}</Text>
             <Icon name="shopping-cart" size={30} color={colorTheme.white} />
           </TouchableOpacity>
         </View>

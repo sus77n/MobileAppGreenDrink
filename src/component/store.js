@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from '@react-native-firebase/firestore';
-import { ActivityIndicator, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export const colorTheme = {
@@ -207,13 +207,23 @@ export const LoadingScreen = ({ visible }) => {
   )
 }
 
-export const setOrder = async ({ drinks, type }) => {
+export const setOrder = async ({ drinks: drinks, type: type, total: total }) => {
   try {
-    const jsonValue = JSON.stringify({ drinks: drinks, type: type });
+    const jsonValue = JSON.stringify({ drinks: drinks, type: type, total: total });
     await AsyncStorage.setItem("order", jsonValue);
     console.log('Order saved successfully');
   } catch (error) {
     console.error('Error saving order to AsyncStorage:', error);
+  }
+}
+
+export const createOrder = async (type) => {
+  try {
+    const jsonValue = JSON.stringify({ drinks: [], type: type, total: 0 });
+    await AsyncStorage.setItem("order", jsonValue);
+    console.log('Order created successfully');
+  } catch (error) {
+    console.error('Error creating order to AsyncStorage:', error);
   }
 }
 
@@ -226,3 +236,24 @@ export const getOrder = async () => {
     return null;
   }
 };
+
+export const addToOrder = async ({ drink: drink }) => {
+  try {
+    const { drinks, type, total } = await getOrder();
+    drinks.push(drink);
+    const newTotal = total + (drink.price * drink.quantity);
+    await setOrder({ drinks: drinks, type: type, total: newTotal });
+    console.log("add order successful: ", { drinks: drinks, type: type, total: newTotal });
+  } catch (error) {
+    console.log("add to order error: ", error);
+    Alert.alert("Add error", error.message);
+  }
+}
+
+export const cleanOrder = async () => {
+  try {
+    await AsyncStorage.removeItem("order")
+  } catch (error) {
+    console.log("Clean order error: ", error);
+  }
+}

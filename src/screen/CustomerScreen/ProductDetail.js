@@ -6,18 +6,19 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,  Dimensions,
+  View, Dimensions,
 } from 'react-native';
 import { colorTheme, getUser, LoadingScreen } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 
 const ProductDetail = ({ navigation, route }) => {
-  const { drink, user, order, totalCurrent, keyOrder } = route.params;
+  const { drink } = route.params;
+
   const [selectedSize, setSelectedSize] = useState('S');
   const [sweetness, setSweetness] = useState('Regular');
-  const [listOrder, setListOrder] = useState(order.drinks);
-  const [total, setTotal] = useState(totalCurrent);
+  const [listOrder, setListOrder] = useState([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const calculateTotal = async (drinks) => {
@@ -53,8 +54,7 @@ const ProductDetail = ({ navigation, route }) => {
     if (listOrder) {
       calculateTotal(listOrder);
     }
-    console.log(order);
-    
+
   }, [listOrder]);
 
   const generateDrinkKey = (drinkId, customization) => {
@@ -64,65 +64,10 @@ const ProductDetail = ({ navigation, route }) => {
   };
 
   const addOrUpdateDrinkWithCheck = async (
-    orderId,
     drinkId,
     customization,
     quantity,
   ) => {
-    console.log(orderId);
-
-    try {
-      const drinkKey = generateDrinkKey(drinkId, customization);
-
-      // Reference the specific order document
-      const orderRef = firestore().collection('orders').doc(orderId);
-      const orderSnapshot = await orderRef.get();
-
-      if (orderSnapshot.exists) {
-        const orderData = orderSnapshot.data();
-        const existingDrink = orderData.drinks?.[drinkKey];
-
-        if (existingDrink) {
-          // If the drink already exists, update the quantity
-          existingDrink.quantity += quantity;
-          await orderRef.update({
-            [`drinks.${drinkKey}`]: existingDrink,
-          });
-          console.log('Drink quantity updated!');
-          // Re-fetch the updated order data to update the state
-          const updatedOrderSnapshot = await orderRef.get();
-          const updatedOrderData = updatedOrderSnapshot.data();
-
-          setListOrder(updatedOrderData.drinks); // Update listOrder state
-          console.log("updatedDrinks" + updatedOrderData.drinks);
-
-          await calculateTotal(updatedOrderData.drinks);
-        } else {
-          // Add a new drink
-          await orderRef.update({
-            [`drinks.${drinkKey}`]: {
-              key: drinkId,
-              custom: customization,
-              quantity: quantity || 1,
-            },
-          });
-          console.log('New drink added!');
-
-          // Re-fetch the updated order data to update the state
-          const updatedOrderSnapshot = await orderRef.get();
-          const updatedOrderData = updatedOrderSnapshot.data();
-
-          setListOrder(updatedOrderData.drinks); // Update listOrder state
-          console.log("updatedDrinks" + updatedOrderData.drinks);
-
-          await calculateTotal(updatedOrderData.drinks); // Recalculate the total price
-        }
-      } else {
-        console.log('Order not found!');
-      }
-    } catch (error) {
-      console.error('Error adding or updating drink:', error);
-    }
   };
 
   return (
@@ -237,12 +182,7 @@ const ProductDetail = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.cart}
             onPress={() => {
-              console.log('Order before navigation:', order);
-              if (order) {
-                navigation.navigate('ReviewOrder', { order, total, user });
-              } else {
-                console.warn('Order is not ready yet!');
-              }
+
             }}>
             <Text style={styles.total}>
               Total: {total ? `đ${total}` : 'Calculating...'}

@@ -7,19 +7,19 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,  Dimensions,
+  View, Dimensions,
 } from 'react-native';
 import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 const TypeDrinkScreen = ({ navigation, route }) => {
-  const { cate, user, order, total, keyOrder } = route.params;
+
+  const { cate, user, total } = route.params;
+
   const [loading, setLoading] = useState(false);
   const [drinks, setDrinks] = useState([]);
 
   useEffect(() => {
-    console.log(keyOrder);
-
     const subscriber = firestore()
       .collection('drinks')
       .onSnapshot(querySnapshot => {
@@ -37,8 +37,9 @@ const TypeDrinkScreen = ({ navigation, route }) => {
         setLoading(false);
       });
 
-    // Unsubscribe from events when no longer in use
-    return () => subscriber();
+    return () => {
+      subscriber();
+    };
   }, []);
 
   const renderDrink = ({ item: drink, index }) => {
@@ -46,7 +47,7 @@ const TypeDrinkScreen = ({ navigation, route }) => {
       <TouchableOpacity
         style={styles.drinkRow}
         onPress={() =>
-          navigation.navigate('ProductDetail', { drink, user, order, totalCurrent: total, keyOrder })
+          navigation.navigate('ProductDetail', { drink })
         }>
         <View style={styles.imageWrap}>
           <Image source={{ uri: drink.img }} style={styles.img} />

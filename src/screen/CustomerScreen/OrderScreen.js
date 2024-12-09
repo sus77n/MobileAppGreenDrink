@@ -55,6 +55,7 @@ const OrderScreen = ({ navigation }) => {
         <Image source={require('../../../assets/img/iconOrderPickUp.png')} />
       </TouchableOpacity>
       <TouchableOpacity
+        disabled
         style={styles.card}
         onPress={() => {
           navigation.navigate('Delivery');

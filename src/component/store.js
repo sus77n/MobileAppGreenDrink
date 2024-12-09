@@ -206,3 +206,23 @@ export const LoadingScreen = ({ visible }) => {
     </Modal>
   )
 }
+
+export const setOrder = async ({ drinks, type }) => {
+  try {
+    const jsonValue = JSON.stringify({ drinks: drinks, type: type });
+    await AsyncStorage.setItem("order", jsonValue);
+    console.log('Order saved successfully');
+  } catch (error) {
+    console.error('Error saving order to AsyncStorage:', error);
+  }
+}
+
+export const getOrder = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem("order");
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (error) {
+    console.error('Error retrieving order from AsyncStorage:', error);
+    return null;
+  }
+};

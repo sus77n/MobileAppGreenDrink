@@ -10,97 +10,31 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../../component/store';
+import { colorTheme, getOrder, getUser, LoadingScreen, TopGoBack } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const OrderPickUp = ({ navigation, route }) => {
   const { user } = route.params
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [seasonalDrink, setSeasonalDrink] = useState([]);
 
-  const [order, setOrder] = useState('');
-  const [keyOrder, setKeyOrder] = useState('');
   const [listOrder, setListOrder] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const calculateTotal = async drinks => {
-    setLoading(true)
-    let newTotal = 0;
-
-    const drinkKeys = Object.keys(drinks);
-    for (const i of drinkKeys) {
-      const drinkData = drinks[i];
-      const { key, custom, quantity } = drinkData;
-
-      try {
-        const drinkSnapshot = await firestore()
-          .collection('drinks')
-          .doc(key)
-          .get();
-        if (drinkSnapshot.exists) {
-          const drinkInfo = drinkSnapshot.data();
-          const basePrice = drinkInfo.price || 0;
-
-          newTotal += basePrice * quantity;
-        }
-      } catch (error) {
-        console.error(`Error fetching drink data for ${drinkId}:`, error);
-      } finally {
-        setLoading(false)
-      }
-    }
-    setTotal(newTotal);
-  };
-
-  const fetchUser = async () => {
-    setLoading(true);
-    console.log('User Pickup:', user);
-
-    try {
-      const documentSnapshot = await firestore()
-        .collection('orders')
-        .doc(user.orderKey)
-        .get();
-
-      if (documentSnapshot.exists) {
-        const data = documentSnapshot.data();
-        console.log('Order Data:', data);
-        setOrder(data);
-        setKeyOrder(user.orderKey)
-
-        if (data.drinks) {
-          console.log('Drinks:', data.drinks);
-          setListOrder(data.drinks);
-
-          await calculateTotal(data.drinks);
-        } else {
-          console.log('Drinks field is undefined or does not exist.');
-        }
-      } else {
-        console.log('No such document!');
-      }
-      setLoading(false)
-    } catch (error) {
-      setLoading(false)
-      console.error('Error fetching order data:', error);
+  const getTotal = async () => {
+    const order = await getOrder();
+    if (order) {
+      setTotal(order.total);
+    } else {
+      setTotal(0);
     }
   };
 
   useEffect(() => {
-    const loadScreen = navigation.addListener("focus", () => fetchUser());
-    return () => loadScreen();
-  }, []);
-
-  useEffect(() => {
-    if (listOrder) {
-      calculateTotal(listOrder);
-    }
-  }, [listOrder]);
-
-  useEffect(() => {
-    const subscriber = firestore()
+      const getCategories = firestore()
       .collection('categories')
       .onSnapshot(querySnapshot => {
         const categories = [];
@@ -116,9 +50,10 @@ const OrderPickUp = ({ navigation, route }) => {
         setLoading(false);
       });
 
-    return () => {
-      setLoading(true);
-      subscriber()
+    return async () => {
+      setLoading(true)
+      await getTotal();
+      getCategories()
     };
   }, []);
 
@@ -126,7 +61,7 @@ const OrderPickUp = ({ navigation, route }) => {
     return (
       <TouchableOpacity
         style={[styles.drinkTag,]}
-        onPress={() => navigation.navigate('TypeDrink', {cate, user, order, total, keyOrder})}>
+        onPress={() => navigation.navigate('TypeDrink', { cate, user, total })}>
         <View style={styles.imageWrapTag}>
           <Image source={{ uri: cate.img }} style={styles.img} />
         </View>
@@ -138,7 +73,7 @@ const OrderPickUp = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    const subscriber = firestore()
+    const getDrinks = firestore()
       .collection('drinks')
       .onSnapshot(querySnapshot => {
         const drinks = [];
@@ -157,7 +92,7 @@ const OrderPickUp = ({ navigation, route }) => {
 
     return () => {
       setLoading(true)
-      subscriber()
+      getDrinks()
     };
   }, []);
 
@@ -165,7 +100,7 @@ const OrderPickUp = ({ navigation, route }) => {
     return (
       <TouchableOpacity
         style={styles.drinkRow}
-        onPress={() => navigation.navigate('ProductDetail', { drink })}>
+        onPress={() => navigation.navigate('ProductDetail', { drink, listOrder })}>
         <View style={styles.imageWrap}>
           <Image source={{ uri: drink.img }} style={styles.img} />
         </View>
@@ -219,12 +154,7 @@ const OrderPickUp = ({ navigation, route }) => {
       <TouchableOpacity
         style={styles.cart}
         onPress={() => {
-          console.log('Order before navigation:', order);
-          if (order) {
-            navigation.navigate('ReviewOrder', { order, total, user, });
-          } else {
-            console.warn('Order is not ready yet!');
-          }
+
         }}>
         <Text style={styles.total}>Total: đ{total}</Text>
         <Icon name="shopping-cart" size={30} color={colorTheme.white} />

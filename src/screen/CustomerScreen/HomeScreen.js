@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -9,43 +9,93 @@ import {
   ScrollView,
   ActivityIndicator,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colorTheme, getUser, LoadingScreen, resetUserAfterChange } from '../../component/store';
+import {
+  colorTheme,
+  getUser,
+  LoadingScreen,
+  resetUserAfterChange,
+} from '../../component/store';
 
-
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({navigation}) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [news, setNews] = useState([]);
 
   const fetchUser = async () => {
-    setLoading(true)
+    setLoading(true);
     const userData = await getUser();
     setUser(userData);
     console.log('User home screen:', userData);
-    setLoading(false)
+    setLoading(false);
+  };
+
+  const fetchNews = async () => {
+    firestore()
+      .collection('newsList')
+      .onSnapshot(querySnapshot => {
+        const news = [];
+        querySnapshot.forEach(documentSnapshot => {
+          news.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
+        });
+        setNews(news);
+        setLoading(false);
+        console.log(news);
+      });
+  };
+
+  const renderNews = ({item: aNews}) => {
+    const truncateContent = (content, limit) => {
+      const words = content.split(' ');
+      if (words.length > limit) {
+        return words.slice(0, limit).join(' ') + '...';
+      }
+      return content;
+    };
+
+    return (
+      <TouchableOpacity
+        style={styles.drinksSection}
+        onPress={() => navigation.navigate('NewsScreen',{aNews})}>
+        <View style={styles.drinkCard}>
+          <Image source={{uri: aNews.img}} style={styles.drinkImage} />
+          <Text style={styles.drinkTitle}>{aNews.title}</Text>
+          <Text style={styles.drinkDescription}>
+            {truncateContent(aNews.content, 15)}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   useEffect(() => {
-    const loadScreen = navigation.addListener("focus", () => { fetchUser() });
+    const loadScreen = navigation.addListener('focus', () => {
+      fetchUser();
+      fetchNews();
+    });
     return () => {
-      loadScreen()
+      loadScreen();
     };
   }, [navigation]);
 
   if (user === null) {
-    return (
-      <LoadingScreen visible={loading} />
-    )
+    return <LoadingScreen visible={loading} />;
   } else {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollView}>
           {/* Greeting Section */}
           <View style={styles.greetingSection}>
-            <Text style={styles.greetingText}>Good morning, {user.formOfAddress}.{user.username}! 🌞</Text>
+            <Text style={styles.greetingText}>
+              Good morning, {user.formOfAddress}.{user.username}! 🌞
+            </Text>
             <TouchableOpacity>
               <Text style={styles.mailIcon}>📩</Text>
             </TouchableOpacity>
@@ -53,20 +103,33 @@ const HomeScreen = ({ navigation }) => {
 
           {/* Balance and Stars Section */}
           <View style={styles.balanceStarsSection}>
-            <View style={styles.balanceCardWrapper}>
+            <TouchableOpacity
+              style={styles.balanceCardWrapper}
+              onPress={() => navigation.navigate('Card')}>
               <View style={styles.balanceCard}>
                 <Text style={styles.balanceTitle}>BALANCE</Text>
-                <Text style={styles.balanceAmount}>{user.balance.toLocaleString()} VND</Text>
-                <TouchableOpacity style={styles.addButton} onPress={()=> navigation.navigate('AddMoney', {user})}>
+                <Text style={styles.balanceAmount}>
+                  {user.balance.toLocaleString()} VND
+                </Text>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={() => navigation.navigate('AddMoney', {user})}>
                   <Text style={styles.addButtonText}>Add money</Text>
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => navigation.navigate('Card')}>
-                <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
-              </TouchableOpacity>
-            </View>
+              <View>
+                <Icon
+                  name="angle-right"
+                  style={styles.iconArrow}
+                  size={30}
+                  color={'white'}
+                />
+              </View>
+            </TouchableOpacity>
 
-            <View style={styles.starsCardWrapper}>
+            <TouchableOpacity
+              style={styles.starsCardWrapper}
+              onPress={() => navigation.navigate('MembershipDetail')}>
               <View style={styles.starsCard}>
                 <Text style={styles.starsTitle}>STARS</Text>
                 <Text style={styles.starsAmount}>{user.stars}</Text>
@@ -74,10 +137,15 @@ const HomeScreen = ({ navigation }) => {
                   {20 - user.stars} star(s) until next reward
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => navigation.navigate('MembershipDetail')}>
-                <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
-              </TouchableOpacity>
-            </View>
+              <View>
+                <Icon
+                  name="angle-right"
+                  style={styles.iconArrow}
+                  size={30}
+                  color={'white'}
+                />
+              </View>
+            </TouchableOpacity>
           </View>
 
           {/* Vouchers Section */}
@@ -85,53 +153,60 @@ const HomeScreen = ({ navigation }) => {
             <Image
               style={styles.iconGift}
               source={require('../../../assets/img/iconGift.png')}
-              resizeMode='contain'
+              resizeMode="contain"
             />
             <Text style={styles.voucherText}>
               You have 1 available voucher(s)
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Card')}>
-              <Icon name='angle-right' style={styles.iconArrow} size={30} color={'white'} />
+              <Icon
+                name="angle-right"
+                style={styles.iconArrow}
+                size={30}
+                color={'white'}
+              />
             </TouchableOpacity>
           </View>
 
           {/* Order Again Section */}
           <View style={styles.orderAgainSection}>
             <Text style={styles.orderAgainTitle}>ORDER AGAIN?</Text>
-            <Text style={styles.orderAgainDetails} numberOfLines={1} ellipsizeMode='tail'>
+            <Text
+              style={styles.orderAgainDetails}
+              numberOfLines={1}
+              ellipsizeMode="tail">
               2 Item(s) | x1 Green Tea Cream Frappuccino L, x1 Americano Cold M
             </Text>
-            <TouchableOpacity style={styles.reorderButton} onPress={() => navigation.navigate('ReviewOrderScreen')}>
+            <TouchableOpacity
+              style={styles.reorderButton}
+              onPress={() => navigation.navigate('ReviewOrderScreen')}>
               <Text style={styles.reorderButtonText}>Reorder</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Suggested Drinks Section */}
-          <TouchableOpacity style={styles.drinksSection} onPress={() => navigation.navigate('NewsScreen')}>
-            <View style={styles.drinkCard}>
-              <Image
+          <FlatList
+            data={news}
+            renderItem={renderNews}
+            keyExtractor={item => item.key}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.drinksSection}
+          />
 
-                source={{ uri: 'https://drive.usercontent.google.com/download?id=1m4CPS1rwv1rDRXYvxPQLInG5e3bH69XG&export=view&authuser=0' }}
-                style={styles.drinkImage}
-              />
-              <Text style={styles.drinkTitle}>hh</Text>
-              <Text style={styles.drinkDescription}>
-                Bursting with the tang of freshly squeezed lemons, paired with a
-                fizzing soda base.
-              </Text>
-            </View>
-          </TouchableOpacity>
           {/* Card Section */}
         </ScrollView>
-        <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
-          <Text style={styles.cardButtonText}>{user.balance.toLocaleString()} VND
-           on card</Text>
+        <TouchableOpacity
+          style={styles.cardButton}
+          onPress={() => navigation.navigate('Card')}>
+          <Text style={styles.cardButtonText}>
+            {user.balance.toLocaleString()} VND on card
+          </Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
   }
 };
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
@@ -143,8 +218,8 @@ const styles = StyleSheet.create({
     paddingVertical: scale(20),
   },
   loading: {
-    justifyContent: "center",
-    verticalAlign: "middle",
+    justifyContent: 'center',
+    verticalAlign: 'middle',
   },
   greetingSection: {
     flexDirection: 'row',
@@ -182,7 +257,7 @@ const styles = StyleSheet.create({
     color: '#eeefab',
   },
   balanceAmount: {
-    fontSize: scale(16),
+    fontSize: scale(18),
     fontWeight: 'bold',
     color: '#fff',
     marginVertical: scale(5),
@@ -228,7 +303,7 @@ const styles = StyleSheet.create({
   },
   voucherSection: {
     backgroundColor: '#f79814',
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     paddingHorizontal: scale(20),
     paddingVertical: scale(8),
     marginBottom: scale(10),
@@ -244,7 +319,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontStyle: 'italic',
     color: '#fff',
-    marginVertical: "auto",
+    marginVertical: 'auto',
   },
   orderAgainSection: {
     backgroundColor: '#7ec479',
@@ -288,19 +363,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   drinksSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: scale(10),
+    // paddingRight: scale(10),
   },
   drinkCard: {
     backgroundColor: '#fff',
     borderRadius: scale(10),
-    width: '60%',
+    width: scale(210),
+    height: scale(220),
     alignItems: 'center',
+    marginHorizontal: scale(10),
   },
   drinkImage: {
-    width: scale(200),
-    height: scale(300),
+    width: scale(210),
+    height: scale(120),
     borderRadius: scale(10),
     marginBottom: scale(10),
   },

@@ -84,12 +84,13 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: scale(1),
+    borderColor: colorTheme.greenBackground,
     paddingHorizontal: scale(10),
     width: '80%',
   },
   addButton: {
     backgroundColor: '#7ec479',
-    paddingVertical: scale(7),
+    paddingVertical: scale(13),
     width: scale(120),
     borderRadius: scale(25),
     borderWidth: scale(2),

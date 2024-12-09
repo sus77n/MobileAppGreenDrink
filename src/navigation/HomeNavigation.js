@@ -11,6 +11,7 @@ import { colorTheme } from '../component/store';
 import HomeStoreScreen from '../screen/StoreScreen/HomeStoreScreen';
 import ManageOrder from '../screen/StoreScreen/ManageOrder';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import AddMoney from '../screen/CustomerScreen/AddMoney';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ export const CustomerHomeNavigation = ({ route, navigation }) => {
             <Stack.Screen name='MembershipDetail' component={MembershipDetail} />
             <Stack.Screen name='ReviewOrderScreen' component={ReviewOrder} />
             <Stack.Screen name='NewsScreen' component={NewsScreen} />
+            <Stack.Screen name='AddMoney' component={AddMoney}/>
         </Stack.Navigator>
     )
 };

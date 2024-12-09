@@ -56,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.balanceCardWrapper}>
               <View style={styles.balanceCard}>
                 <Text style={styles.balanceTitle}>BALANCE</Text>
-                <Text style={styles.balanceAmount}>đ{user.balance}</Text>
+                <Text style={styles.balanceAmount}>{user.balance.toLocaleString()} VND</Text>
                 <TouchableOpacity style={styles.addButton}>
                   <Text style={styles.addButtonText}>Add money</Text>
                 </TouchableOpacity>
@@ -124,7 +124,8 @@ const HomeScreen = ({ navigation }) => {
           {/* Card Section */}
         </ScrollView>
         <TouchableOpacity style={styles.cardButton} onPress={() => navigation.navigate('Card')}>
-          <Text style={styles.cardButtonText}>₫{user.balance} on card</Text>
+          <Text style={styles.cardButtonText}>{user.balance.toLocaleString()} VND
+           on card</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );

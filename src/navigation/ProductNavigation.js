@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
-import ManageProduct from '../screen/ManageProduct';
-import AddProduct from '../screen/AddProduct';
-import EditProduct from '../screen/EditProduct';
+import ManageProduct from '../screen/StoreScreen/ManageProduct';
+import AddProduct from '../screen/StoreScreen/AddProduct';
+import EditProduct from '../screen/StoreScreen/EditProduct';
 import { colorTheme } from '../component/store';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 

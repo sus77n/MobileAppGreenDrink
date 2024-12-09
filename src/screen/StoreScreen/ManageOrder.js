@@ -13,7 +13,7 @@ import CheckBox from '@react-native-community/checkbox'; // Correct import for C
 import {colorTheme, TopGoBack} from '../component/store';
 import {getFirestore} from '@react-native-firebase/firestore';
 
-const ManageDetailTrans = ({navigation, route}) => {
+const ManageOrder = ({navigation, route}) => {
   const {transaction} = route.params;
 
   const [drinks, setDrinks] = useState(transaction.drinks); // Get drinks list
@@ -224,4 +224,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ManageDetailTrans;
+export default ManageOrder;

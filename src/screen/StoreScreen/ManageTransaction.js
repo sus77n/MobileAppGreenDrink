@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Dimensions,FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {colorTheme, TopGoBack} from '../component/store';
+import {colorTheme, TopGoBack} from '../../component/store';
 
 const ManageTransaction = ({navigation}) => {
   const [transactions, setTransactions] = useState([]);

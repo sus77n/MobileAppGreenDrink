@@ -2,10 +2,10 @@ import React from 'react';
 import 'react-native-gesture-handler';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colorTheme } from '../component/store';
-import StoreScreen from '../screen/StoreScreen';
-import ManagerStore from '../screen/ManageStore';
-import EditStore from '../screen/EditStore';
-import AddStore from '../screen/AddStore';
+import StoreScreen from '../screen/CustomerScreen/StoreScreen';
+import ManagerStore from '../screen/StoreScreen/ManageStore';
+import EditStore from '../screen/StoreScreen/EditStore';
+import AddStore from '../screen/StoreScreen/AddStore';
 
 const Stack = createNativeStackNavigator();
 

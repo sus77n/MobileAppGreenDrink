@@ -132,7 +132,7 @@ const OrderPickUp = ({ navigation, route }) => {
     return (
       <TouchableOpacity
         style={styles.drinkRow}
-        onPress={() => navigation.navigate('ProductDetail', { drink })}>
+        onPress={() => navigation.navigate('ProductDetail', { drink, user })}>
         <View style={styles.imageWrap}>
           <Image source={{ uri: drink.img }} style={styles.img} />
         </View>

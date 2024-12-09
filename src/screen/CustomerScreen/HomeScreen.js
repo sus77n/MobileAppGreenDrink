@@ -33,7 +33,7 @@ const HomeScreen = ({ navigation }) => {
     return () => {
       loadScreen()
     };
-  }, []);
+  }, [navigation]);
 
   if (user === null) {
     return (
@@ -57,7 +57,7 @@ const HomeScreen = ({ navigation }) => {
               <View style={styles.balanceCard}>
                 <Text style={styles.balanceTitle}>BALANCE</Text>
                 <Text style={styles.balanceAmount}>{user.balance.toLocaleString()} VND</Text>
-                <TouchableOpacity style={styles.addButton}>
+                <TouchableOpacity style={styles.addButton} onPress={()=> navigation.navigate('AddMoney', {user})}>
                   <Text style={styles.addButtonText}>Add money</Text>
                 </TouchableOpacity>
               </View>

@@ -24,7 +24,8 @@ const CustomerTab = () => {
       'TransactionDetail',
       'ProfileDetail',
       'TypeDrink',
-      'ProductDetail'
+      'ProductDetail',
+      'AddMoney'
     ];
     return hiddenScreens.includes(routeName) ? 'none' : 'flex';
   };

@@ -47,7 +47,6 @@ const HomeScreen = ({navigation}) => {
         });
         setNews(news);
         setLoading(false);
-        console.log(news);
       });
   };
 

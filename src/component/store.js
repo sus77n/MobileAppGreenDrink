@@ -23,44 +23,44 @@ export const colorTheme = {
 
 };
 
-export const PayInStoreTop = ({ navigation, text }) => {
-  const styles = StyleSheet.create({
-    top: {
-      flexDirection: 'row',
-      backgroundColor: 'white',
-      justifyContent: 'space-between',
-      height: 70,
-      elevation: 5,
-      shadowColor: '#000',
-      shadowOffset: { width: 2, height: 5 },
-      shadowOpacity: 0.25,
-      alignItems: 'center',
-    },
-    title: {
-      fontSize: 20,
-      color: '#568f56',
-      paddingLeft: 20,
-      fontWeight: 'bold',
-    },
-    iconClose: {
-      paddingRight: 20,
-      fontSize: 20,
-      fontWeight: '400',
-      color: colorTheme.greenText,
-    },
-  });
+// export const TopGoBack = ({ navigation, text }) => {
+//   const styles = StyleSheet.create({
+//     top: {
+//       flexDirection: 'row',
+//       backgroundColor: 'white',
+//       justifyContent: 'space-between',
+//       height: 70,
+//       elevation: 5,
+//       shadowColor: '#000',
+//       shadowOffset: { width: 2, height: 5 },
+//       shadowOpacity: 0.25,
+//       alignItems: 'center',
+//     },
+//     title: {
+//       fontSize: 20,
+//       color: '#568f56',
+//       paddingLeft: 20,
+//       fontWeight: 'bold',
+//     },
+//     iconClose: {
+//       paddingRight: 20,
+//       fontSize: 20,
+//       fontWeight: '400',
+//       color: colorTheme.greenText,
+//     },
+//   });
 
-  return (
-    <View style={styles.top}>
-      <Text style={styles.title}>{text}</Text>
-      <TouchableOpacity onPress={() => {
-        navigation.popToTop();
-      }}>
-        <Text style={styles.iconClose}>X</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+//   return (
+//     <View style={styles.top}>
+//       <Text style={styles.title}>{text}</Text>
+//       <TouchableOpacity onPress={() => {
+//         navigation.popToTop();
+//       }}>
+//         <Text style={styles.iconClose}>X</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
 
 export const TopGoBack = ({ navigation, text }) => {
   const styles = StyleSheet.create({

@@ -35,7 +35,7 @@ const ManagerStore = ({ navigation }) => {
         const { latitude, longitude } = position.coords;
         setUserPosition({ latitude, longitude });
         console.log("get user position successfully: " + userPosition);
-        
+
       },
       error => Alert.alert('Error', 'Unable to get location: ' + error.message),
       { enableHighAccuracy: false, timeout: 20000, maximumAge: 10000 }
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   coverMap: {
-    height: scale(300), 
+    height: scale(300),
     width: '100%',
     borderRadius: scale(5),
     shadowColor: colorTheme.black,
@@ -220,15 +220,15 @@ const styles = StyleSheet.create({
       height: 0,
     },
     shadowOpacity: 0.30,
-    shadowRadius: scale(4.65), 
-    elevation: scale(8), 
+    shadowRadius: scale(4.65),
+    elevation: scale(8),
   },
   title: {
-    fontSize: scale(22), 
+    fontSize: scale(22),
     fontWeight: 'bold',
     color: '#4CAF50',
     marginLeft: scale(15),
-    marginVertical: scale(10), 
+    marginVertical: scale(10),
   },
   loaderContainer: {
     flex: 1,
@@ -239,49 +239,49 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationCard: {
-    marginVertical: scale(12), 
+    marginVertical: scale(12),
     backgroundColor: colorTheme.grayBackground,
-    borderRadius: scale(10), 
-    paddingHorizontal: scale(18), 
-    paddingVertical: scale(18), 
+    borderRadius: scale(10),
+    paddingHorizontal: scale(18),
+    paddingVertical: scale(18),
   },
   address: {
-    fontSize: scale(15), 
+    fontSize: scale(15),
     fontWeight: '700',
     color: colorTheme.greenText,
-    marginVertical: scale(12), 
+    marginVertical: scale(12),
   },
   contactBtn: {
     backgroundColor: colorTheme.grayBackground,
     paddingVertical: scale(12),
-    paddingHorizontal: scale(18), 
-    borderRadius: scale(5), 
+    paddingHorizontal: scale(18),
+    borderRadius: scale(5),
     borderWidth: 1,
     borderColor: colorTheme.greenBackground,
     alignItems: 'center',
   },
   contactText: {
-    fontSize: scale(14), 
+    fontSize: scale(14),
     color: colorTheme.greenBackground,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: scale(10), 
+    marginVertical: scale(10),
   },
   editBtn: {
     backgroundColor: colorTheme.greenBackground,
-    borderRadius: scale(25), 
+    borderRadius: scale(25),
     justifyContent: "center",
-    paddingHorizontal: scale(9), 
-    paddingVertical: scale(7), 
+    paddingHorizontal: scale(9),
+    paddingVertical: scale(7),
   },
   btnRow: {
     flexDirection: "row",
     alignItems: 'center',
     justifyContent: "space-evenly",
-    width: scale(100), 
+    width: scale(100),
   },
 });
 

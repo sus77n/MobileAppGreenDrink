@@ -8,7 +8,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { colorTheme, PayInStoreTop } from '../../component/store';
+import { colorTheme, TopGoBack } from '../../component/store';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -16,7 +16,7 @@ const MembershipDetail = ({ navigation }) => {
   const progress = 7 / 20;
   return (
     <SafeAreaView style={styles.container}>
-      <PayInStoreTop navigation={navigation} text={'Membership detail'}/>
+      <TopGoBack navigation={navigation} text={'Membership detail'}/>
       <View style={styles.cardSection}>
         <View style={styles.cardTitleWrap}>
           <Text style={styles.cardTitle}>Gold member</Text>

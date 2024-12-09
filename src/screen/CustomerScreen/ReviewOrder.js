@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,  Dimensions,
 } from 'react-native';
-import { colorTheme, LoadingScreen, PayInStoreTop, resetUserAfterChange } from '../../component/store';
+import { colorTheme, LoadingScreen, TopGoBack, resetUserAfterChange } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
 
@@ -170,7 +170,7 @@ const ReviewOrder = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <PayInStoreTop navigation={navigation} text={'Review Order'} />
+      <TopGoBack navigation={navigation} text={'Review Order'} />
       <View style={styles.typeSection}>
         <View style={styles.leftTypeSection}>
           <Text style={styles.title}>Pick-up at</Text>

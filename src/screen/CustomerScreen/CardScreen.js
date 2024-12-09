@@ -8,7 +8,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { colorTheme, getTimeNow, getUser, LoadingScreen, PayInStoreTop } from '../../component/store';
+import { colorTheme, getTimeNow, getUser, LoadingScreen, TopGoBack } from '../../component/store';
 const CardScreen = ({ navigation, route }) => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ const CardScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <LoadingScreen visible={loading} />
-      <PayInStoreTop navigation={navigation} text={'Pay In Store'} />
+      <TopGoBack navigation={navigation} text={'Pay In Store'} />
       <View style={styles.card}>
         <Image
           source={require('../../../assets/img/goldCard.png')}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {  Dimensions, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { colorTheme, LoadingScreen, resetUserAfterChange, TopGoBack } from "../component/store";
+import { colorTheme, LoadingScreen, resetUserAfterChange, TopGoBack } from "../../component/store";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

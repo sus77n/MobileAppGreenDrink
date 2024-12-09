@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,  Dimensions,
 } from 'react-native';
-import { colorTheme, LoadingScreen, PayInStoreTop, resetUserAfterChange } from '../component/store';
+import { colorTheme, LoadingScreen, PayInStoreTop, resetUserAfterChange } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dimensions, Alert, Button, Image, SafeAreaView, TextInput, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Import Picker
 import firestore from '@react-native-firebase/firestore';
-import { colorTheme, LoadingScreen, TopGoBack } from '../component/store';  // Assuming colorTheme is available from your existing code
+import { colorTheme, LoadingScreen, TopGoBack } from '../../component/store';  // Assuming colorTheme is available from your existing code
 
 const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;

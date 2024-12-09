@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import 'react-native-gesture-handler';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { colorTheme, GOOGLE_MAPS_APIKEY } from '../component/store';
+import { colorTheme, GOOGLE_MAPS_APIKEY } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import Geolocation from '@react-native-community/geolocation';

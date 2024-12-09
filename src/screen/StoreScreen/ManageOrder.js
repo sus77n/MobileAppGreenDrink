@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox'; // Correct import for CheckBox
-import {colorTheme, TopGoBack} from '../component/store';
+import {colorTheme, TopGoBack} from '../../component/store';
 import {getFirestore} from '@react-native-firebase/firestore';
 
 const ManageOrder = ({navigation, route}) => {

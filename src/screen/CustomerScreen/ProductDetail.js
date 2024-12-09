@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,  Dimensions,
 } from 'react-native';
-import { colorTheme, getUser, LoadingScreen } from '../component/store';
+import { colorTheme, getUser, LoadingScreen } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 
@@ -129,7 +129,7 @@ const ProductDetail = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <LoadingScreen visible={loading} />
       <ImageBackground
-        source={require('../../assets/img/detailBackgroun.png')}
+        source={require('../../../assets/img/detailBackgroun.png')}
         style={{ width: '101%', height: '115%' }}>
         {/* Back Button */}
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -171,10 +171,10 @@ const ProductDetail = ({ navigation, route }) => {
                   <Image
                     source={
                       size === 'S'
-                        ? require('../../assets/img/sizeS.png')
+                        ? require('../../../assets/img/sizeS.png')
                         : size === 'M'
-                          ? require('../../assets/img/sizeM.png')
-                          : require('../../assets/img/sizeL.png')
+                          ? require('../../../assets/img/sizeM.png')
+                          : require('../../../assets/img/sizeL.png')
                     }
                   />
                 </TouchableOpacity>
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   },
   wrapWhite: {
     width: scale(375),
-    height: height * 0.72, // Keeping the 60% proportional height
+    height: height * 0.72, 
     flex: 1,
     backgroundColor: colorTheme.white,
     marginTop: height * 0.25, // 70% of screen height

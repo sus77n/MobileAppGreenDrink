@@ -9,7 +9,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { colorTheme, getUser, LoadingScreen } from '../component/store';
+import { colorTheme, getUser, LoadingScreen } from '../../component/store';
 
 const OrderScreen = ({ navigation }) => {
   const [selectedType, setSelectedTye] = useState('OrderPickUp');
@@ -52,7 +52,7 @@ const OrderScreen = ({ navigation }) => {
           navigation.navigate('OrderPickUp', { user });
         }}>
         <Text style={styles.cardTitle}>Order & Pick-up</Text>
-        <Image source={require('../../assets/img/iconOrderPickUp.png')} />
+        <Image source={require('../../../assets/img/iconOrderPickUp.png')} />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.card}
@@ -60,7 +60,7 @@ const OrderScreen = ({ navigation }) => {
           navigation.navigate('Delivery');
         }}>
         <Text style={styles.cardTitle}>Delivery</Text>
-        <Image source={require('../../assets/img/iconDelivery.png')} />
+        <Image source={require('../../../assets/img/iconDelivery.png')} />
       </TouchableOpacity>
       <View style={styles.reorderSection}>
         <Text style={styles.reorderTitle}>Order again</Text>

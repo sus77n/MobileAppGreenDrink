@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions,FlatList, StyleSheet, Text, View } from "react-native";
-import { colorTheme, TopGoBack } from "../component/store";
+import { colorTheme, TopGoBack } from "../../component/store";
 import { getFirestore } from "@react-native-firebase/firestore";
 const ManageTransDetail = ({ navigation, route }) => {
     const {transaction} = route.params

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { colorTheme, LoadingScreen, TopGoBack } from '../component/store';
+import { colorTheme, LoadingScreen, TopGoBack } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 const Delivery = ({ navigation }) => {

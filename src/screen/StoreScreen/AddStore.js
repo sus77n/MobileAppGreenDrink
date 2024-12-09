@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Dimensions,Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
-import { colorTheme, LoadingScreen } from '../../component/store';
+import "react-native-gesture-handler"
+import { Dimensions, Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet } from 'react-native';
+import { colorTheme, LoadingScreen, TopGoBack } from '../../component/store';
 import firestore from '@react-native-firebase/firestore';
 
 const { width, height } = Dimensions.get('window');
@@ -8,6 +9,9 @@ const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+    },
+    form: {
         flex: 1,
         backgroundColor: colorTheme.white,
         padding: scale(20),
@@ -62,7 +66,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cancelButton: {
-        backgroundColor: 'red', // You can choose a color for the cancel button
+        backgroundColor: 'red',
         paddingVertical: scale(10),
         borderRadius: scale(5),
         flex: 1,
@@ -92,12 +96,12 @@ const AddStore = ({ navigation, }) => {
         }
         const toNumberLatitude = parseFloat(latitude);
         const toNumberLongitude = parseFloat(latitude);
-        
+
         if (isNaN(toNumberLongitude) || isNaN(toNumberLatitude)) {
             Alert.alert('Error', 'Please enter a valid location');
             return;
         }
-        
+
         firestore()
             .collection('storeLocations')
             .add({
@@ -129,49 +133,52 @@ const AddStore = ({ navigation, }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <LoadingScreen visible={loading} />
-            <TextInput
-                style={styles.input}
-                placeholder="Store Name"
-                value={name}
-                onChangeText={setName}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Address"
-                value={address}
-                onChangeText={setAddress}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Phone number"
-                value={contact}
-                onChangeText={setContact}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Latitude"
-                value={latitude}
-                onChangeText={setLatitude}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Longitude"
-                value={longitude}
-                onChangeText={setLongitude}
-            />
+            <TopGoBack text={"Add store"} navigation={navigation} />
+            <View style={styles.form}>
+                <LoadingScreen visible={loading} />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Store Name"
+                    value={name}
+                    onChangeText={setName}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Address"
+                    value={address}
+                    onChangeText={setAddress}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Phone number"
+                    value={contact}
+                    onChangeText={setContact}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Latitude"
+                    value={latitude}
+                    onChangeText={setLatitude}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Longitude"
+                    value={longitude}
+                    onChangeText={setLongitude}
+                />
 
 
-            <View style={styles.row}>
-                <TouchableOpacity style={styles.previewButton} onPress={handlePreview}>
-                    <Text style={styles.buttonText}>Preview</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.buttonText}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                    <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
+                <View style={styles.row}>
+                    <TouchableOpacity style={styles.previewButton} onPress={handlePreview}>
+                        <Text style={styles.buttonText}>Preview</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                        <Text style={styles.buttonText}>Save</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+                        <Text style={styles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </SafeAreaView>
     );

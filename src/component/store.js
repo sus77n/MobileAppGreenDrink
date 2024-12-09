@@ -23,44 +23,33 @@ export const colorTheme = {
 
 };
 
-// export const TopGoBack = ({ navigation, text }) => {
-//   const styles = StyleSheet.create({
-//     top: {
-//       flexDirection: 'row',
-//       backgroundColor: 'white',
-//       justifyContent: 'space-between',
-//       height: 70,
-//       elevation: 5,
-//       shadowColor: '#000',
-//       shadowOffset: { width: 2, height: 5 },
-//       shadowOpacity: 0.25,
-//       alignItems: 'center',
-//     },
-//     title: {
-//       fontSize: 20,
-//       color: '#568f56',
-//       paddingLeft: 20,
-//       fontWeight: 'bold',
-//     },
-//     iconClose: {
-//       paddingRight: 20,
-//       fontSize: 20,
-//       fontWeight: '400',
-//       color: colorTheme.greenText,
-//     },
-//   });
+export const TopNoIcon = ({ navigation, text }) => {
+  const styles = StyleSheet.create({
+    top: {
+      flexDirection: 'row',
+      backgroundColor: 'white',
+      justifyContent: 'space-between',
+      height: 70,
+      elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 2, height: 5 },
+      shadowOpacity: 0.25,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 20,
+      color: colorTheme.greenText,
+      paddingLeft: 20,
+      fontWeight: 'bold',
+    },
+  });
 
-//   return (
-//     <View style={styles.top}>
-//       <Text style={styles.title}>{text}</Text>
-//       <TouchableOpacity onPress={() => {
-//         navigation.popToTop();
-//       }}>
-//         <Text style={styles.iconClose}>X</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
+  return (
+    <View style={styles.top}>
+      <Text style={styles.title}>{text}</Text>
+    </View>
+  );
+};
 
 export const TopGoBack = ({ navigation, text }) => {
   const styles = StyleSheet.create({
@@ -74,11 +63,11 @@ export const TopGoBack = ({ navigation, text }) => {
       shadowOffset: { width: 2, height: 5 },
       shadowOpacity: 0.25,
       alignItems: 'center',
+      zIndex: 1,
     },
     title: {
       fontSize: 20,
-      color: '#568f56',
-      paddingRight: 20,
+      color: colorTheme.greenText,
       fontWeight: 'bold',
     },
     iconBack: {

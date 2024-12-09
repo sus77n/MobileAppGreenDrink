@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import 'react-native-gesture-handler';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { colorTheme, GOOGLE_MAPS_APIKEY } from '../../component/store';
+import { colorTheme, GOOGLE_MAPS_APIKEY, TopNoIcon } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import Geolocation from '@react-native-community/geolocation';
@@ -110,7 +110,7 @@ const ManagerStore = ({ navigation }) => {
           })
         }}>
         <Text style={styles.address}>{store.name}</Text>
-        <Text style={styles.drinks}>{store.address}</Text>
+        <Text>{store.address}</Text>
         <View style={styles.row}>
           <TouchableOpacity style={styles.contactBtn} onPress={() => { }}>
             <Text style={styles.contactText}>Phone: {store.contact}</Text>
@@ -132,7 +132,7 @@ const ManagerStore = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Find a store</Text>
+      <TopNoIcon text={"Stores"} />
       <View style={styles.coverMap}>
         <MapView
           style={styles.map}
@@ -170,13 +170,12 @@ const ManagerStore = ({ navigation }) => {
       </View>
       <View style={styles.nearbyBlock}>
         <View style={styles.row}>
-          <Text style={styles.title}>Existed Stores</Text>
-          <View style={styles.btnRow}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Add')}>
-              <Icon name="plus" style={styles.editBtn} color={colorTheme.white} size={20} />
-            </TouchableOpacity>
-          </View>
+          <Text style={[styles.title, { marginBottom: scale(20) }]}>Existed Stores</Text>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => navigation.navigate('Add')}>
+            <Icon name="plus" style={styles.editBtn} color={colorTheme.white} size={20} />
+          </TouchableOpacity>
         </View>
 
         {locations.length === 0 ? (
@@ -211,24 +210,15 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   coverMap: {
-    height: scale(300),
-    width: '100%',
-    borderRadius: scale(5),
-    shadowColor: colorTheme.black,
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.30,
-    shadowRadius: scale(4.65),
-    elevation: scale(8),
+    height: scale(height * 0.4),
+    width: "100%",
+    marginBottom: scale(5),
   },
   title: {
     fontSize: scale(22),
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: colorTheme.greenText,
     marginLeft: scale(15),
-    marginVertical: scale(10),
   },
   loaderContainer: {
     flex: 1,
@@ -239,7 +229,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationCard: {
-    marginVertical: scale(12),
+    marginVertical: scale(10),
     backgroundColor: colorTheme.grayBackground,
     borderRadius: scale(10),
     paddingHorizontal: scale(18),
@@ -262,13 +252,13 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: scale(14),
-    color: colorTheme.greenBackground,
+    color: colorTheme.greenText,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: scale(10),
+    textAlign: "center",
+    marginVertical: scale(10)
   },
   editBtn: {
     backgroundColor: colorTheme.greenBackground,
@@ -283,6 +273,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     width: scale(100),
   },
+  addBtn: {
+    marginRight: scale(25)
+  }
 });
 
 

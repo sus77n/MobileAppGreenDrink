@@ -5,10 +5,10 @@ import {
     View,
     ActivityIndicator,
     FlatList,
-    TouchableOpacity,  Dimensions,
+    TouchableOpacity, Dimensions,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { colorTheme, LoadingScreen } from "../../component/store";
+import { colorTheme, LoadingScreen, TopNoIcon } from "../../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 
@@ -35,7 +35,7 @@ const StoreScreen = ({ navigation }) => {
                     })
                 }>
                 <Text style={styles.address}>{location.name}</Text>
-                <Text style={styles.drinks}>{location.address}</Text>
+                <Text>{location.address}</Text>
                 <View style={styles.row}>
                     <TouchableOpacity style={styles.contactBtn} onPress={() => { }}>
                         <Text style={styles.contactText}>Phone: {location.contact}</Text>
@@ -78,7 +78,7 @@ const StoreScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <LoadingScreen visible={loading} />
-            <Text style={styles.title}>Find a store</Text>
+            <TopNoIcon text={"Stores"} />
             <View style={styles.coverMap}>
                 <MapView
                     style={styles.map}
@@ -106,7 +106,7 @@ const StoreScreen = ({ navigation }) => {
                 </MapView>
             </View>
             <View style={styles.nearbyBlock}>
-                <Text style={styles.title}>Nearby Stores</Text>
+                <Text style={[styles.title, { marginBottom: scale(20) }]}>Nearby Stores</Text>
                 {locations.length === 0 ? (
                     <View style={styles.loaderContainer}>
                         <ActivityIndicator size="large" color="#0000ff" />
@@ -135,16 +135,16 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
     },
     coverMap: {
-        height: scale(height * 0.4), 
+        height: scale(height * 0.4),
         width: "100%",
-        marginVertical: scale(10), 
+        marginBottom: scale(10),
     },
     title: {
         fontSize: scale(20),
         fontWeight: "bold",
-        color: "#4CAF50",
-        marginLeft: scale(width * 0.05), 
-        marginTop: scale(10), 
+        color: colorTheme.greenText,
+        marginLeft: scale(width * 0.05),
+        marginTop: scale(10),
     },
     loaderContainer: {
         flex: 1,
@@ -155,10 +155,10 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     locationCard: {
-        marginVertical: scale(10), 
+        marginVertical: scale(10),
         backgroundColor: colorTheme.grayBackground,
         borderRadius: scale(10),
-        paddingHorizontal: scale(15), 
+        paddingHorizontal: scale(15),
         paddingVertical: scale(10),
         marginHorizontal: scale(10),
     },
@@ -166,11 +166,11 @@ const styles = StyleSheet.create({
         fontSize: scale(15),
         fontWeight: "700",
         color: colorTheme.greenText,
-        marginVertical: scale(10), 
+        marginVertical: scale(10),
     },
     contactBtn: {
         backgroundColor: colorTheme.grayBackground,
-        paddingVertical: scale(10), 
+        paddingVertical: scale(10),
         paddingHorizontal: scale(20),
         borderRadius: scale(5),
         borderWidth: scale(1),
@@ -179,15 +179,14 @@ const styles = StyleSheet.create({
     },
     contactText: {
         fontSize: scale(14),
-        color: colorTheme.greenBackground,
+        color: colorTheme.greenText,
     },
     row: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingTop: scale(height * 0.04), // Converts "4%" of height
+        paddingTop: scale(height * 0.04),
     },
 });
-
 
 export default StoreScreen;

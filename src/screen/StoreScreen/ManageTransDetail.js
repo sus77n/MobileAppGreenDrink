@@ -9,8 +9,8 @@ const ManageTransDetail = ({ navigation, route }) => {
     const renderItem = ({ item }) => (
         <View style={styles.row}>
             <View>
-            <Text style={styles.itemName}>{item.quantity} x {item.name} - {item.custom.size}</Text>
-            <Text style={{marginLeft: 22,}}>{item.custom.sweetness}</Text>
+            <Text style={styles.itemName}>{item.quantity} x {item.name} - {item.customization.size}</Text>
+            <Text style={{marginLeft: 22,}}>{item.customization.sweetness}</Text>
             </View>
             <Text style={styles.itemAmount}>{item.price}</Text>
         </View>

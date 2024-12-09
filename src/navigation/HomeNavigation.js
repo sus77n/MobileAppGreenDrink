@@ -34,7 +34,6 @@ export const CustomerHomeNavigation = ({ route, navigation }) => {
 };
 
 export const ManagerHomeNavigation = ({ route, navigation }) => {
-
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route) ?? '';
         const hiddenScreens = ['Edit', 'Add', 'ManageDetailTrans'];

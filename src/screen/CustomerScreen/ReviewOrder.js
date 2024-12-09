@@ -24,24 +24,22 @@ const ReviewOrder = ({ navigation, route }) => {
   useEffect(() => {
     const fetchDrinks = async () => {
       try {
-        const drinkKeys = Object.keys(order.drinks); // Get all the drink keys from order.drinks
-        const drinksData = []; // Array to store the drink details
+        const drinkKeys = Object.keys(order.drinks); 
+        const drinksData = []; 
 
-        // Create a batch of async operations to fetch drinks in parallel
         const drinkFetchPromises = drinkKeys.map(async (drinkKey) => {
-          const drinkData = order.drinks[drinkKey]; // Get the drink object using the key
+          const drinkData = order.drinks[drinkKey]; 
 
-          // Fetch the drink details from the Firestore 'drinks' collection
           const doc = await firestore().collection('drinks').doc(drinkData.key).get();
 
           if (doc.exists) {
             const drinkDetails = doc.data();
             drinksData.push({
-              key: drinkData.key, // Use the key from order
+              key: drinkData.key, 
               name: drinkDetails.name,
               price: drinkDetails.price,
-              quantity: drinkData.quantity || 1, // Default to 1 if quantity is not set
-              custom: drinkData.custom, // Customization details
+              quantity: drinkData.quantity || 1, 
+              custom: drinkData.custom, 
             });
             console.log("each item: " + drinkData.key + drinkDetails.name);
 
@@ -50,21 +48,18 @@ const ReviewOrder = ({ navigation, route }) => {
           }
         });
 
-        // Wait for all the drink fetch promises to resolve
         await Promise.all(drinkFetchPromises);
         console.log("drinks data" + drinksData);
-        // Update the state with the fetched data
         setListDrinks(drinksData);
       } catch (error) {
         console.error('Error fetching drinks from Firestore:', error);
       }
     };
 
-    fetchDrinks(); // Call the function to fetch drinks
+    fetchDrinks(); 
   }, [order.drinks]);
 
 
-  // Update quantity for a specific drink
   const updateQuantity = (key, increment) => {
     setQuantities((prev) => ({
       ...prev,
@@ -73,12 +68,10 @@ const ReviewOrder = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    console.log('order list:', order.drinks); // Logs the full array
+    console.log('order list:', order.drinks); 
   }, []);
 
   const renderItem = ({ item: drink }) => {
-    // const details = drinkDetails[drink.key];
-    // if (!details) return null;
 
     return (
       <View>
@@ -134,10 +127,7 @@ const ReviewOrder = ({ navigation, route }) => {
             totalStars: user.totalStars + total / 20000,
           }
         )
-      // .then(() => {
-      //     Alert.alert('Success', 'User updated successfully');
-      //     navigation.navigate('Home');
-      // })
+
       resetUserAfterChange(user.key)
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -148,19 +138,18 @@ const ReviewOrder = ({ navigation, route }) => {
     try {
       const db = firestore();
 
-      // Create the transaction document
+
       const newTransaction = {
-        customerID: user.key,  // Provided customerID
-        createdAt: new Date(),  // Set the current timestamp
-        drinks: listDrinks,  // Drink details as shown in the screenshot
-        status: "Uncompleted",  // Example status, adjust as necessary
-        transID: `T${new Date().getTime()}`,  // Unique transaction ID based on the timestamp
-        type: "OrderPickUp",  // Example type, adjust as necessary
-        price: total,  // Price from the drink details
-        priceBeforePromotion: total  // Price before promotion
+        customerID: user.key,  
+        createdAt: new Date(),  
+        drinks: listDrinks,  
+        status: "Uncompleted", 
+        transID: `T${new Date().getTime()}`,  
+        type: "OrderPickUp", 
+        price: total,  
+        priceBeforePromotion: total  
       };
 
-      // Adding the new document to the transactions collection
       await db.collection('transactions').add(newTransaction);
       console.log("Transaction added successfully.");
     } catch (e) {
@@ -192,10 +181,8 @@ const ReviewOrder = ({ navigation, route }) => {
           keyExtractor={(item) => item.key}
         />
 
-        {/* Divider */}
         <View style={styles.divider} />
 
-        {/* Order Total */}
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
           <Text style={styles.orderTotalValue}>

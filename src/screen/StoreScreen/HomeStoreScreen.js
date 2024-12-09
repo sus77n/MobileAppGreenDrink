@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
-import { colorTheme, LoadingScreen } from '../../component/store';
+import { colorTheme, LoadingScreen, resetUserStorage } from '../../component/store';
 import { getFirestore } from '@react-native-firebase/firestore';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 const HomeStoreScreen = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const subscriber = getFirestore()
+    useEffect(()=>{
+      subscriber()
+    },[])
+
+    const subscriber = () =>  {
+      setLoading(true)
+      getFirestore()
       .collection('transactions')
       .onSnapshot(querySnapshot => {
         const transactions = [];
@@ -20,34 +26,75 @@ const HomeStoreScreen = ({ navigation }) => {
             key: documentSnapshot.id,
           });
         });
-        setLoading(false)
-        setTransactions(transactions);
+
+        const filter = transactions.filter(item => item.status === 'Uncompleted');
+        setTransactions(filter);
       });
-    console.log(transactions);
-    setLoading(true)
-    return () => subscriber();
-  }, []);
+      setLoading(false)
+    }
 
   const handleTransactionStatus = (transactionId, newStatus) => {
+    // Step 1: Update the local state
+    setLoading(true)
     const updatedTransactions = transactions.map(transaction => {
-      if (transaction.id === transactionId) {
+      if (transaction.transId === transactionId) {
         return { ...transaction, status: newStatus };
       }
       return transaction;
     });
+  
     setTransactions(updatedTransactions);
+  
+    // Step 2: Find and update Firestore using the 'transId' field
+    const transactionRef = getFirestore()
+      .collection('transactions')
+      .where('transID', '==', transactionId)
+      .limit(1); // Make sure the query returns only one result
+  
+    transactionRef.get()
+      .then(querySnapshot => {
+        if (!querySnapshot.empty) {
+          const transactionDoc = querySnapshot.docs[0];
+          transactionDoc.ref.update({
+            status: newStatus,
+          })
+          .then(() => {
+            console.log('Transaction status updated in Firestore');
+          })
+          .catch((error) => {
+            console.error('Error updating status in Firestore: ', error);
+          });
+        } else {
+          console.log('Transaction not found');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching transaction from Firestore: ', error);
+      });
+      setLoading(false)
   };
 
+  const logoutHandler = () => {
+    try {
+        resetUserStorage();
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+        })
+    } catch (error) {
+        console.error("Error resetting navigation: ", error);
+    }
+};
   const renderTransactionItem = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageDetailTrans', { transaction: item })}>
+      <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageOrder', { transaction: item })}>
         <Text style={styles.transactionId}>Transaction ID: {item.transID}</Text>
         <Text style={styles.statusText}>Status: {item.status}</Text>
         <View style={styles.buttonContainer}>
           {item.status === 'Uncompleted' && (
             <TouchableOpacity
               style={styles.button}
-              onPress={() => handleTransactionStatus(item.id, 'Completed')}
+              onPress={() => handleTransactionStatus(item.transID, 'Completed')}
               disabled={item.status === 'Completed'} // Disable after status change
             >
               <Text style={styles.buttonText}>Mark as Completed</Text>
@@ -67,6 +114,14 @@ const HomeStoreScreen = ({ navigation }) => {
       <LoadingScreen visible={loading} />
       <View style={styles.greetingSection}>
         <Text style={styles.greetingText}>Green Drink Store</Text>
+        <TouchableOpacity onPress={() =>logoutHandler()}>
+        <Icon
+                  name="sign-out"
+                  style={styles.icon}
+                  size={30}
+                  color={colorTheme.greenText}
+                />
+        </TouchableOpacity>
       </View>
       <FlatList
         data={transactions}

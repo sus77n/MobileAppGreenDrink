@@ -18,21 +18,33 @@ const ManageOrder = ({navigation, route}) => {
 
   const [drinks, setDrinks] = useState(transaction.drinks); // Get drinks list
   const [user, setUser] = useState({});
-  const handleDrinkCompletion = drinkId => {
-    const updatedDrinks = drinks.map(drink => {
-      if (drink.id === drinkId) {
-        return {...drink, completed: !drink.completed}; // Toggle completion status
-      }
-      return drink;
-    });
-    setDrinks(updatedDrinks);
 
-    // Recalculate total price (if needed, e.g., for completed items or promotions)
-    const updatedPrice = updatedDrinks.reduce(
-      (acc, drink) => acc + drink.price * drink.quantity,
-      0,
-    );
-    setTotalPrice(updatedPrice);
+  const handleTransactionStatus = (transactionId, newStatus) => {
+    const transactionRef = getFirestore()
+      .collection('transactions')
+      .where('transID', '==', transactionId)
+      .limit(1); // Make sure the query returns only one result
+  
+    transactionRef.get()
+      .then(querySnapshot => {
+        if (!querySnapshot.empty) {
+          const transactionDoc = querySnapshot.docs[0];
+          transactionDoc.ref.update({
+            status: newStatus,
+          })
+          .then(() => {
+            console.log('Transaction status updated in Firestore');
+          })
+          .catch((error) => {
+            console.error('Error updating status in Firestore: ', error);
+          });
+        } else {
+          console.log('Transaction not found');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching transaction from Firestore: ', error);
+      });
   };
 
   const renderDrinkItem = ({item, index}) => {
@@ -40,10 +52,10 @@ const ManageOrder = ({navigation, route}) => {
       <View style={styles.drinkRow}>
         <View style={styles.drinkInfo}>
           <Text style={styles.drinkName}>
-            {item.quantity} x {item.name} - {item.custom.size}
+            {item.quantity} x {item.name} - {item.customization.size}
           </Text>
           <Text style={styles.drinkSweetness}>
-            Sweetness: {item.custom.sweetness}
+            Sweetness: {item.customization.sweetness}
           </Text>
         </View>
         <View style={styles.priceDrinkContainer}>
@@ -129,8 +141,9 @@ const ManageOrder = ({navigation, route}) => {
         <TouchableOpacity
           style={styles.completeButton}
           onPress={() => {
+            handleTransactionStatus(transaction.transID, 'Completed')
             Alert.alert('Transaction Completed');
-            navigation.goback();
+            navigation.goBack();
           }}>
           <Text style={styles.completeButtonText}>Complete Transaction</Text>
         </TouchableOpacity>

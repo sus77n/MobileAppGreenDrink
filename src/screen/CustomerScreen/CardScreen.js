@@ -32,7 +32,7 @@ const CardScreen = ({ navigation, route }) => {
       <PayInStoreTop navigation={navigation} text={'Pay In Store'} />
       <View style={styles.card}>
         <Image
-          source={require('../../assets/img/goldCard.png')}
+          source={require('../../../assets/img/goldCard.png')}
           style={styles.goldCard}
           resizeMode='contain'
         />
@@ -48,7 +48,7 @@ const CardScreen = ({ navigation, route }) => {
         <Text style={styles.voucherTitle}>VOUCHERS</Text>
         <View style={styles.voucherMain}>
           <View style={styles.voucherCard}>
-            <Image source={require('../../assets/img/voucherIcon.png')} style={styles.voucherIcon} />
+            <Image source={require('../../../assets/img/voucherIcon.png')} style={styles.voucherIcon} />
             <View style={styles.cardTitleWrap}>
               <Text style={styles.cardTitle}>Discount on 20% on Teacher Day</Text>
               <Text style={styles.cardSubtitle}>Expires on 20/11/2024</Text>

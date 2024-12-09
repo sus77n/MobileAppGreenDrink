@@ -1,13 +1,13 @@
 
 import React from 'react';
 import 'react-native-gesture-handler';
-import ProfileScreen from '../screen/ProfileScreen';
-import ProfileDetail from '../screen/ProfileDetail';
-import TransactionScreen from '../screen/TransactionScreen';
-import MembershipDetail from '../screen/MembershipDetail';
-import TransactionDetail from '../screen/TransactionDetail';
+import ProfileScreen from '../screen/CustomerScreen/ProfileScreen';
+import ProfileDetail from '../screen/CustomerScreen/ProfileDetail';
+import TransactionScreen from '../screen/CustomerScreen/TransactionScreen';
+import MembershipDetail from '../screen/CustomerScreen/MembershipDetail';
+import TransactionDetail from '../screen/CustomerScreen/TransactionDetail';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ChangePassword from '../screen/ChangePassword';
+import ChangePassword from '../screen/CustomerScreen/ChangePassword';
 import { colorTheme } from '../component/store';
 
 const Stack = createNativeStackNavigator();

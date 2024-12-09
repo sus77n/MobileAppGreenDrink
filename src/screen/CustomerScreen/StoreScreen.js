@@ -8,7 +8,7 @@ import {
     TouchableOpacity,  Dimensions,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { colorTheme, LoadingScreen } from "../component/store";
+import { colorTheme, LoadingScreen } from "../../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 

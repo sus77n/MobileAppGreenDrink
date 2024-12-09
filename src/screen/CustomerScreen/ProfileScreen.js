@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {   Dimensions,ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colorTheme, getUser, LoadingScreen, resetUserStorage, setUserStorage, TopGoBack } from "../component/store";
+import { colorTheme, getUser, LoadingScreen, resetUserStorage, setUserStorage, TopGoBack } from "../../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProfileScreen = ({ navigation }) => {

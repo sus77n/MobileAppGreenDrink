@@ -1,15 +1,15 @@
 import React from 'react';
 import 'react-native-gesture-handler';
-import HomeScreen from '../screen/HomeScreen';
-import InboxScreen from '../screen/InboxScreen';
-import CardScreen from '../screen/CardScreen';
-import ReviewOrder from '../screen/ReviewOrder';
-import NewsScreen from '../screen/NewsScreen';
+import HomeScreen from '../screen/CustomerScreen/HomeScreen';
+import InboxScreen from '../screen/CustomerScreen/InboxScreen';
+import CardScreen from '../screen/CustomerScreen/CardScreen';
+import ReviewOrder from '../screen/CustomerScreen/ReviewOrder';
+import NewsScreen from '../screen/CustomerScreen/NewsScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MembershipDetail from '../screen/MembershipDetail';
+import MembershipDetail from '../screen/CustomerScreen/MembershipDetail';
 import { colorTheme } from '../component/store';
-import HomeStoreScreen from '../screen/HomeStoreScreen';
-import ManageDetailTrans from '../screen/ManageDetailTrans';
+import HomeStoreScreen from '../screen/StoreScreen/HomeStoreScreen';
+import ManageOrder from '../screen/StoreScreen/ManageOrder';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
@@ -48,7 +48,7 @@ export const ManagerHomeNavigation = ({ route, navigation }) => {
             })}
         >
             <Stack.Screen name="HomeMain" component={HomeStoreScreen} />
-            <Stack.Screen name='ManageDetailTrans' component={ManageDetailTrans} />
+            <Stack.Screen name='ManageOrder' component={ManageOrder} />
         </Stack.Navigator>
     )
 };

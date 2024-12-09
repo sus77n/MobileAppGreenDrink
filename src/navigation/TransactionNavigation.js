@@ -1,8 +1,8 @@
 import 'react-native-gesture-handler';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colorTheme } from '../component/store';
-import ManageTransaction from '../screen/ManageTransaction';
-import ManageTransDetail from '../screen/ManageTransDetail';
+import ManageTransaction from '../screen/StoreScreen/ManageTransaction';
+import ManageTransDetail from '../screen/StoreScreen//ManageTransDetail';
 
 const Stack = createNativeStackNavigator();
 

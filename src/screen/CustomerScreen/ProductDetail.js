@@ -18,6 +18,7 @@ const ProductDetail = ({ navigation, route }) => {
 
   const [selectedSize, setSelectedSize] = useState('S');
   const [sweetness, setSweetness] = useState('Regular');
+  const [quantity, setQuantity] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -142,13 +143,39 @@ const ProductDetail = ({ navigation, route }) => {
               </TouchableOpacity>
             </View>
           </View>
+          <View style={styles.sweetSection}>
+            <Text style={styles.titleSize}>Quantity</Text>
+            <View style={styles.buttonGroup}>
+              <View style={styles.controls}>
+                <TouchableOpacity style={styles.controlButton} onPress={() => {
+                  setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+                }}>
+                  <Icon
+                    name="minus-circle"
+                    color={colorTheme.greenBackground}
+                    size={30}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.quantity}>{quantity}</Text>
+                <TouchableOpacity style={styles.controlButton} onPress={() => {
+                  setQuantity(prevQuantity => prevQuantity + 1);
+                }}>
+                  <Icon
+                    name="plus-circle"
+                    color={colorTheme.greenBackground}
+                    size={30}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
 
           <TouchableOpacity
             style={styles.addIcon}
             onPress={() =>
               addToOrderList({
                 customization: { size: selectedSize, sweetness: sweetness },
-                quantity: 1,
+                quantity: quantity,
               })
             }>
             <Icon name="plus" size={25} color={colorTheme.white} />
@@ -182,7 +209,7 @@ const styles = StyleSheet.create({
     height: height * 0.72, // Keeping the 60% proportional height
     flex: 1,
     backgroundColor: colorTheme.white,
-    marginTop: height * 0.25, // 70% of screen height
+    marginTop: height * 0.12, // 70% of screen height
     borderTopLeftRadius: scale(50),
     borderTopRightRadius: scale(50),
   },
@@ -315,6 +342,22 @@ const styles = StyleSheet.create({
     borderRadius: scale(25),
     bottom: scale(190),
     right: scale(20),
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    marginBottom: scale(15),
+    width: scale(120),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
+    borderColor: colorTheme.greenBackground,
+    paddingVertical: scale(5),
+  },
+  quantity: {
+    fontSize: scale(18),
+    fontWeight: 'bold',
+    marginHorizontal: scale(15),
   },
 });
 

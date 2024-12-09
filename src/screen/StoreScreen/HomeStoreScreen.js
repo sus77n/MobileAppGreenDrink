@@ -14,9 +14,9 @@ const HomeStoreScreen = ({ navigation }) => {
     },[])
 
     const subscriber = () =>  {
-      setLoading(true)
       getFirestore()
       .collection('transactions')
+      .orderBy('transID') 
       .onSnapshot(querySnapshot => {
         const transactions = [];
 
@@ -30,7 +30,6 @@ const HomeStoreScreen = ({ navigation }) => {
         const filter = transactions.filter(item => item.status === 'Uncompleted');
         setTransactions(filter);
       });
-      setLoading(false)
     }
 
   const handleTransactionStatus = (transactionId, newStatus) => {

@@ -83,24 +83,28 @@ const OrderPickUp = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    const beforeRemoveListener = navigation.addListener('beforeRemove', (event) => {
+    const beforeRemoveListener = navigation.addListener('beforeRemove', async (event) => {
       event.preventDefault();
-
-      Alert.alert(
-        'Cancel order',
-        'Your order will be cancelled. Are you sure?',
-        [
-          { text: 'Cancel', style: 'cancel', onPress: () => { } },
-          {
-            text: 'Sure',
-            style: 'destructive',
-            onPress: async () => {
-              await cleanOrder();
-              navigation.dispatch(event.data.action)
-            }
-          },
-        ]
-      );
+      const checkOrder = await getOrder();
+      if (checkOrder) {
+        Alert.alert(
+          'Cancel order',
+          'Your order will be cancelled. Are you sure?',
+          [
+            { text: 'Cancel', style: 'cancel', onPress: () => { } },
+            {
+              text: 'Sure',
+              style: 'destructive',
+              onPress: async () => {
+                await cleanOrder();
+                navigation.dispatch(event.data.action)
+              }
+            },
+          ]
+        );
+      } else {
+        navigation.dispatch(event.data.action)
+      }
     });
 
     return () => {

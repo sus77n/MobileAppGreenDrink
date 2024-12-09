@@ -8,7 +8,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { colorTheme, getTimeNow, getUser, LoadingScreen, PayInStoreTop } from '../component/store';
+import { colorTheme, getTimeNow, getUser, LoadingScreen, PayInStoreTop } from '../../component/store';
 const CardScreen = ({ navigation, route }) => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);

@@ -8,7 +8,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { colorTheme, PayInStoreTop } from '../component/store';
+import { colorTheme, PayInStoreTop } from '../../component/store';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 

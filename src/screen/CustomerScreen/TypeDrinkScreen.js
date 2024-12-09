@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,  Dimensions,
 } from 'react-native';
-import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../component/store';
+import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 const TypeDrinkScreen = ({ navigation, route }) => {

@@ -10,7 +10,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../component/store';
+import { colorTheme, getUser, LoadingScreen, TopGoBack } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';

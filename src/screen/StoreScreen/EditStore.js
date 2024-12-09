@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, TextInput, TouchableOpacity, Text, SafeAreaView, View, StyleSheet, Dimensions } from 'react-native';
-import { colorTheme, LoadingScreen } from '../component/store';
+import { colorTheme, LoadingScreen } from '../../component/store';
 import firestore from '@react-native-firebase/firestore';
 
 const { width, height } = Dimensions.get('window');

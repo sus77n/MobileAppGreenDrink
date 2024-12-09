@@ -11,7 +11,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import {colorTheme} from '../component/store';
+import {colorTheme} from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 

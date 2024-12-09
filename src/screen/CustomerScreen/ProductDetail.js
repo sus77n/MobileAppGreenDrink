@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   },
   wrapWhite: {
     width: scale(375),
-    height: height * 0.72, 
+    height: height * 0.72, // Keeping the 60% proportional height
     flex: 1,
     backgroundColor: colorTheme.white,
     marginTop: height * 0.25, // 70% of screen height

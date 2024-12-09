@@ -16,6 +16,7 @@ import {
   TopGoBack,
   resetUserAfterChange,
   getOrder,
+  cleanOrder,
 } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
@@ -89,7 +90,7 @@ const ReviewOrder = ({ navigation, route }) => {
   const updateBalance = () => {
     try {
       const starOnOrder = user.stars + order.total / 25000;
-      
+
       if (starOnOrder == 20) {
         starOnOrder = 0;
       } else if (starOnOrder > 20) {
@@ -104,12 +105,12 @@ const ReviewOrder = ({ navigation, route }) => {
           stars: starOnOrder,
           totalStars: user.totalStars + order.total / 25000,
         })
-      .then(() => {
-        console.log('Update successful');
-      })
-      .catch((error) => {
-        console.error('Error updating document: ', error);
-      });
+        .then(() => {
+          console.log('Update successful');
+        })
+        .catch((error) => {
+          console.error('Error updating document: ', error);
+        });
 
       resetUserAfterChange(user.key);
     } catch (error) {
@@ -137,6 +138,26 @@ const ReviewOrder = ({ navigation, route }) => {
       console.error('Error adding transaction: ', e);
     }
   };
+
+  const payHandle = async () => {
+    try {
+      addTransaction();
+      updateBalance();
+      await cleanOrder()
+      Alert.alert('Enjoy your drink!');
+      setTimeout(() => {
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: "Home"
+          }]
+        });
+      }, 1000);
+    } catch (error) {
+      console.error("Pay failed", error);
+      Alert.alert("Pay failed", "Try again")
+    }
+  }
 
   if (!order) {
     return (
@@ -187,10 +208,7 @@ const ReviewOrder = ({ navigation, route }) => {
               text: 'Ok',
               onPress: () => {
                 if (user.balance >= order.total) {
-                  updateBalance();
-                  addTransaction();
-                  Alert.alert('Enjoy your drink!');
-                  navigation.popToTop();
+                  payHandle();
                 } else {
                   Alert.alert('Not enough money');
                 }

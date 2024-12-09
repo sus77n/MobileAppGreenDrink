@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 
 const ProductDetail = ({ navigation, route }) => {
-  const { drink } = route.params;
+  const { drink, user } = route.params;
 
   const [selectedSize, setSelectedSize] = useState('S');
   const [sweetness, setSweetness] = useState('Regular');
@@ -22,18 +22,22 @@ const ProductDetail = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
 
   const updateTotal = async () => {
-    const order = await getOrder();
-    setTotal(order.total);
+    try {
+      const order = await getOrder();
+      setTotal(order.total);
+    } catch (error) {
+      console.error("Error update total: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addToOrderList = async ({ customization, quantity }) => {
     setLoading(true)
     try {
       await addToOrder({ drink: { ...drink, quantity: quantity, customization: customization } });
-      Alert.alert("Successful", "Add to order Successfully")
       setLoading(false)
       await updateTotal();
-      navigation.pop();
     } catch (error) {
       console.error("Add productDetail error: ", error);
       Alert.alert("Error", "Something went wrong. Try again!")
@@ -41,6 +45,11 @@ const ProductDetail = ({ navigation, route }) => {
       setLoading(false)
     }
   };
+
+  useEffect(() => {
+    const loadScreen = navigation.addListener("focus", async () => { await updateTotal() });
+    return () => { loadScreen() };
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>

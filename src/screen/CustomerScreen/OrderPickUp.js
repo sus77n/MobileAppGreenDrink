@@ -22,13 +22,14 @@ const OrderPickUp = ({ navigation, route }) => {
   const [categories, setCategories] = useState([]);
   const [seasonalDrink, setSeasonalDrink] = useState([]);
   const [total, setTotal] = useState(0);
+  const type = "Order & Pick Up"
 
   const updateTotal = async () => {
     try {
       const order = await getOrder();
       if (order === null) {
         setTotal(0);
-        await createOrder("orderPickUp");
+        await createOrder(type);
         const check = await getOrder();
         console.log("check: ", check);
       } else {

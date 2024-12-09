@@ -20,12 +20,15 @@ import {
 } from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
+import { Picker } from '@react-native-picker/picker';
 
 const ReviewOrder = ({ navigation, route }) => {
   const { user } = route.params;
   const [listDrinks, setListDrinks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState(null);
+  const [stores, setStores] = useState([]);
+  const [selectedStores, setSelectedStores] = useState("Chose a store");
 
   const fetchOrder = async () => {
     setLoading(true);
@@ -42,7 +45,27 @@ const ReviewOrder = ({ navigation, route }) => {
 
   useEffect(() => {
     const loadScreen = navigation.addListener("focus", () => { fetchOrder() });
-    return () => { loadScreen() };
+
+    const unsubscribeStores = getFirestore()
+      .collection("storeLocations")
+      .onSnapshot((response) => {
+        const temp = response.docs.map((doc) => ({
+          ...doc.data(),
+          key: doc.id
+        }));
+        setStores(temp);
+        console.log("stores: ", temp);
+
+        setLoading(false);
+      }, (error) => {
+        console.error("Error fetching stores: ", error);
+        setLoading(false);
+      });
+
+    return () => {
+      loadScreen()
+      unsubscribeStores()
+    };
   }, []);
 
   const renderItem = ({ item: drink }) => {
@@ -61,19 +84,25 @@ const ReviewOrder = ({ navigation, route }) => {
         </View>
         <View style={styles.controls}>
           <View style={styles.controls}>
-            <TouchableOpacity style={styles.controlButton} onPress={() => { }}>
+            <TouchableOpacity style={styles.controlButton} onPress={() => {
+              if (drink.quantity > 1) {
+                updateDrinkQuantity(drink.key, drink.quantity - 1);
+              }
+            }}>
               <Icon
                 name="minus-circle"
                 color={colorTheme.greenBackground}
-                size={25}
+                size={scale(30)}
               />
             </TouchableOpacity>
             <Text style={styles.quantity}>{drink.quantity}</Text>
-            <TouchableOpacity style={styles.controlButton} onPress={() => { }}>
+            <TouchableOpacity style={styles.controlButton} onPress={() => {
+              updateDrinkQuantity(drink.key, drink.quantity + 1);
+            }}>
               <Icon
                 name="plus-circle"
                 color={colorTheme.greenBackground}
-                size={25}
+                size={scale(30)}
               />
             </TouchableOpacity>
           </View>
@@ -118,6 +147,7 @@ const ReviewOrder = ({ navigation, route }) => {
       console.error('Error updating user:', error);
     }
   };
+
   const addTransaction = async () => {
     try {
       const db = firestore();
@@ -130,6 +160,7 @@ const ReviewOrder = ({ navigation, route }) => {
         type: order.type,
         price: order.total,
         priceBeforePromotion: order.total,
+        store: selectedStores
       };
 
       await db.collection('transactions').add(newTransaction);
@@ -159,7 +190,24 @@ const ReviewOrder = ({ navigation, route }) => {
     }
   }
 
-  if (!order) {
+  const updateDrinkQuantity = (drinkKey, newQuantity) => {
+    setListDrinks(prevDrinks => {
+      const updatedDrinks = prevDrinks.map(drink =>
+        drink.key === drinkKey ? { ...drink, quantity: newQuantity } : drink
+      );
+
+      const newTotal = updatedDrinks.reduce(
+        (total, drink) => total + drink.quantity * drink.price,
+        0
+      );
+
+      setOrder(prevOrder => ({ ...prevOrder, drinks: updatedDrinks, total: newTotal }));
+
+      return updatedDrinks;
+    });
+  };
+
+  if (!order || !stores) {
     return (
       <SafeAreaView style={styles.container}>
         <LoadingScreen visible={true} />
@@ -172,16 +220,17 @@ const ReviewOrder = ({ navigation, route }) => {
       <LoadingScreen visible={loading} />
       <TopGoBack navigation={navigation} text={'Review Order'} />
       <View style={styles.typeSection}>
-        <View>
-          <Text style={styles.title}>Pick-up at</Text>
-          <Text style={styles.subtitle}>Hikari</Text>
-        </View>
-        <Icon
-          name="angle-down"
-          style={styles.iconArrow}
-          size={30}
-          color={'black'}
-        />
+        <Text style={styles.title}>Pick-up at</Text>
+        <Picker style={styles.picker}
+          selectedValue={selectedStores}
+          onValueChange={(value) => setSelectedStores(value)}>
+          {stores.map(store => {
+            console.log("st: ", store);
+            return (
+              <Picker.Item label={store.name} value={store.name} />
+            )
+          })}
+        </Picker>
       </View>
       <View style={styles.itemSection}>
         <Text style={styles.header}>Order items</Text>
@@ -235,17 +284,14 @@ const styles = StyleSheet.create({
   },
   typeSection: {
     backgroundColor: colorTheme.grayBackground,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: scale(20),
-    paddingVertical: scale(20),
+    paddingHorizontal: scale(10),
+    paddingVertical: scale(10),
     margin: scale(15),
     marginBottom: scale(0),
     borderRadius: scale(15),
   },
   title: {
     fontSize: scale(17),
-    marginBottom: scale(10),
   },
   subtitle: {
     fontSize: scale(20),
@@ -303,7 +349,7 @@ const styles = StyleSheet.create({
     marginBottom: scale(15),
   },
   quantity: {
-    fontSize: scale(16),
+    fontSize: scale(18),
     fontWeight: 'bold',
     marginHorizontal: scale(10),
   },
@@ -356,6 +402,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  location: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  picker: {
+    backgroundColor: colorTheme.white,
+    marginVertical: scale(10),
+    borderRadius: scale(50)
   },
 });
 

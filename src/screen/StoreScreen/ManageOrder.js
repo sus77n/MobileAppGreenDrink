@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -10,11 +10,11 @@ import {
   Dimensions,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox'; // Correct import for CheckBox
-import {colorTheme, TopGoBack} from '../../component/store';
-import {getFirestore} from '@react-native-firebase/firestore';
+import { colorTheme, TopGoBack } from '../../component/store';
+import { getFirestore } from '@react-native-firebase/firestore';
 
-const ManageOrder = ({navigation, route}) => {
-  const {transaction} = route.params;
+const ManageOrder = ({ navigation, route }) => {
+  const { transaction } = route.params;
 
   const [drinks, setDrinks] = useState(transaction.drinks); // Get drinks list
   const [user, setUser] = useState({});
@@ -24,7 +24,7 @@ const ManageOrder = ({navigation, route}) => {
       .collection('transactions')
       .where('transID', '==', transactionId)
       .limit(1); // Make sure the query returns only one result
-  
+
     transactionRef.get()
       .then(querySnapshot => {
         if (!querySnapshot.empty) {
@@ -32,12 +32,12 @@ const ManageOrder = ({navigation, route}) => {
           transactionDoc.ref.update({
             status: newStatus,
           })
-          .then(() => {
-            console.log('Transaction status updated in Firestore');
-          })
-          .catch((error) => {
-            console.error('Error updating status in Firestore: ', error);
-          });
+            .then(() => {
+              console.log('Transaction status updated in Firestore');
+            })
+            .catch((error) => {
+              console.error('Error updating status in Firestore: ', error);
+            });
         } else {
           console.log('Transaction not found');
         }
@@ -47,7 +47,7 @@ const ManageOrder = ({navigation, route}) => {
       });
   };
 
-  const renderDrinkItem = ({item, index}) => {
+  const renderDrinkItem = ({ item, index }) => {
     return (
       <View style={styles.drinkRow}>
         <View style={styles.drinkInfo}>
@@ -94,14 +94,14 @@ const ManageOrder = ({navigation, route}) => {
     fetchCustomer()
   }, []);
   const formattedDate = transaction.createdAt
-  ? transaction.createdAt.toDate().toLocaleDateString("en-US", {
+    ? transaction.createdAt.toDate().toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-  })
-  : "N/A";
+    })
+    : "N/A";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,7 +111,8 @@ const ManageOrder = ({navigation, route}) => {
         <Text style={styles.customerName}>Customer: {user.formOfAddress} {user.username}</Text>
         <Text style={styles.transInfor}>Phone: {user.phone}</Text>
         <Text style={styles.transInfor}>Transaction ID: {transaction.transID}</Text>
-        <Text>Created At: {formattedDate}</Text>
+        <Text style={styles.transInfor}>Created At: {formattedDate}</Text>
+        <Text>Store: {transaction.store}</Text>
       </View>
 
       {/* Drink List */}
@@ -127,13 +128,13 @@ const ManageOrder = ({navigation, route}) => {
         <View style={styles.rowPrice}>
           <View>
             <Text style={styles.totalText}>Price Before Promotion:</Text>
-            <Text style={[styles.totalText, {color: 'black', marginTop: scale(10)}]}>Total Price:</Text>
+            <Text style={[styles.totalText, { color: 'black', marginTop: scale(10) }]}>Total Price:</Text>
           </View>
           <View>
             <Text style={styles.totalText}>
               đ{transaction.priceBeforePromotion.toLocaleString()}
             </Text>
-            <Text style={[styles.totalText, {color: 'black', marginTop: scale(10)}]}>
+            <Text style={[styles.totalText, { color: 'black', marginTop: scale(10) }]}>
               đ{transaction.price.toLocaleString()}
             </Text>
           </View>
@@ -152,7 +153,7 @@ const ManageOrder = ({navigation, route}) => {
   );
 };
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     color: colorTheme.greenText,
     marginBottom: scale(15),
   },
-  transInfor:{
+  transInfor: {
     marginBottom: scale(7)
   },
   drinksList: {

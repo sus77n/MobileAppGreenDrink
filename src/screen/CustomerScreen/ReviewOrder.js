@@ -88,26 +88,33 @@ const ReviewOrder = ({ navigation, route }) => {
 
   const updateBalance = () => {
     try {
-      const starOnOrder = user.stars + total / 25000;
+      const starOnOrder = user.stars + order.total / 25000;
+      
       if (starOnOrder == 20) {
         starOnOrder = 0;
       } else if (starOnOrder > 20) {
         starOnOrder = starOnOrder - 20;
       }
 
-      getFirestore()
+      firestore()
         .collection('customers')
         .doc(user.key)
         .update({
-          balance: user.balance - total,
+          balance: user.balance - order.total,
           stars: starOnOrder,
-          totalStars: user.totalStars + total / 25000,
-        });
+          totalStars: user.totalStars + order.total / 25000,
+        })
+      .then(() => {
+        console.log('Update successful');
+      })
+      .catch((error) => {
+        console.error('Error updating document: ', error);
+      });
 
       resetUserAfterChange(user.key);
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
-      console.error('Error updating user:', error.massage);
+      console.error('Error updating user:', error);
     }
   };
   const addTransaction = async () => {

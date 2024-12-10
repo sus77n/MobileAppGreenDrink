@@ -104,7 +104,7 @@ const HomeScreen = ({navigation}) => {
           <View style={styles.balanceStarsSection}>
             <TouchableOpacity
               style={styles.balanceCardWrapper}
-              onPress={() => navigation.navigate('Card')}>
+              onPress={() => navigation.navigate('Card', {user})}>
               <View style={styles.balanceCard}>
                 <Text style={styles.balanceTitle}>BALANCE</Text>
                 <Text style={styles.balanceAmount}>
@@ -128,7 +128,7 @@ const HomeScreen = ({navigation}) => {
 
             <TouchableOpacity
               style={styles.starsCardWrapper}
-              onPress={() => navigation.navigate('MembershipDetail')}>
+              onPress={() => navigation.navigate('MembershipDetail', {user})}>
               <View style={styles.starsCard}>
                 <Text style={styles.starsTitle}>STARS</Text>
                 <Text style={styles.starsAmount}>{user.stars.toFixed(2)}</Text>
@@ -155,7 +155,7 @@ const HomeScreen = ({navigation}) => {
               resizeMode="contain"
             />
             <Text style={styles.voucherText}>
-              You have 1 available voucher(s)
+              You have {user.vouchers.length} available voucher(s)
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Card')}>
               <Icon

@@ -47,8 +47,8 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={[styles.whiteText, styles.name]}>{user ? user.username : "User"}</Text>
                 <View style={styles.subHeader}>
                     <Icon name='star' style={styles.accountIcon} size={22} color={colorTheme.orangeText} />
-                    <Text style={[styles.whiteText, styles.subHeaderText]}>{user ? user.stars : "0"}</Text>
-                    <Text style={[styles.whiteText, styles.subHeaderText]}>Gold member</Text>
+                    <Text style={[styles.whiteText, styles.subHeaderText]}>{user ? user.stars.toFixed(2) : "0"}</Text>
+                    <Text style={[styles.whiteText, styles.subHeaderText]}>{user ? user.rank: ""} member</Text>
                 </View>
             </View>
 

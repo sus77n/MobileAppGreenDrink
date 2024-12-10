@@ -12,8 +12,9 @@ import { colorTheme, TopGoBack } from '../../component/store';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const MembershipDetail = ({ navigation }) => {
-  const progress = 7 / 20;
+const MembershipDetail = ({ navigation, route}) => {
+  const {user} = route.params
+  const progress = user.stars.toFixed(2) / 20;
   return (
     <SafeAreaView style={styles.container}>
       <TopGoBack navigation={navigation} text={'Membership detail'}/>
@@ -27,7 +28,7 @@ const MembershipDetail = ({ navigation }) => {
             <Text style={styles.subTitle}>Rewards</Text>
             <View style={styles.rewardWrap}>
               <Text style={styles.twenty}>
-                <Text style={styles.amountReward}>7/</Text>
+                <Text style={styles.amountReward}>{user.stars.toFixed(2)}/</Text>
                 20
               </Text>
               <Icon
@@ -42,7 +43,7 @@ const MembershipDetail = ({ navigation }) => {
             <Text style={styles.subTitle}>Total stars</Text>
             <View style={styles.rewardWrap}>
               <Text style={styles.amountStars}>
-                50
+                {user.totalStars.toFixed(2)}
               </Text>
               <Icon
                 name="star"
@@ -55,35 +56,21 @@ const MembershipDetail = ({ navigation }) => {
         </View>
         <Progress.Bar progress={progress} borderRadius={20} width={320} height={20} color={colorTheme.orangeText} style={styles.bar}/>
         <Text style={styles.note}>
-            Earn 13 star(s) to get 1 drink S size FREE
+            Earn {20 - user.stars} star(s) to get 1 drink free
         </Text>
       </View>
       <View style={styles.membership}>
         <View style={styles.membershipDetailWrap}>
-            <Icon name='crown' size={25} color={colorTheme.copper} style={{    marginLeft: 'auto',
-    marginRight: 'auto'}} />
-            <Text style={[styles.membershipTitle, {color: colorTheme.copper}]}>Copper member</Text>
-            <Text style={styles.membershipContent}>- Discount 5%</Text>
-        </View>
-        <View style={styles.membershipDetailWrap}>
             <Icon name='crown' size={25} color={colorTheme.silver} style={{    marginLeft: 'auto',
     marginRight: 'auto'}} />
-            <Text style={[styles.membershipTitle, {color: colorTheme.silver}]}>Silver member</Text>
+            <Text style={[styles.membershipTitle, {color: colorTheme.silver}]}>Copper member</Text>
             <Text style={styles.membershipContent}>- Discount 5%</Text>
         </View>
-      </View>
-      <View style={[styles.membership, {marginTop: 20}]}>
         <View style={styles.membershipDetailWrap}>
             <Icon name='crown' size={25} color={colorTheme.gold} style={{    marginLeft: 'auto',
     marginRight: 'auto'}} />
-            <Text style={[styles.membershipTitle, {color: colorTheme.gold}]}>Copper member</Text>
-            <Text style={styles.membershipContent}>- Discount 5%</Text>
-        </View>
-        <View style={styles.membershipDetailWrap}>
-            <Icon name='crown' size={25} color={colorTheme.diamond} style={{    marginLeft: 'auto',
-    marginRight: 'auto'}} />
-            <Text style={[styles.membershipTitle, {color: colorTheme.diamond}]}>Silver member</Text>
-            <Text style={styles.membershipContent}>- Discount 5%</Text>
+            <Text style={[styles.membershipTitle, {color: colorTheme.gold}]}>Gold member</Text>
+            <Text style={styles.membershipContent}>- Discount 10%</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -101,38 +88,36 @@ const styles = StyleSheet.create({
 
   cardSection: {
     backgroundColor: colorTheme.darkGrayBackground,
-    paddingVertical: scale(15),  // Scaled padding
-    margin: scale(17),          // Scaled margin
-    borderRadius: scale(10),    // Scaled border radius
+    paddingVertical: scale(15),  
+    margin: scale(17),          
+    borderRadius: scale(10),    
   },
   cardTitleWrap: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    paddingBottom: scale(15),   // Scaled padding bottom
-    paddingLeft: scale(20),     // Scaled padding left
+    paddingBottom: scale(15),   
+    paddingLeft: scale(20),    
     borderColor: colorTheme.grayLine,
   },
   cardTitle: {
     color: colorTheme.orangeText,
     fontWeight: '700',
-    fontSize: scale(20),        // Scaled font size
+    fontSize: scale(20),       
   },
-  iconMember: {},
-
   cardMain: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: scale(10),         // Scaled padding
+    padding: scale(10),       
   },
 
   rewards: {
-    paddingLeft: scale(20),     // Scaled padding left
+    paddingLeft: scale(20),     
   },
 
   subTitle: {
     color: colorTheme.grayText,
-    fontSize: scale(16),        // Scaled font size
-    paddingBottom: scale(7),    // Scaled padding bottom
+    fontSize: scale(16),        
+    paddingBottom: scale(7),    
   },
 
   rewardWrap: {
@@ -141,51 +126,50 @@ const styles = StyleSheet.create({
 
   amountReward: {
     color: colorTheme.white,
-    fontSize: scale(25),        // Scaled font size
+    fontSize: scale(25),       
   },
 
   twenty: {
     color: colorTheme.orangeText,
-    fontSize: scale(20),        // Scaled font size
+    fontSize: scale(20),       
     fontWeight: '700',
   },
 
   star: {
-    marginRight: scale(20),     // Scaled margin right
+    marginRight: scale(20),    
   },
 
   amountStars: {
     color: colorTheme.orangeText,
-    fontSize: scale(25),        // Scaled font size
+    fontSize: scale(25),       
     fontWeight: '700',
   },
 
   bar: {
-    marginLeft: scale(30),      // Scaled margin left
+    marginLeft: scale(30),    
   },
 
   note: {
     color: colorTheme.grayText,
-    fontSize: scale(12),        // Scaled font size
-    marginLeft: scale(30),      // Scaled margin left
-    marginTop: scale(10),       // Scaled margin top
+    fontSize: scale(12),        
+    marginLeft: scale(30),      
+    marginTop: scale(10),       
   },
 
   membership: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: scale(20),// Scaled margin horizontal
+    marginHorizontal: scale(20),
   },
 
-  membershipDetailWrap: {
-    width: scale(180),          // Scaled width
+  membershipDetailWrap: {       
     borderWidth: 1,
-    borderRadius: scale(20),    // Scaled border radius
-    paddingHorizontal: scale(20), // Scaled padding horizontal
+    borderRadius: scale(20),    
+    width: scale(150)
   },
 
   membershipTitle: {
-    fontSize: scale(17),        // Scaled font size
+    fontSize: scale(17),      
     fontWeight: '500',
     marginLeft: 'auto',
     marginRight: 'auto'

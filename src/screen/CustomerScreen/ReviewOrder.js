@@ -119,14 +119,12 @@ const ReviewOrder = ({ navigation, route }) => {
   const updateBalance = async () => {
     try {
       let starOnOrder = user.stars + order.total / 25000;
-  
       if (starOnOrder === 20) {
         starOnOrder = 0;
       } else if (starOnOrder > 20) {
         starOnOrder -= 20;
       }
-  
-      // Perform Firestore update
+
       await firestore()
         .collection('customers')
         .doc(user.key)
@@ -137,17 +135,14 @@ const ReviewOrder = ({ navigation, route }) => {
         });
   
       console.log('Update successful');
-  
-      // Reset user state after change
-      await resetUserAfterChange(user.key); // Assuming resetUserAfterChange is async
+      await resetUserAfterChange(user.key); 
     } catch (error) {
       console.error('Error updating user:', error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
-      throw error; // Re-throw to propagate the error to the caller
+      throw error; 
     }
   };
   
-
   const addTransaction = async () => {
     try {
       const db = firestore();
@@ -169,6 +164,14 @@ const ReviewOrder = ({ navigation, route }) => {
       console.error('Error adding transaction: ', e);
     }
   };
+
+  const handleVoucher = () =>{
+    try {
+      
+    } catch (error) {
+      
+    }
+  }
 
   const payHandle = async () => {
     try {
@@ -214,6 +217,21 @@ const ReviewOrder = ({ navigation, route }) => {
     )
   }
 
+  const renderVouchers = ({item: voucher}) => {
+    return (
+      <TouchableOpacity style={styles.voucherCard} onPress={handleVoucher()}>
+        <Image
+          source={require('../../../assets/img/voucherIcon.png')}
+          style={styles.voucherIcon}
+        />
+        <View style={styles.cardTitleWrap}>
+          <Text style={styles.cardTitle}>{voucher.content}</Text>
+          <Text style={styles.cardSubtitle}>Add it before pay</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LoadingScreen visible={loading} />
@@ -242,10 +260,20 @@ const ReviewOrder = ({ navigation, route }) => {
         />
 
         <View style={styles.divider} />
+        <View style={styles.voucherMain}>
+          <FlatList
+            data={user.vouchers}
+            renderItem={renderVouchers}
+            keyExtractor={item => item.key}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+        <View style={styles.divider} />
 
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
-          <Text style={styles.orderTotalValue}>đ{order.total.toLocaleString()}</Text>
+          <Text style={styles.orderTotalValue}>{order.total.toLocaleString()} VND</Text>
         </View>
 
         <TouchableOpacity
@@ -359,7 +387,7 @@ const styles = StyleSheet.create({
   divider: {
     height: scale(1),
     backgroundColor: '#ddd',
-    marginVertical: scale(15),
+    marginVertical: scale(8),
   },
   totalContainer: {
     flexDirection: 'row',
@@ -397,6 +425,52 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.white,
     marginVertical: scale(10),
     borderRadius: scale(50)
+  },
+
+  voucherMain: {
+    backgroundColor: colorTheme.greenBackgroundDrink,
+    flexDirection: 'row',
+    padding: scale(10),
+    borderRadius: scale(10),
+  },
+
+  voucherCard: {
+    backgroundColor: colorTheme.white,
+    padding: scale(5),
+    borderRadius: scale(10),
+    flexDirection: 'row',
+    width: scale(240),
+    alignItems: 'center',
+    marginRight: scale(15),
+  },
+
+  voucherSection: {
+    paddingHorizontal: scale(15),
+  },
+
+  voucherTitle: {
+    fontWeight: '700',
+    fontSize: scale(20),
+    marginBottom: scale(10),
+  },
+
+
+  voucherIcon: {
+    marginTop: scale(10),
+    marginLeft: scale(5),
+    marginRight: scale(10),
+  },
+
+  cardTitleWrap: {
+    width: scale(150),
+  },
+
+  cardTitle: {
+    color: colorTheme.black,
+    fontWeight: '600',
+  },
+  cardSubtitle: {
+    color: colorTheme.grayText,
   },
 });
 

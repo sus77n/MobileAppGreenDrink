@@ -157,7 +157,7 @@ const HomeScreen = ({navigation}) => {
             <Text style={styles.voucherText}>
               You have {user.vouchers.length} available voucher(s)
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Card')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Card', {user})}>
               <Icon
                 name="angle-right"
                 style={styles.iconArrow}
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f79814',
     justifyContent: 'space-between',
     paddingHorizontal: scale(20),
-    paddingVertical: scale(8),
+    paddingVertical: scale(13),
     marginBottom: scale(10),
     flexDirection: 'row',
   },

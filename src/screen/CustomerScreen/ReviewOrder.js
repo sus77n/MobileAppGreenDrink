@@ -116,37 +116,37 @@ const ReviewOrder = ({ navigation, route }) => {
     );
   };
 
-  const updateBalance = () => {
+  const updateBalance = async () => {
     try {
-      const starOnOrder = user.stars + order.total / 25000;
-
-      if (starOnOrder == 20) {
+      let starOnOrder = user.stars + order.total / 25000;
+  
+      if (starOnOrder === 20) {
         starOnOrder = 0;
       } else if (starOnOrder > 20) {
-        starOnOrder = starOnOrder - 20;
+        starOnOrder -= 20;
       }
-
-      firestore()
+  
+      // Perform Firestore update
+      await firestore()
         .collection('customers')
         .doc(user.key)
         .update({
           balance: user.balance - order.total,
           stars: starOnOrder,
           totalStars: user.totalStars + order.total / 25000,
-        })
-        .then(() => {
-          console.log('Update successful');
-        })
-        .catch((error) => {
-          console.error('Error updating document: ', error);
         });
-
-      resetUserAfterChange(user.key);
+  
+      console.log('Update successful');
+  
+      // Reset user state after change
+      await resetUserAfterChange(user.key); // Assuming resetUserAfterChange is async
     } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
       console.error('Error updating user:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+      throw error; // Re-throw to propagate the error to the caller
     }
   };
+  
 
   const addTransaction = async () => {
     try {
@@ -172,23 +172,22 @@ const ReviewOrder = ({ navigation, route }) => {
 
   const payHandle = async () => {
     try {
+      await updateBalance(); // Await ensures errors are caught here
       addTransaction();
-      updateBalance();
-      await cleanOrder()
+      await cleanOrder();
+  
       Alert.alert('Enjoy your drink!');
       setTimeout(() => {
         navigation.reset({
           index: 0,
-          routes: [{
-            name: "Home"
-          }]
+          routes: [{ name: "Home" }]
         });
       }, 1000);
     } catch (error) {
       console.error("Pay failed", error);
-      Alert.alert("Pay failed", "Try again")
+      Alert.alert("Pay failed", "Try again");
     }
-  }
+  };
 
   const updateDrinkQuantity = (drinkKey, newQuantity) => {
     setListDrinks(prevDrinks => {
@@ -239,6 +238,7 @@ const ReviewOrder = ({ navigation, route }) => {
           data={listDrinks}
           renderItem={renderItem}
           keyExtractor={item => item.key}
+          showsVerticalScrollIndicator={false}
         />
 
         <View style={styles.divider} />
@@ -247,9 +247,8 @@ const ReviewOrder = ({ navigation, route }) => {
           <Text style={styles.orderTotalLabel}>Order total:</Text>
           <Text style={styles.orderTotalValue}>đ{order.total.toLocaleString()}</Text>
         </View>
-      </View>
 
-      <TouchableOpacity
+        <TouchableOpacity
         style={styles.cardButton}
         onPress={() =>
           Alert.alert('', 'Are you sure to pay ?', [
@@ -271,6 +270,9 @@ const ReviewOrder = ({ navigation, route }) => {
         }>
         <Text style={styles.cardButtonText}>Pay</Text>
       </TouchableOpacity>
+      </View>
+
+
     </SafeAreaView>
   );
 };
@@ -304,6 +306,7 @@ const styles = StyleSheet.create({
     marginRight: scale(20),
   },
   itemSection: {
+    flex: 1,
     backgroundColor: '#fff',
     padding: scale(20),
   },
@@ -371,31 +374,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  reorderButton: {
-    backgroundColor: colorTheme.white,
-    paddingVertical: scale(7),
-    width: scale(80),
-    borderRadius: scale(25),
-    borderWidth: scale(1),
-    borderColor: colorTheme.greenBackground,
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginRight: scale(20),
-  },
-  reorderButtonText: {
-    fontSize: scale(14),
-    color: colorTheme.greenBackground,
-    fontWeight: 'bold',
-  },
   cardButton: {
-    position: 'absolute',
     width: scale(170),
     backgroundColor: '#7ec479',
     paddingVertical: scale(15),
     paddingHorizontal: scale(20),
     borderRadius: scale(25),
-    bottom: scale(10),
-    right: scale(20),
+    top: scale(10),
+    alignSelf: 'flex-end'
   },
   cardButtonText: {
     fontSize: scale(16),

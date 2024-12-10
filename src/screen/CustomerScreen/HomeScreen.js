@@ -131,7 +131,7 @@ const HomeScreen = ({navigation}) => {
               onPress={() => navigation.navigate('MembershipDetail')}>
               <View style={styles.starsCard}>
                 <Text style={styles.starsTitle}>STARS</Text>
-                <Text style={styles.starsAmount}>{user.stars}</Text>
+                <Text style={styles.starsAmount}>{user.stars.toFixed(2)}</Text>
                 <Text style={styles.starsSubtitle}>
                   {20 - user.stars} star(s) until next reward
                 </Text>
@@ -198,7 +198,7 @@ const HomeScreen = ({navigation}) => {
           style={styles.cardButton}
           onPress={() => navigation.navigate('Card')}>
           <Text style={styles.cardButtonText}>
-            {user.balance.toLocaleString()} VND on card
+            {user.balance.toLocaleString()} VND{'\n'}on card
           </Text>
         </TouchableOpacity>
       </SafeAreaView>

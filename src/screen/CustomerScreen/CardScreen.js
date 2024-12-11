@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -7,24 +7,34 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
+  FlatList,
 } from 'react-native';
-import { colorTheme, getTimeNow, getUser, LoadingScreen, TopGoBack } from '../../component/store';
-const CardScreen = ({ navigation, route }) => {
-  const [user, setUser] = useState({});
+import {
+  colorTheme,
+  getTimeNow,
+  getUser,
+  LoadingScreen,
+  TopGoBack,
+} from '../../component/store';
+import {getFirestore} from '@react-native-firebase/firestore';
+const CardScreen = ({navigation, route}) => {
+  const {user} = route.params;
   const [loading, setLoading] = useState(false);
 
-  const fetchUser = async () => {
-    const userData = await getUser();
-    setUser(userData);                
-    setLoading(false)
+  const renderVouchers = ({item: voucher}) => {
+    return (
+      <View style={styles.voucherCard}>
+        <Image
+          source={require('../../../assets/img/voucherIcon.png')}
+          style={styles.voucherIcon}
+        />
+        <View style={styles.cardTitleWrap}>
+          <Text style={styles.cardTitle}>{voucher.content}</Text>
+          <Text style={styles.cardSubtitle}>Add it before pay</Text>
+        </View>
+      </View>
+    );
   };
-  useEffect(() => {
-    const loadScreen = navigation.addListener("focus", () => { fetchUser() });
-    return () => {
-      setLoading(true)
-      fetchUser()
-    };
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,33 +44,35 @@ const CardScreen = ({ navigation, route }) => {
         <Image
           source={require('../../../assets/img/goldCard.png')}
           style={styles.goldCard}
-          resizeMode='contain'
+          resizeMode="contain"
         />
         <View style={styles.moneyWrap}>
-          <Text style={styles.money}>đ{user.stars}</Text>
+          <Text style={styles.money}>{user.balance.toLocaleString()} VND</Text>
           <Text style={styles.subtitle}>{getTimeNow()}</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddMoney', {user})}>
         <Text style={styles.addButtonText}>Add money</Text>
       </TouchableOpacity>
       <View style={styles.voucherSection}>
         <Text style={styles.voucherTitle}>VOUCHERS</Text>
         <View style={styles.voucherMain}>
-          <View style={styles.voucherCard}>
-            <Image source={require('../../../assets/img/voucherIcon.png')} style={styles.voucherIcon} />
-            <View style={styles.cardTitleWrap}>
-              <Text style={styles.cardTitle}>Discount on 20% on Teacher Day</Text>
-              <Text style={styles.cardSubtitle}>Expires on 20/11/2024</Text>
-            </View>
-          </View>
+          <FlatList
+            data={user.vouchers}
+            renderItem={renderVouchers}
+            keyExtractor={item => item.key}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
         </View>
       </View>
       <View style={styles.barCode}></View>
     </SafeAreaView>
   );
 };
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({
@@ -69,9 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.grayBackground,
   },
 
-  voucherIcon: {
-
-  },
+  voucherIcon: {},
   card: {
     backgroundColor: colorTheme.greenBackground,
     marginRight: scale(15),
@@ -121,6 +131,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  voucherCard: {
+    backgroundColor: colorTheme.white,
+    padding: scale(5),
+    borderRadius: scale(10),
+    flexDirection: 'row',
+    width: scale(240),
+    alignItems: 'center',
+    marginRight: scale(15),
+  },
+
   voucherSection: {
     paddingHorizontal: scale(15),
   },
@@ -136,14 +156,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: scale(10),
     borderRadius: scale(10),
-  },
-
-  voucherCard: {
-    backgroundColor: colorTheme.white,
-    padding: scale(5),
-    borderRadius: scale(10),
-    flexDirection: 'row',
-    width: scale(240),
   },
 
   voucherIcon: {
@@ -168,6 +180,5 @@ const styles = StyleSheet.create({
     // No specific styles defined, so leaving empty
   },
 });
-
 
 export default CardScreen;

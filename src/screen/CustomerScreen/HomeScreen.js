@@ -104,7 +104,7 @@ const HomeScreen = ({navigation}) => {
           <View style={styles.balanceStarsSection}>
             <TouchableOpacity
               style={styles.balanceCardWrapper}
-              onPress={() => navigation.navigate('Card')}>
+              onPress={() => navigation.navigate('Card', {user})}>
               <View style={styles.balanceCard}>
                 <Text style={styles.balanceTitle}>BALANCE</Text>
                 <Text style={styles.balanceAmount}>
@@ -128,10 +128,10 @@ const HomeScreen = ({navigation}) => {
 
             <TouchableOpacity
               style={styles.starsCardWrapper}
-              onPress={() => navigation.navigate('MembershipDetail')}>
+              onPress={() => navigation.navigate('MembershipDetail', {user})}>
               <View style={styles.starsCard}>
                 <Text style={styles.starsTitle}>STARS</Text>
-                <Text style={styles.starsAmount}>{user.stars}</Text>
+                <Text style={styles.starsAmount}>{user.stars.toFixed(2)}</Text>
                 <Text style={styles.starsSubtitle}>
                   {20 - user.stars} star(s) until next reward
                 </Text>
@@ -155,9 +155,9 @@ const HomeScreen = ({navigation}) => {
               resizeMode="contain"
             />
             <Text style={styles.voucherText}>
-              You have 1 available voucher(s)
+              You have {user.vouchers.length} available voucher(s)
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Card')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Card', {user})}>
               <Icon
                 name="angle-right"
                 style={styles.iconArrow}
@@ -198,7 +198,7 @@ const HomeScreen = ({navigation}) => {
           style={styles.cardButton}
           onPress={() => navigation.navigate('Card')}>
           <Text style={styles.cardButtonText}>
-            {user.balance.toLocaleString()} VND on card
+            {user.balance.toLocaleString()} VND{'\n'}on card
           </Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f79814',
     justifyContent: 'space-between',
     paddingHorizontal: scale(20),
-    paddingVertical: scale(8),
+    paddingVertical: scale(13),
     marginBottom: scale(10),
     flexDirection: 'row',
   },

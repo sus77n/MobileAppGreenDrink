@@ -126,38 +126,33 @@ const ReviewOrder = ({ navigation, route }) => {
     );
   };
 
-  const updateBalance = () => {
+  const updateBalance = async () => {
     try {
-      const starOnOrder = user.stars + order.total / 25000;
-
-      if (starOnOrder == 20) {
+      let starOnOrder = user.stars + order.total / 25000;
+      if (starOnOrder === 20) {
         starOnOrder = 0;
       } else if (starOnOrder > 20) {
-        starOnOrder = starOnOrder - 20;
+        starOnOrder -= 20;
       }
 
-      firestore()
+      await firestore()
         .collection('customers')
         .doc(user.key)
         .update({
           balance: user.balance - order.total,
           stars: starOnOrder,
           totalStars: user.totalStars + order.total / 25000,
-        })
-        .then(() => {
-          console.log('Update successful');
-        })
-        .catch((error) => {
-          console.error('Error updating document: ', error);
         });
-
-      resetUserAfterChange(user.key);
+  
+      console.log('Update successful');
+      await resetUserAfterChange(user.key); 
     } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
       console.error('Error updating user:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+      throw error; 
     }
   };
-
+  
   const addTransaction = async () => {
     try {
       const db = firestore();
@@ -180,25 +175,32 @@ const ReviewOrder = ({ navigation, route }) => {
     }
   };
 
+  const handleVoucher = () =>{
+    try {
+      
+    } catch (error) {
+      
+    }
+  }
+
   const payHandle = async () => {
     try {
+      await updateBalance(); // Await ensures errors are caught here
       addTransaction();
-      updateBalance();
-      await cleanOrder()
+      await cleanOrder();
+  
       Alert.alert('Enjoy your drink!');
       setTimeout(() => {
         navigation.reset({
           index: 0,
-          routes: [{
-            name: "Home"
-          }]
+          routes: [{ name: "Home" }]
         });
       }, 1000);
     } catch (error) {
       console.error("Pay failed", error);
-      Alert.alert("Pay failed", "Try again")
+      Alert.alert("Pay failed", "Try again");
     }
-  }
+  };
 
   const updateDrinkQuantity = (drinkIndex, newQuantity) => {
     setListDrinks(prevDrinks => {
@@ -235,6 +237,21 @@ const ReviewOrder = ({ navigation, route }) => {
     )
   }
 
+  const renderVouchers = ({item: voucher}) => {
+    return (
+      <TouchableOpacity style={styles.voucherCard} onPress={handleVoucher()}>
+        <Image
+          source={require('../../../assets/img/voucherIcon.png')}
+          style={styles.voucherIcon}
+        />
+        <View style={styles.cardTitleWrap}>
+          <Text style={styles.cardTitle}>{voucher.content}</Text>
+          <Text style={styles.cardSubtitle}>Add it before pay</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LoadingScreen visible={loading} />
@@ -257,16 +274,26 @@ const ReviewOrder = ({ navigation, route }) => {
           data={listDrinks}
           renderItem={renderItem}
           keyExtractor={item => item.key}
+          showsVerticalScrollIndicator={false}
         />
+        <View style={styles.divider} />
+        <View style={styles.voucherMain}>
+          <FlatList
+            data={user.vouchers}
+            renderItem={renderVouchers}
+            keyExtractor={item => item.key}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
         <View style={styles.divider} />
 
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
-          <Text style={styles.orderTotalValue}>đ{order.total.toLocaleString()}</Text>
+          <Text style={styles.orderTotalValue}>{order.total.toLocaleString()} VND</Text>
         </View>
-      </View>
 
-      <TouchableOpacity
+        <TouchableOpacity
         style={styles.cardButton}
         onPress={() =>
           Alert.alert('', 'Are you sure to pay ?', [
@@ -288,6 +315,9 @@ const ReviewOrder = ({ navigation, route }) => {
         }>
         <Text style={styles.cardButtonText}>Pay</Text>
       </TouchableOpacity>
+      </View>
+
+
     </SafeAreaView>
   );
 };
@@ -321,6 +351,7 @@ const styles = StyleSheet.create({
     marginRight: scale(20),
   },
   itemSection: {
+    flex: 1,
     backgroundColor: '#fff',
     padding: scale(20),
   },
@@ -373,7 +404,7 @@ const styles = StyleSheet.create({
   divider: {
     height: scale(1),
     backgroundColor: '#ddd',
-    marginVertical: scale(15),
+    marginVertical: scale(8),
   },
   totalContainer: {
     flexDirection: 'row',
@@ -388,31 +419,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  reorderButton: {
-    backgroundColor: colorTheme.white,
-    paddingVertical: scale(7),
-    width: scale(80),
-    borderRadius: scale(25),
-    borderWidth: scale(1),
-    borderColor: colorTheme.greenBackground,
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginRight: scale(20),
-  },
-  reorderButtonText: {
-    fontSize: scale(14),
-    color: colorTheme.greenBackground,
-    fontWeight: 'bold',
-  },
   cardButton: {
-    position: 'absolute',
     width: scale(170),
     backgroundColor: '#7ec479',
     paddingVertical: scale(15),
     paddingHorizontal: scale(20),
     borderRadius: scale(25),
-    bottom: scale(10),
-    right: scale(20),
+    top: scale(10),
+    alignSelf: 'flex-end'
   },
   cardButtonText: {
     fontSize: scale(16),
@@ -428,6 +442,52 @@ const styles = StyleSheet.create({
     backgroundColor: colorTheme.white,
     marginVertical: scale(10),
     borderRadius: scale(50)
+  },
+
+  voucherMain: {
+    backgroundColor: colorTheme.greenBackgroundDrink,
+    flexDirection: 'row',
+    padding: scale(10),
+    borderRadius: scale(10),
+  },
+
+  voucherCard: {
+    backgroundColor: colorTheme.white,
+    padding: scale(5),
+    borderRadius: scale(10),
+    flexDirection: 'row',
+    width: scale(240),
+    alignItems: 'center',
+    marginRight: scale(15),
+  },
+
+  voucherSection: {
+    paddingHorizontal: scale(15),
+  },
+
+  voucherTitle: {
+    fontWeight: '700',
+    fontSize: scale(20),
+    marginBottom: scale(10),
+  },
+
+
+  voucherIcon: {
+    marginTop: scale(10),
+    marginLeft: scale(5),
+    marginRight: scale(10),
+  },
+
+  cardTitleWrap: {
+    width: scale(150),
+  },
+
+  cardTitle: {
+    color: colorTheme.black,
+    fontWeight: '600',
+  },
+  cardSubtitle: {
+    color: colorTheme.grayText,
   },
 });
 

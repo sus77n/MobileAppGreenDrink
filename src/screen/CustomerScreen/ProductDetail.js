@@ -20,7 +20,7 @@ const ProductDetail = ({ navigation, route }) => {
   const [sweetness, setSweetness] = useState('Regular');
   const [quantity, setQuantity] = useState(1);
   const [total, setTotal] = useState(0);
-  const [selectedPrice, setSelectedPrice] = useState(drink.price - 10000);
+  const [selectedPrice, setSelectedPrice] = useState((drink.price - 10000));
   const [loading, setLoading] = useState(false);
 
   const updateTotal = async () => {
@@ -33,11 +33,26 @@ const ProductDetail = ({ navigation, route }) => {
       setLoading(false);
     }
   };
+  
+  useEffect(() => {
+    const loadScreen = navigation.addListener("focus", async () => { await updateTotal() });
+    return () => { loadScreen() };
+  }, [])
 
-  const addToOrderList = async ({ customization, quantity }) => {
+  const addToOrderList = async () => {
     setLoading(true)
     try {
-      await addToOrder({ drink: { ...drink, price: selectedPrice, quantity: quantity, customization: customization } });
+      const newDrink = {
+        ...drink,
+        key: (drink.key + selectedSize + sweetness),
+        price: selectedPrice,
+        customization: {
+          size: selectedSize,
+          sweetness: sweetness
+        },
+        quantity: quantity,
+      };
+      await addToOrder({ drink: newDrink });
       setLoading(false)
       await updateTotal();
     } catch (error) {
@@ -47,11 +62,6 @@ const ProductDetail = ({ navigation, route }) => {
       setLoading(false)
     }
   };
-
-  useEffect(() => {
-    const loadScreen = navigation.addListener("focus", async () => { await updateTotal() });
-    return () => { loadScreen() };
-  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -182,11 +192,7 @@ const ProductDetail = ({ navigation, route }) => {
 
           <TouchableOpacity
             style={styles.addIcon}
-            onPress={() =>
-              addToOrderList({
-                customization: { size: selectedSize, sweetness: sweetness },
-                quantity: quantity,
-              })
+            onPress={() => addToOrderList()
             }>
             <Icon name="plus" size={25} color={colorTheme.white} />
           </TouchableOpacity>

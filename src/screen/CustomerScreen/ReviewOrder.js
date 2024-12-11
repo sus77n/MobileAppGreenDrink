@@ -107,7 +107,7 @@ const ReviewOrder = ({ navigation, route }) => {
             </TouchableOpacity>
             <Text style={styles.quantity}>{drink.quantity}</Text>
             <TouchableOpacity style={styles.controlButton} onPress={() => {
-              updateDrinkQuantity(drink.key, drink.quantity + 1);
+              updateDrinkQuantity(index, drink.quantity + 1);
             }}>
               <Icon
                 name="plus-circle"
@@ -143,16 +143,16 @@ const ReviewOrder = ({ navigation, route }) => {
           stars: starOnOrder,
           totalStars: user.totalStars + order.total / 25000,
         });
-  
+
       console.log('Update successful');
-      await resetUserAfterChange(user.key); 
+      await resetUserAfterChange(user.key);
     } catch (error) {
       console.error('Error updating user:', error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
-      throw error; 
+      throw error;
     }
   };
-  
+
   const addTransaction = async () => {
     try {
       const db = firestore();
@@ -175,11 +175,11 @@ const ReviewOrder = ({ navigation, route }) => {
     }
   };
 
-  const handleVoucher = () =>{
+  const handleVoucher = () => {
     try {
-      
+
     } catch (error) {
-      
+
     }
   }
 
@@ -188,7 +188,7 @@ const ReviewOrder = ({ navigation, route }) => {
       await updateBalance(); // Await ensures errors are caught here
       addTransaction();
       await cleanOrder();
-  
+
       Alert.alert('Enjoy your drink!');
       setTimeout(() => {
         navigation.reset({
@@ -237,7 +237,7 @@ const ReviewOrder = ({ navigation, route }) => {
     )
   }
 
-  const renderVouchers = ({item: voucher}) => {
+  const renderVouchers = ({ item: voucher }) => {
     return (
       <TouchableOpacity style={styles.voucherCard} onPress={handleVoucher()}>
         <Image
@@ -294,27 +294,27 @@ const ReviewOrder = ({ navigation, route }) => {
         </View>
 
         <TouchableOpacity
-        style={styles.cardButton}
-        onPress={() =>
-          Alert.alert('', 'Are you sure to pay ?', [
-            {
-              text: 'Ok',
-              onPress: () => {
-                if (user.balance >= order.total) {
-                  payHandle();
-                } else {
-                  Alert.alert('Not enough money');
-                }
+          style={styles.cardButton}
+          onPress={() =>
+            Alert.alert('', 'Are you sure to pay ?', [
+              {
+                text: 'Ok',
+                onPress: () => {
+                  if (user.balance >= order.total) {
+                    payHandle();
+                  } else {
+                    Alert.alert('Not enough money');
+                  }
+                },
               },
-            },
-            {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-            },
-          ])
-        }>
-        <Text style={styles.cardButtonText}>Pay</Text>
-      </TouchableOpacity>
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+              },
+            ])
+          }>
+          <Text style={styles.cardButtonText}>Pay</Text>
+        </TouchableOpacity>
       </View>
 
 

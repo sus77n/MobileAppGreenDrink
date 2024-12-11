@@ -239,9 +239,22 @@ export const getOrder = async () => {
 export const addToOrder = async ({ drink: drink }) => {
   try {
     const { drinks, type, total } = await getOrder();
-    drinks.push(drink);
+
+    let flag = false;
+    const newDrinks = drinks.map((item) => {
+      console.log("item ", item);
+      if (item.key === drink.key) {
+        flag = true;
+        return { ...item, quantity: item.quantity + drink.quantity};
+      }
+      return item;
+    });
+    if (!flag) {
+      newDrinks.push(drink);
+    }
+
     const newTotal = total + (drink.price * drink.quantity);
-    await setOrder({ drinks: drinks, type: type, total: newTotal });
+    await setOrder({ drinks: newDrinks, type: type, total: newTotal });
   } catch (error) {
     console.log("add to order error: ", error);
     Alert.alert("Add error", error.message);

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  ToastAndroid,
+  BackHandler,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
@@ -21,10 +23,28 @@ import {
   resetUserAfterChange,
 } from '../../component/store';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [news, setNews] = useState([]);
+  const [backPressCount, setBackPressCount] = useState(0);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (backPressCount === 0) {
+        setBackPressCount(1); 
+        ToastAndroid.show('Back one more time to exit', ToastAndroid.SHORT);
+        setTimeout(() => setBackPressCount(0), 2000); 
+        return true;
+      } else {
+        BackHandler.exitApp();
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [backPressCount]);
 
   const fetchUser = async () => {
     setLoading(true);
@@ -50,7 +70,7 @@ const HomeScreen = ({navigation}) => {
       });
   };
 
-  const renderNews = ({item: aNews}) => {
+  const renderNews = ({ item: aNews }) => {
     const truncateContent = (content, limit) => {
       const words = content.split(' ');
       if (words.length > limit) {
@@ -62,9 +82,9 @@ const HomeScreen = ({navigation}) => {
     return (
       <TouchableOpacity
         style={styles.drinksSection}
-        onPress={() => navigation.navigate('NewsScreen',{aNews})}>
+        onPress={() => navigation.navigate('NewsScreen', { aNews })}>
         <View style={styles.drinkCard}>
-          <Image source={{uri: aNews.img}} style={styles.drinkImage} />
+          <Image source={{ uri: aNews.img }} style={styles.drinkImage} />
           <Text style={styles.drinkTitle}>{aNews.title}</Text>
           <Text style={styles.drinkDescription}>
             {truncateContent(aNews.content, 15)}
@@ -104,7 +124,7 @@ const HomeScreen = ({navigation}) => {
           <View style={styles.balanceStarsSection}>
             <TouchableOpacity
               style={styles.balanceCardWrapper}
-              onPress={() => navigation.navigate('Card', {user})}>
+              onPress={() => navigation.navigate('Card', { user })}>
               <View style={styles.balanceCard}>
                 <Text style={styles.balanceTitle}>BALANCE</Text>
                 <Text style={styles.balanceAmount}>
@@ -112,7 +132,7 @@ const HomeScreen = ({navigation}) => {
                 </Text>
                 <TouchableOpacity
                   style={styles.addButton}
-                  onPress={() => navigation.navigate('AddMoney', {user})}>
+                  onPress={() => navigation.navigate('AddMoney', { user })}>
                   <Text style={styles.addButtonText}>Add money</Text>
                 </TouchableOpacity>
               </View>
@@ -128,12 +148,12 @@ const HomeScreen = ({navigation}) => {
 
             <TouchableOpacity
               style={styles.starsCardWrapper}
-              onPress={() => navigation.navigate('MembershipDetail', {user})}>
+              onPress={() => navigation.navigate('MembershipDetail', { user })}>
               <View style={styles.starsCard}>
                 <Text style={styles.starsTitle}>STARS</Text>
                 <Text style={styles.starsAmount}>{user.stars.toFixed(2)}</Text>
                 <Text style={styles.starsSubtitle}>
-                  {20 - user.stars.toFixed(2)} star(s) until next reward
+                  {(20 - user.stars).toFixed(2)} star(s) until next reward
                 </Text>
               </View>
               <View>
@@ -157,7 +177,7 @@ const HomeScreen = ({navigation}) => {
             <Text style={styles.voucherText}>
               You have {user.vouchers.length} available voucher(s)
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Card', {user})}>
+            <TouchableOpacity onPress={() => navigation.navigate('Card', { user })}>
               <Icon
                 name="angle-right"
                 style={styles.iconArrow}
@@ -205,7 +225,7 @@ const HomeScreen = ({navigation}) => {
     );
   }
 };
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 
 const styles = StyleSheet.create({

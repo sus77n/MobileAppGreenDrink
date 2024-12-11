@@ -9,14 +9,33 @@ const HomeStoreScreen = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
 
-    useEffect(()=>{
-      subscriber()
-    },[])
+  useEffect(() => {
+    subscriber()
+  }, [])
 
-    const subscriber = () =>  {
-      getFirestore()
+  const [backPressCount, setBackPressCount] = useState(0);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (backPressCount === 0) {
+        setBackPressCount(1); 
+        ToastAndroid.show('Back one more time to exit', ToastAndroid.SHORT);
+        setTimeout(() => setBackPressCount(0), 2000); 
+        return true;
+      } else {
+        BackHandler.exitApp();
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [backPressCount]);
+
+  const subscriber = () => {
+    getFirestore()
       .collection('transactions')
-      .orderBy('transID') 
+      .orderBy('transID')
       .onSnapshot(querySnapshot => {
         const transactions = [];
 
@@ -30,7 +49,7 @@ const HomeStoreScreen = ({ navigation }) => {
         const filter = transactions.filter(item => item.status === 'Uncompleted');
         setTransactions(filter);
       });
-    }
+  }
 
   const handleTransactionStatus = (transactionId, newStatus) => {
     // Step 1: Update the local state
@@ -41,15 +60,15 @@ const HomeStoreScreen = ({ navigation }) => {
       }
       return transaction;
     });
-  
+
     setTransactions(updatedTransactions);
-  
+
     // Step 2: Find and update Firestore using the 'transId' field
     const transactionRef = getFirestore()
       .collection('transactions')
       .where('transID', '==', transactionId)
       .limit(1); // Make sure the query returns only one result
-  
+
     transactionRef.get()
       .then(querySnapshot => {
         if (!querySnapshot.empty) {
@@ -57,12 +76,12 @@ const HomeStoreScreen = ({ navigation }) => {
           transactionDoc.ref.update({
             status: newStatus,
           })
-          .then(() => {
-            console.log('Transaction status updated in Firestore');
-          })
-          .catch((error) => {
-            console.error('Error updating status in Firestore: ', error);
-          });
+            .then(() => {
+              console.log('Transaction status updated in Firestore');
+            })
+            .catch((error) => {
+              console.error('Error updating status in Firestore: ', error);
+            });
         } else {
           console.log('Transaction not found');
         }
@@ -70,20 +89,20 @@ const HomeStoreScreen = ({ navigation }) => {
       .catch((error) => {
         console.error('Error fetching transaction from Firestore: ', error);
       });
-      setLoading(false)
+    setLoading(false)
   };
 
   const logoutHandler = () => {
     try {
-        resetUserStorage();
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-        })
+      resetUserStorage();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      })
     } catch (error) {
-        console.error("Error resetting navigation: ", error);
+      console.error("Error resetting navigation: ", error);
     }
-};
+  };
   const renderTransactionItem = ({ item }) => {
     return (
       <TouchableOpacity style={styles.transactionCard} onPress={() => navigation.navigate('ManageOrder', { transaction: item })}>
@@ -113,13 +132,13 @@ const HomeStoreScreen = ({ navigation }) => {
       <LoadingScreen visible={loading} />
       <View style={styles.greetingSection}>
         <Text style={styles.greetingText}>Green Drink Store</Text>
-        <TouchableOpacity onPress={() =>logoutHandler()}>
-        <Icon
-                  name="sign-out"
-                  style={styles.icon}
-                  size={30}
-                  color={colorTheme.greenText}
-                />
+        <TouchableOpacity onPress={() => logoutHandler()}>
+          <Icon
+            name="sign-out"
+            style={styles.icon}
+            size={30}
+            color={colorTheme.greenText}
+          />
         </TouchableOpacity>
       </View>
       <FlatList

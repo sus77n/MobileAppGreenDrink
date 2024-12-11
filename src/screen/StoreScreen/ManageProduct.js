@@ -10,6 +10,8 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
+  BackHandler,
+  ToastAndroid,
 } from 'react-native';
 import {colorTheme} from '../../component/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -113,7 +115,25 @@ const ManageProduct = ({navigation}) => {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [selectedDrinkIds, setSelectedDrinkIds] = useState([]);
   const [selectionMode, setSelectionMode] = useState(false);
+  const [backPressCount, setBackPressCount] = useState(0);
 
+  useEffect(() => {
+    const backAction = () => {
+      if (backPressCount === 0) {
+        setBackPressCount(1); 
+        ToastAndroid.show('Back one more time to exit', ToastAndroid.SHORT);
+        setTimeout(() => setBackPressCount(0), 2000); 
+        return true;
+      } else {
+        BackHandler.exitApp();
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [backPressCount]);
+  
   useEffect(() => {
     const subscriber = firestore()
       .collection('categories')

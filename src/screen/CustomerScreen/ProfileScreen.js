@@ -1,12 +1,30 @@
 import React, { useEffect, useState } from "react";
-import {   Dimensions,ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {   BackHandler, Dimensions,ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from "react-native";
 import { colorTheme, getUser, LoadingScreen, resetUserStorage, setUserStorage, TopGoBack } from "../../component/store";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProfileScreen = ({ navigation }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [backPressCount, setBackPressCount] = useState(0);
 
+    useEffect(() => {
+      const backAction = () => {
+        if (backPressCount === 0) {
+          setBackPressCount(1); 
+          ToastAndroid.show('Back one more time to exit', ToastAndroid.SHORT);
+          setTimeout(() => setBackPressCount(0), 2000); 
+          return true;
+        } else {
+          BackHandler.exitApp();
+        }
+      };
+  
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+  
+      return () => backHandler.remove();
+    }, [backPressCount]);
+    
     const fetchUser = async () => {
         try {
             const user = await getUser();

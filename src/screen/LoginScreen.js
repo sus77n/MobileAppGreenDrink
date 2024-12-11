@@ -25,11 +25,31 @@ const LoginScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: '1046745299175-5b64vsicc0k21kck5c2ctpr607v39270.apps.googleusercontent.com',
+      webClientId: webClientId,
     });
+    hasUser();
   }, []);
 
-
+  const hasUser = async () => {
+    setLoading(true);
+    try {
+      const user = await getUser();
+      if (user !== null) {
+        if (user.key === adminId) {
+          navigation.navigate("ManagerTab");
+        } else {
+          navigation.navigate("UserTab");
+        }
+      } 
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      console.error(error.message);
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const onGoogleButtonPress = async () => {
     setLoading(true)

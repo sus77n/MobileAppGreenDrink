@@ -7,6 +7,7 @@ import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { ProductNavigation } from './ProductNavigation';
 import { TransactionNavigation } from './TransactionNavigation';
 import { ManagerStoreNavigation } from './StoreNavigation';
+import AddMoney from '../screen/StoreScreen/AddMoney';
 
 const Tab = createBottomTabNavigator();
 
@@ -49,6 +50,7 @@ const ManagerTab = () => {
       <Tab.Screen name="Home" component={ManagerHomeNavigation} />
       <Tab.Screen name="Product" component={ProductNavigation} />
       <Tab.Screen name="Store" component={ManagerStoreNavigation} />
+      <Tab.Screen name="Add Money" component={AddMoney} />
       <Tab.Screen name="Transaction" component={TransactionNavigation} />
     </Tab.Navigator>
   );

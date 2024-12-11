@@ -56,7 +56,7 @@ const MembershipDetail = ({ navigation, route}) => {
         </View>
         <Progress.Bar progress={progress} borderRadius={20} width={320} height={20} color={colorTheme.orangeText} style={styles.bar}/>
         <Text style={styles.note}>
-            Earn {20 - user.stars.toFixed(2)} star(s) to get 1 drink free
+            Earn {(20 - user.stars).toFixed(2)} star(s) to get 1 drink free
         </Text>
       </View>
       <View style={styles.membership}>

@@ -133,7 +133,7 @@ const HomeScreen = ({navigation}) => {
                 <Text style={styles.starsTitle}>STARS</Text>
                 <Text style={styles.starsAmount}>{user.stars.toFixed(2)}</Text>
                 <Text style={styles.starsSubtitle}>
-                  {20 - user.stars} star(s) until next reward
+                  {20 - user.stars.toFixed(2)} star(s) until next reward
                 </Text>
               </View>
               <View>

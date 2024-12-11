@@ -54,8 +54,6 @@ const ReviewOrder = ({ navigation, route }) => {
           key: doc.id
         }));
         setStores(temp);
-        console.log("stores: ", temp);
-
         setLoading(false);
       }, (error) => {
         console.error("Error fetching stores: ", error);
@@ -68,7 +66,7 @@ const ReviewOrder = ({ navigation, route }) => {
     };
   }, []);
 
-  const renderItem = ({ item: drink }) => {
+  const renderItem = ({ item: drink, index }) => {
     return (
       <View>
         <View style={styles.itemContainer}>
@@ -86,7 +84,19 @@ const ReviewOrder = ({ navigation, route }) => {
           <View style={styles.controls}>
             <TouchableOpacity style={styles.controlButton} onPress={() => {
               if (drink.quantity > 1) {
-                updateDrinkQuantity(drink.key, drink.quantity - 1);
+                updateDrinkQuantity(index, drink.quantity - 1);
+              } else {
+                Alert.alert("Cancel this order", "Do you want to remove this drink from the order",
+                  [
+                    { text: 'No', style: 'cancel', onPress: () => { } },
+                    {
+                      text: 'Yes',
+                      style: 'destructive',
+                      onPress: () => {
+                        deleteDrinkHandle(index)
+                      }
+                    },
+                  ])
               }
             }}>
               <Icon
@@ -190,10 +200,10 @@ const ReviewOrder = ({ navigation, route }) => {
     }
   }
 
-  const updateDrinkQuantity = (drinkKey, newQuantity) => {
+  const updateDrinkQuantity = (drinkIndex, newQuantity) => {
     setListDrinks(prevDrinks => {
-      const updatedDrinks = prevDrinks.map(drink =>
-        drink.key === drinkKey ? { ...drink, quantity: newQuantity } : drink
+      const updatedDrinks = prevDrinks.map((drink, index) =>
+        index === drinkIndex ? { ...drink, quantity: newQuantity } : drink
       );
 
       const newTotal = updatedDrinks.reduce(
@@ -205,6 +215,16 @@ const ReviewOrder = ({ navigation, route }) => {
 
       return updatedDrinks;
     });
+  };
+
+  const deleteDrinkHandle = (removeIndex) => {
+    const newList = listDrinks.filter((drink, index) => index !== removeIndex);
+    const newTotal = newList.reduce(
+      (total, drink) => total + drink.quantity * drink.price,
+      0
+    );
+    setOrder(prevOrder => ({ ...prevOrder, drinks: newList, total: newTotal }));
+    setListDrinks(newList);
   };
 
   if (!order || !stores) {
@@ -225,7 +245,6 @@ const ReviewOrder = ({ navigation, route }) => {
           selectedValue={selectedStores}
           onValueChange={(value) => setSelectedStores(value)}>
           {stores.map(store => {
-            console.log("st: ", store);
             return (
               <Picker.Item label={store.name} value={store.name} />
             )
@@ -234,13 +253,11 @@ const ReviewOrder = ({ navigation, route }) => {
       </View>
       <View style={styles.itemSection}>
         <Text style={styles.header}>Order items</Text>
-
         <FlatList
           data={listDrinks}
           renderItem={renderItem}
           keyExtractor={item => item.key}
         />
-
         <View style={styles.divider} />
 
         <View style={styles.totalContainer}>

@@ -20,6 +20,7 @@ const ProductDetail = ({ navigation, route }) => {
   const [sweetness, setSweetness] = useState('Regular');
   const [quantity, setQuantity] = useState(1);
   const [total, setTotal] = useState(0);
+  const [selectedPrice, setSelectedPrice] = useState(drink.price - 10000);
   const [loading, setLoading] = useState(false);
 
   const updateTotal = async () => {
@@ -36,7 +37,7 @@ const ProductDetail = ({ navigation, route }) => {
   const addToOrderList = async ({ customization, quantity }) => {
     setLoading(true)
     try {
-      await addToOrder({ drink: { ...drink, quantity: quantity, customization: customization } });
+      await addToOrder({ drink: { ...drink, price: selectedPrice, quantity: quantity, customization: customization } });
       setLoading(false)
       await updateTotal();
     } catch (error) {
@@ -76,7 +77,7 @@ const ProductDetail = ({ navigation, route }) => {
             </View>
             <View style={styles.topRight}>
               <Image source={{ uri: drink.img }} style={styles.img} />
-              <Text style={styles.price}>đ{drink.price}</Text>
+              <Text style={styles.price}>đ{selectedPrice}</Text>
             </View>
           </View>
 
@@ -91,7 +92,16 @@ const ProductDetail = ({ navigation, route }) => {
                       ? styles.sizeSquareActive
                       : styles.sizeSquareUnactive
                   }
-                  onPress={() => setSelectedSize(size)}>
+                  onPress={() => {
+                    setSelectedSize(size)
+                    if (size === "S") {
+                      setSelectedPrice(drink.price - 10000);
+                    } else if (size === "M") {
+                      setSelectedPrice(drink.price);
+                    } else if (size === "L") {
+                      setSelectedPrice(drink.price + 5000);
+                    }
+                  }}>
                   <Image
                     source={
                       size === 'S'

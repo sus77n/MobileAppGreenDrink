@@ -211,7 +211,6 @@ export const setOrder = async ({ drinks: drinks, type: type, total: total }) => 
   try {
     const jsonValue = JSON.stringify({ drinks: drinks, type: type, total: total });
     await AsyncStorage.setItem("order", jsonValue);
-    console.log('Order saved successfully');
   } catch (error) {
     console.error('Error saving order to AsyncStorage:', error);
   }
@@ -243,7 +242,6 @@ export const addToOrder = async ({ drink: drink }) => {
     drinks.push(drink);
     const newTotal = total + (drink.price * drink.quantity);
     await setOrder({ drinks: drinks, type: type, total: newTotal });
-    console.log("add order successful: ", { drinks: drinks, type: type, total: newTotal });
   } catch (error) {
     console.log("add to order error: ", error);
     Alert.alert("Add error", error.message);

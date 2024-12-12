@@ -130,11 +130,11 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.balanceAmount}>
                   {user.balance.toLocaleString()} VND
                 </Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={styles.addButton}
                   onPress={() => navigation.navigate('AddMoney', { user })}>
                   <Text style={styles.addButtonText}>Add money</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
               <View>
                 <Icon
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: scale(10),
     width: scale(210),
-    height: scale(220),
+    height: scale(240),
     alignItems: 'center',
     marginHorizontal: scale(10),
   },

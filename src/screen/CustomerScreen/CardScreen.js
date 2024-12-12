@@ -51,11 +51,11 @@ const CardScreen = ({navigation, route}) => {
           <Text style={styles.subtitle}>{getTimeNow()}</Text>
         </View>
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate('AddMoney', {user})}>
         <Text style={styles.addButtonText}>Add money</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View style={styles.voucherSection}>
         <Text style={styles.voucherTitle}>VOUCHERS</Text>
         <View style={styles.voucherMain}>
@@ -139,9 +139,11 @@ const styles = StyleSheet.create({
     width: scale(240),
     alignItems: 'center',
     marginRight: scale(15),
+
   },
 
   voucherSection: {
+    marginTop: scale(20),
     paddingHorizontal: scale(15),
   },
 

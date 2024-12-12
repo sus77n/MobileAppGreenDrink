@@ -78,9 +78,17 @@ const ReviewOrder = ({ navigation, route }) => {
               Sweetness: {drink.customization.sweetness}
             </Text>
           </View>
-          <Text style={styles.itemPrice}>đ{drink.price.toLocaleString()}</Text>
+          <View style={styles.priceContainer}>
+            <Text style={styles.itemPrice}>đ{drink.price.toLocaleString()}</Text>
+            {drink.isFree && (
+            <Text style={styles.originalPrice}>
+              đ{drink.originalPrice.toLocaleString()}
+            </Text>
+          )}
+          </View>
         </View>
-        <View style={styles.controls}>
+        {!drink.isFree && (
+          <View style={styles.controls}>
           <View style={styles.controls}>
             <TouchableOpacity style={styles.controlButton} onPress={() => {
               if (drink.quantity > 1) {
@@ -122,6 +130,7 @@ const ReviewOrder = ({ navigation, route }) => {
             </Text>
           </View>
         </View>
+          )}
       </View>
     );
   };
@@ -129,21 +138,37 @@ const ReviewOrder = ({ navigation, route }) => {
   const updateBalance = async () => {
     try {
       let starOnOrder = user.stars + order.total / 25000;
-      if (starOnOrder === 20) {
-        starOnOrder = 0;
-      } else if (starOnOrder > 20) {
-        starOnOrder -= 20;
+      let addVoucher = false;
+  
+      if (starOnOrder >= 20) {
+        starOnOrder -= 20; // Reset stars after reaching 20
+        addVoucher = true; // Indicate that a new voucher should be added
       }
-
-      await firestore()
-        .collection('customers')
-        .doc(user.key)
-        .update({
-          balance: user.balance - order.total,
-          stars: starOnOrder,
-          totalStars: user.totalStars + order.total / 25000,
+  
+      const updatedData = {
+        balance: user.balance - order.total,
+        stars: starOnOrder,
+        totalStars: user.totalStars + order.total / 25000,
+      };
+  
+      const customerRef = firestore().collection('customers').doc(user.key);
+  
+      if (addVoucher) {
+        const newVoucher = {
+          id: 'FreeDrink',
+          content: 'You have 1 drink free',
+        };
+  
+        // Update vouchers array
+        await customerRef.update({
+          ...updatedData,
+          vouchers: firestore.FieldValue.arrayUnion(newVoucher),
         });
-
+      } else {
+        // Update without adding a voucher
+        await customerRef.update(updatedData);
+      }
+  
       console.log('Update successful');
       await resetUserAfterChange(user.key);
     } catch (error) {
@@ -152,6 +177,8 @@ const ReviewOrder = ({ navigation, route }) => {
       throw error;
     }
   };
+  
+  
 
   const addTransaction = async () => {
     try {
@@ -175,20 +202,97 @@ const ReviewOrder = ({ navigation, route }) => {
     }
   };
 
-  const handleVoucher = () => {
+  const handleVoucher = (voucherID) => {
     try {
-
+      if (voucherID === "FreeDrink") {
+        const updatedDrinks = [...listDrinks];
+        let isApplied = false;
+  
+        for (let i = 0; i < updatedDrinks.length; i++) {
+          if (!updatedDrinks[i].isFree && !isApplied) {
+            updatedDrinks[i] = {
+              ...updatedDrinks[i],
+              originalPrice: updatedDrinks[i].price,
+              price: 0,
+              isFree: true,
+            };
+            isApplied = true;
+          }
+        }
+  
+        if (isApplied) {
+          // Calculate the total before promotion
+          const totalBeforePromotion = updatedDrinks.reduce(
+            (total, drink) => total + (drink.originalPrice || drink.price) * drink.quantity,
+            0
+          );
+  
+          // Calculate the total after promotion
+          const newTotal = updatedDrinks.reduce(
+            (total, drink) => total + drink.price * drink.quantity,
+            0
+          );
+  
+          // Update state
+          setListDrinks(updatedDrinks);
+          setOrder((prevOrder) => ({
+            ...prevOrder,
+            drinks: updatedDrinks,
+            total: newTotal,
+            totalBeforePromotion: totalBeforePromotion,
+          }));
+  
+          // Mark the voucher as applied in the user's voucher list
+          const updatedVouchers = user.vouchers.map(voucher =>
+            voucher.id === voucherID ? { ...voucher, isApplied: true } : voucher
+          );
+          user.vouchers = updatedVouchers;
+  
+          Alert.alert("Voucher Applied", "One drink is free!");
+        } else {
+          Alert.alert("No eligible drinks", "All drinks already have a voucher applied.");
+        }
+      } else {
+        Alert.alert("Invalid Voucher", "This voucher is not supported yet.");
+      }
     } catch (error) {
-
+      console.error("Error applying voucher: ", error);
+      Alert.alert("Error", "Something went wrong while applying the voucher.");
     }
-  }
+  };
+  
+  
+  
 
   const payHandle = async () => {
     try {
-      await updateBalance(); // Await ensures errors are caught here
-      addTransaction();
+      await updateBalance();
+      await addTransaction();
+  
+      // Identify the applied voucher (if any)
+      const appliedVoucher = user.vouchers.find(voucher => voucher.isApplied);
+  
+      if (appliedVoucher) {
+        // Update the voucher list in Firestore
+        const updatedVouchers = user.vouchers.map(voucher => 
+          voucher.id === appliedVoucher.id 
+            ? { ...voucher, isApplied: true } 
+            : voucher
+        );
+  
+        await firestore()
+          .collection('customers')
+          .doc(user.key)
+          .update({
+            vouchers: updatedVouchers, // Replace the entire vouchers array
+          });
+  
+        console.log('Voucher updated successfully.');
+      }
+  
+      // Clean the order
       await cleanOrder();
-
+  
       Alert.alert('Enjoy your drink!');
       setTimeout(() => {
         navigation.reset({
@@ -201,7 +305,7 @@ const ReviewOrder = ({ navigation, route }) => {
       Alert.alert("Pay failed", "Try again");
     }
   };
-
+  
   const updateDrinkQuantity = (drinkIndex, newQuantity) => {
     setListDrinks(prevDrinks => {
       const updatedDrinks = prevDrinks.map((drink, index) =>
@@ -239,7 +343,7 @@ const ReviewOrder = ({ navigation, route }) => {
 
   const renderVouchers = ({ item: voucher }) => {
     return (
-      <TouchableOpacity style={styles.voucherCard} onPress={handleVoucher()}>
+      <TouchableOpacity style={styles.voucherCard} onPress={() => handleVoucher(voucher.id)}>
         <Image
           source={require('../../../assets/img/voucherIcon.png')}
           style={styles.voucherIcon}
@@ -288,6 +392,10 @@ const ReviewOrder = ({ navigation, route }) => {
         </View>
         <View style={styles.divider} />
 
+        <View style={styles.totalContainer}>
+          <Text style={styles.itemDetails}>Total before promotion:</Text>
+          <Text style={styles.originalPrice}>{order.totalBeforePromotion ? order.totalBeforePromotion.toLocaleString() : order.total.toLocaleString()} VND</Text>
+        </View>
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
           <Text style={styles.orderTotalValue}>{order.total.toLocaleString()} VND</Text>
@@ -368,6 +476,12 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
+  },
+  priceContainer:{
+    alignItems: 'flex-end'
+  },
+  originalPrice:{
+    textDecorationLine:'line-through',
   },
   itemName: {
     fontSize: scale(14),
@@ -485,9 +599,11 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: colorTheme.black,
     fontWeight: '600',
+    fontSize: scale(13)
   },
   cardSubtitle: {
     color: colorTheme.grayText,
+    fontSize: scale(10)
   },
 });
 

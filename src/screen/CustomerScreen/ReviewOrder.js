@@ -29,7 +29,7 @@ const ReviewOrder = ({ navigation, route }) => {
   const [order, setOrder] = useState(null);
   const [stores, setStores] = useState([]);
   const [selectedStores, setSelectedStores] = useState("Chose a store");
-
+  const [vouchers, setVouchers] = useState(user.vouchers); 
   const fetchOrder = async () => {
     setLoading(true);
     try {
@@ -202,8 +202,33 @@ const ReviewOrder = ({ navigation, route }) => {
     }
   };
 
-  const handleVoucher = (voucherID) => {
+  const handleVoucher = async (voucherID) => {
     try {
+      const updatedVouchers = [...vouchers].flat();
+      
+      for (let i = 0; i < updatedVouchers.length; i++) {
+        console.log("voucher [i]", i, JSON.stringify(updatedVouchers[i]));
+      }
+      let foundVoucher = false;
+      for (let i = 0; i < updatedVouchers.length; i++) {
+        console.log("voucher [i]"+ JSON.stringify(updatedVouchers[i]) + i);
+        
+        if (updatedVouchers[i].id === voucherID && !updatedVouchers[i].isApplied) {
+          updatedVouchers[i] = {
+            ...updatedVouchers[i],
+            isApplied: true,
+          };
+          foundVoucher = true;
+          break; 
+        }
+      }
+  
+      if (!foundVoucher) {
+        Alert.alert("Voucher Error", "Voucher already applied or not found.");
+        return;
+      }
+  
+      // Apply the voucher logic (e.g., FreeDrink)
       if (voucherID === "FreeDrink") {
         const updatedDrinks = [...listDrinks];
         let isApplied = false;
@@ -221,19 +246,18 @@ const ReviewOrder = ({ navigation, route }) => {
         }
   
         if (isApplied) {
-          // Calculate the total before promotion
           const totalBeforePromotion = updatedDrinks.reduce(
-            (total, drink) => total + (drink.originalPrice || drink.price) * drink.quantity,
+            (total, drink) =>
+              total + (drink.originalPrice || drink.price) * drink.quantity,
             0
           );
   
-          // Calculate the total after promotion
           const newTotal = updatedDrinks.reduce(
             (total, drink) => total + drink.price * drink.quantity,
             0
           );
   
-          // Update state
+          // Update local drinks and order
           setListDrinks(updatedDrinks);
           setOrder((prevOrder) => ({
             ...prevOrder,
@@ -242,15 +266,16 @@ const ReviewOrder = ({ navigation, route }) => {
             totalBeforePromotion: totalBeforePromotion,
           }));
   
-          // Mark the voucher as applied in the user's voucher list
-          const updatedVouchers = user.vouchers.map(voucher =>
-            voucher.id === voucherID ? { ...voucher, isApplied: true } : voucher
-          );
-          user.vouchers = updatedVouchers;
+          // Update local vouchers
+          setVouchers(updatedVouchers);
   
+          console.log("Voucher applied locally:", updatedVouchers);
           Alert.alert("Voucher Applied", "One drink is free!");
         } else {
-          Alert.alert("No eligible drinks", "All drinks already have a voucher applied.");
+          Alert.alert(
+            "No eligible drinks",
+            "All drinks already have a voucher applied."
+          );
         }
       } else {
         Alert.alert("Invalid Voucher", "This voucher is not supported yet.");
@@ -262,49 +287,38 @@ const ReviewOrder = ({ navigation, route }) => {
   };
   
   
-  
 
   const payHandle = async () => {
     try {
       await updateBalance();
       await addTransaction();
   
-      // Identify the applied voucher (if any)
-      const appliedVoucher = user.vouchers.find(voucher => voucher.isApplied);
+      // Update Firestore with the local vouchers array
+      await firestore()
+        .collection("customers")
+        .doc(user.key)
+        .update({ vouchers });
   
-      if (appliedVoucher) {
-        // Update the voucher list in Firestore
-        const updatedVouchers = user.vouchers.map(voucher => 
-          voucher.id === appliedVoucher.id 
-            ? { ...voucher, isApplied: true } 
-            : voucher
-        );
-  
-        await firestore()
-          .collection('customers')
-          .doc(user.key)
-          .update({
-            vouchers: updatedVouchers, // Replace the entire vouchers array
-          });
-  
-        console.log('Voucher updated successfully.');
-      }
+      console.log("Vouchers updated in Firestore:", vouchers);
   
       // Clean the order
       await cleanOrder();
   
-      Alert.alert('Enjoy your drink!');
+      Alert.alert("Enjoy your drink!");
       setTimeout(() => {
         navigation.reset({
           index: 0,
-          routes: [{ name: "Home" }]
+          routes: [{ name: "Home" }],
         });
       }, 1000);
+      resetUserAfterChange();
     } catch (error) {
       console.error("Pay failed", error);
       Alert.alert("Pay failed", "Try again");
     }
   };
+  
+  
   
   const updateDrinkQuantity = (drinkIndex, newQuantity) => {
     setListDrinks(prevDrinks => {
@@ -342,19 +356,26 @@ const ReviewOrder = ({ navigation, route }) => {
   }
 
   const renderVouchers = ({ item: voucher }) => {
-    return (
-      <TouchableOpacity style={styles.voucherCard} onPress={() => handleVoucher(voucher.id)}>
-        <Image
-          source={require('../../../assets/img/voucherIcon.png')}
-          style={styles.voucherIcon}
-        />
-        <View style={styles.cardTitleWrap}>
-          <Text style={styles.cardTitle}>{voucher.content}</Text>
-          <Text style={styles.cardSubtitle}>Add it before pay</Text>
-        </View>
-      </TouchableOpacity>
-    );
+    if (!voucher.isApplied) {
+      return (
+        <TouchableOpacity
+          style={styles.voucherCard}
+          onPress={() => handleVoucher(voucher.id)}
+        >
+          <Image
+            source={require('../../../assets/img/voucherIcon.png')}
+            style={styles.voucherIcon}
+          />
+          <View style={styles.cardTitleWrap}>
+            <Text style={styles.cardTitle}>{voucher.content}</Text>
+            <Text style={styles.cardSubtitle}>Add it before pay</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+    return null; // Do not render anything if `isApplied` is true
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -383,7 +404,7 @@ const ReviewOrder = ({ navigation, route }) => {
         <View style={styles.divider} />
         <View style={styles.voucherMain}>
           <FlatList
-            data={user.vouchers}
+            data={vouchers}
             renderItem={renderVouchers}
             keyExtractor={item => item.key}
             horizontal

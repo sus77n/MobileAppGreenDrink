@@ -50,7 +50,6 @@ const ProfileScreen = ({navigation}) => {
     try {
       const user = await getUser();
       setUser(user);
-      setQRValue(user.key);
       console.log('User:', user);
       setLoading(false);
     } catch (error) {
@@ -127,7 +126,7 @@ const ProfileScreen = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.row}
-            onPress={() => navigation.navigate('MembershipDetail')}>
+            onPress={() => navigation.navigate('MembershipDetail', {user})}>
             <Text style={styles.rowText}>Membership Details</Text>
             <Icon
               name="crown-circle-outline"

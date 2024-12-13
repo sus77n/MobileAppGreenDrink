@@ -109,10 +109,6 @@ const EditStoreScreen = ({ navigation, route }) => {
         setHasEdit(isEdited);
     }, [name, address, contact, latitude, longitude]);
 
-    const handlePreview = () => {
-        console.log('Preview product:', { name, address, contact, latitude, longitude });
-    };
-
     const handleSave = () => {
         setLoading(true);
         if (!name || !address || !contact || !latitude || !longitude) {
@@ -198,9 +194,6 @@ const EditStoreScreen = ({ navigation, route }) => {
 
 
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.previewButton} onPress={handlePreview}>
-                        <Text style={styles.buttonText}>Preview</Text>
-                    </TouchableOpacity>
                     <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                         <Text style={styles.buttonText}>Update</Text>
                     </TouchableOpacity>

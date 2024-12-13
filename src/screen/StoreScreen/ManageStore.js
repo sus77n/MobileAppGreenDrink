@@ -74,10 +74,6 @@ const ManagerStore = ({ navigation }) => {
             });
           });
 
-          storeLocations.forEach((location, index) => {
-            console.log(location);
-          });
-
           setLocation(storeLocations);
         });
 

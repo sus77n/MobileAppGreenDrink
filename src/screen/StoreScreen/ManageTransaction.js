@@ -1,18 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {BackHandler, Dimensions,FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, Dimensions, FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {colorTheme, TopGoBack} from '../../component/store';
+import { colorTheme, LoadingScreen, TopGoBack } from '../../component/store';
 
-const ManageTransaction = ({navigation}) => {
+const ManageTransaction = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [backPressCount, setBackPressCount] = useState(0);
 
   useEffect(() => {
     const backAction = () => {
       if (backPressCount === 0) {
-        setBackPressCount(1); 
+        setBackPressCount(1);
         ToastAndroid.show('Back one more time to exit', ToastAndroid.SHORT);
-        setTimeout(() => setBackPressCount(0), 2000); 
+        setTimeout(() => setBackPressCount(0), 2000);
         return true;
       } else {
         BackHandler.exitApp();
@@ -23,14 +24,15 @@ const ManageTransaction = ({navigation}) => {
 
     return () => backHandler.remove();
   }, [backPressCount]);
-  
+
   useEffect(() => {
+    setLoading(true)
     const subscriber = firestore()
       .collection('transactions')
       .orderBy('createdAt', 'desc')
       .onSnapshot(async querySnapshot => {
         const transactionsList = [];
-  
+
         const fetchDrinksPromises = querySnapshot.docs.map(async documentSnapshot => {
           const transactionData = documentSnapshot.data();
           const drinksSnapshot = await firestore()
@@ -38,42 +40,41 @@ const ManageTransaction = ({navigation}) => {
             .doc(documentSnapshot.id)
             .collection('drinks')
             .get();
-  
+
           return {
             id: documentSnapshot.id,
-            ...transactionData, 
+            ...transactionData,
             amount: `₫${transactionData.price?.toLocaleString()}`,
             priceBeforePromotion: `₫${transactionData.priceBeforePromotion?.toLocaleString()}`,
             date: new Date(transactionData.createdAt.toDate()),
           };
         });
-  
-        // Wait for all promises to resolve
+
         const allTransactions = await Promise.all(fetchDrinksPromises);
-  
-        // Group transactions by month
+
         const groupedData = [];
         let currentMonth = null;
-  
+
         allTransactions.forEach(transaction => {
           const month = transaction.date.toLocaleString('default', {
             month: 'long',
             year: 'numeric',
           });
           if (month !== currentMonth) {
-            groupedData.push({type: 'header', month});
+            groupedData.push({ type: 'header', month });
             currentMonth = month;
           }
-          groupedData.push({type: 'transaction', ...transaction});
+          groupedData.push({ type: 'transaction', ...transaction });
         });
-  
+
         setTransactions(groupedData);
+        setLoading(false);
       });
     return () => subscriber();
   }, []);
-  
 
-  const renderItem = ({item}) => {
+
+  const renderItem = ({ item }) => {
     if (item.type === 'header') {
       return <Text style={styles.header}>{item.month}</Text>;
     }
@@ -82,7 +83,7 @@ const ManageTransaction = ({navigation}) => {
       <TouchableOpacity
         style={styles.transactionContainer}
         onPress={() =>
-          navigation.navigate('ManageTransDetail', {transaction: item})
+          navigation.navigate('ManageTransDetail', { transaction: item })
         }>
         <View style={styles.left}>
           <Text style={styles.description}>{item.type}</Text>
@@ -97,6 +98,7 @@ const ManageTransaction = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      <LoadingScreen visible={loading} />
       <TopGoBack text={'Transaction History'} navigation={navigation} />
       <FlatList
         data={transactions}

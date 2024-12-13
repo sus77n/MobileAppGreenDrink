@@ -27,7 +27,7 @@ const LoginScreen = ({ navigation, route }) => {
     GoogleSignin.configure({
       webClientId: webClientId,
     });
-    // hasUser();
+    hasUser();
   }, []);
 
   const hasUser = async () => {

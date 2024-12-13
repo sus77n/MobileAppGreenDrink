@@ -222,10 +222,11 @@ const styles = StyleSheet.create({
   },
   wrapWhite: {
     width: scale(375),
-    height: height * 0.72, // Keeping the 60% proportional height
+    height: height * 0.72, 
     flex: 1,
     backgroundColor: colorTheme.white,
-    marginTop: height * 0.12, // 70% of screen height
+    marginTop: height * 0.12, 
+    paddingTop: scale(20),
     borderTopLeftRadius: scale(50),
     borderTopRightRadius: scale(50),
   },
@@ -233,6 +234,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: scale(20),
+    paddingVertical: scale(10),
   },
   topLeft: {
     width: '60%',
@@ -241,7 +243,7 @@ const styles = StyleSheet.create({
   },
   name: {
     color: colorTheme.greenText,
-    fontSize: scale(25),
+    fontSize: scale(20),
     fontWeight: '700',
     marginBottom: scale(20),
   },
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
   },
   img: {
     position: 'absolute',
-    marginTop: scale(-40),
+    marginTop: scale(-80),
     width: scale(100),
     height: scale(180),
   },
@@ -260,13 +262,13 @@ const styles = StyleSheet.create({
     color: colorTheme.orangeBackground,
     fontWeight: '700',
     fontSize: scale(23),
-    marginTop: scale(160),
+    marginTop: scale(140),
   },
   sizeSetion: {
     paddingHorizontal: scale(20),
   },
   titleSize: {
-    fontSize: scale(20),
+    fontSize: scale(17),
     fontWeight: '700',
     color: colorTheme.grayText,
   },
@@ -282,8 +284,8 @@ const styles = StyleSheet.create({
     borderRadius: scale(15),
     alignItems: 'center',
     justifyContent: 'center',
-    width: scale(110),
-    height: scale(110),
+    width: scale(90),
+    height: scale(90),
   },
   sizeSquareUnactive: {
     borderWidth: scale(2),
@@ -292,8 +294,8 @@ const styles = StyleSheet.create({
     borderRadius: scale(15),
     alignItems: 'center',
     justifyContent: 'center',
-    width: scale(110),
-    height: scale(110),
+    width: scale(90),
+    height: scale(90),
   },
   sweetSection: {
     paddingHorizontal: scale(20),

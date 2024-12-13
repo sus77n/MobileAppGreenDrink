@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   name: {
     width: '60%',
-    fontSize: 17,
+    fontSize: scale(14),
     fontWeight: '600',
     textAlign: 'center',
     color: colorTheme.greenText,

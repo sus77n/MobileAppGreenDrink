@@ -29,7 +29,7 @@ const ReviewOrder = ({ navigation, route }) => {
   const [order, setOrder] = useState(null);
   const [stores, setStores] = useState([]);
   const [selectedStores, setSelectedStores] = useState("Chose a store");
-
+  const [vouchers, setVouchers] = useState(user.vouchers); 
   const fetchOrder = async () => {
     setLoading(true);
     try {
@@ -78,9 +78,17 @@ const ReviewOrder = ({ navigation, route }) => {
               Sweetness: {drink.customization.sweetness}
             </Text>
           </View>
-          <Text style={styles.itemPrice}>đ{drink.price.toLocaleString()}</Text>
+          <View style={styles.priceContainer}>
+            <Text style={styles.itemPrice}>đ{drink.price.toLocaleString()}</Text>
+            {drink.isFree && (
+            <Text style={styles.originalPrice}>
+              đ{drink.originalPrice.toLocaleString()}
+            </Text>
+          )}
+          </View>
         </View>
-        <View style={styles.controls}>
+        {!drink.isFree && (
+          <View style={styles.controls}>
           <View style={styles.controls}>
             <TouchableOpacity style={styles.controlButton} onPress={() => {
               if (drink.quantity > 1) {
@@ -122,6 +130,7 @@ const ReviewOrder = ({ navigation, route }) => {
             </Text>
           </View>
         </View>
+          )}
       </View>
     );
   };
@@ -129,22 +138,55 @@ const ReviewOrder = ({ navigation, route }) => {
   const updateBalance = async () => {
     try {
       let starOnOrder = user.stars + order.total / 25000;
-      if (starOnOrder === 20) {
-        starOnOrder = 0;
-      } else if (starOnOrder > 20) {
-        starOnOrder -= 20;
+      let addVoucher = false;
+      
+      console.log("star on order: " + starOnOrder);
+      
+      if (starOnOrder >= 20) {
+        starOnOrder -= 20; // Reset stars after reaching 20
+        addVoucher = true; // Indicate that a new voucher should be added
       }
-
-      await firestore()
-        .collection('customers')
-        .doc(user.key)
-        .update({
-          balance: user.balance - order.total,
-          stars: starOnOrder,
-          totalStars: user.totalStars + order.total / 25000,
+  
+      const updatedData = {
+        balance: user.balance - order.total,
+        stars: starOnOrder,
+        totalStars: user.totalStars + order.total / 25000,
+      };
+  
+      const customerRef = firestore().collection('customers').doc(user.key);
+      
+      // Fetch the existing customer data to get the vouchers array
+      const doc = await customerRef.get();
+      const customerData = doc.data();
+      const existingVouchers = customerData.vouchers || []; // Ensure vouchers is an array, defaulting to an empty array
+  
+      // Add a new voucher if addVoucher is true
+      if (addVoucher) {
+        console.log('Running add voucher...');
+        
+        const newVoucher = {
+          id: 'FreeDrink',
+          content: 'You have 1 drink free',
+          isApplied: false,
+        };
+  
+        // Push the new voucher into the existing vouchers array
+        existingVouchers.push(newVoucher);
+  
+        // Update the customer document with the new vouchers array and other updated data
+        await customerRef.update({
+          ...updatedData,
+          vouchers: existingVouchers, // Update the vouchers array with the new voucher
         });
-
-      console.log('Update successful');
+  
+        console.log('Voucher added successfully');
+      } else {
+        // Just update user data without adding a voucher
+        await customerRef.update(updatedData);
+        console.log('Updated without adding voucher');
+      }
+  
+      // Proceed with any other actions (like resetting user data, etc.)
       await resetUserAfterChange(user.key);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -152,6 +194,10 @@ const ReviewOrder = ({ navigation, route }) => {
       throw error;
     }
   };
+  
+  
+  
+  
 
   const addTransaction = async () => {
     try {
@@ -175,33 +221,125 @@ const ReviewOrder = ({ navigation, route }) => {
     }
   };
 
-  const handleVoucher = () => {
+  const handleVoucher = async (voucherID) => {
     try {
-
+      const updatedVouchers = [...vouchers].flat();
+      
+      for (let i = 0; i < updatedVouchers.length; i++) {
+        console.log("voucher [i]", i, JSON.stringify(updatedVouchers[i]));
+      }
+      let foundVoucher = false;
+      for (let i = 0; i < updatedVouchers.length; i++) {
+        console.log("voucher [i]"+ JSON.stringify(updatedVouchers[i]) + i);
+        
+        if (updatedVouchers[i].id === voucherID && !updatedVouchers[i].isApplied) {
+          updatedVouchers[i] = {
+            ...updatedVouchers[i],
+            isApplied: true,
+          };
+          foundVoucher = true;
+          break; 
+        }
+      }
+  
+      if (!foundVoucher) {
+        Alert.alert("Voucher Error", "Voucher already applied or not found.");
+        return;
+      }
+  
+      // Apply the voucher logic (e.g., FreeDrink)
+      if (voucherID === "FreeDrink") {
+        const updatedDrinks = [...listDrinks];
+        let isApplied = false;
+  
+        for (let i = 0; i < updatedDrinks.length; i++) {
+          if (!updatedDrinks[i].isFree && !isApplied) {
+            updatedDrinks[i] = {
+              ...updatedDrinks[i],
+              originalPrice: updatedDrinks[i].price,
+              price: 0,
+              isFree: true,
+            };
+            isApplied = true;
+          }
+        }
+  
+        if (isApplied) {
+          const totalBeforePromotion = updatedDrinks.reduce(
+            (total, drink) =>
+              total + (drink.originalPrice || drink.price) * drink.quantity,
+            0
+          );
+  
+          const newTotal = updatedDrinks.reduce(
+            (total, drink) => total + drink.price * drink.quantity,
+            0
+          );
+  
+          // Update local drinks and order
+          setListDrinks(updatedDrinks);
+          setOrder((prevOrder) => ({
+            ...prevOrder,
+            drinks: updatedDrinks,
+            total: newTotal,
+            totalBeforePromotion: totalBeforePromotion,
+          }));
+  
+          // Update local vouchers
+          setVouchers(updatedVouchers);
+  
+          console.log("Voucher applied locally:", updatedVouchers);
+          Alert.alert("Voucher Applied", "One drink is free!");
+        } else {
+          Alert.alert(
+            "No eligible drinks",
+            "All drinks already have a voucher applied."
+          );
+        }
+      } else {
+        Alert.alert("Invalid Voucher", "This voucher is not supported yet.");
+      }
     } catch (error) {
-
+      console.error("Error applying voucher: ", error);
+      Alert.alert("Error", "Something went wrong while applying the voucher.");
     }
-  }
+  };
+  
+  
 
   const payHandle = async () => {
     try {
-      await updateBalance(); // Await ensures errors are caught here
-      addTransaction();
-      await cleanOrder();
+      await updateBalance();
+      await addTransaction();
+  
+      const updatedVouchers = vouchers.filter(voucher => !voucher.isApplied);
 
-      Alert.alert('Enjoy your drink!');
+      await firestore()
+        .collection("customers")
+        .doc(user.key)
+         .update({ vouchers: updatedVouchers });
+  
+      console.log("Vouchers updated in Firestore:", vouchers);
+  
+      // Clean the order
+      await cleanOrder();
+  
+      Alert.alert("Enjoy your drink!");
       setTimeout(() => {
         navigation.reset({
           index: 0,
-          routes: [{ name: "Home" }]
+          routes: [{ name: "Home" }],
         });
       }, 1000);
+      resetUserAfterChange();
     } catch (error) {
       console.error("Pay failed", error);
       Alert.alert("Pay failed", "Try again");
     }
   };
-
+  
+  
+  
   const updateDrinkQuantity = (drinkIndex, newQuantity) => {
     setListDrinks(prevDrinks => {
       const updatedDrinks = prevDrinks.map((drink, index) =>
@@ -238,19 +376,26 @@ const ReviewOrder = ({ navigation, route }) => {
   }
 
   const renderVouchers = ({ item: voucher }) => {
-    return (
-      <TouchableOpacity style={styles.voucherCard} onPress={handleVoucher()}>
-        <Image
-          source={require('../../../assets/img/voucherIcon.png')}
-          style={styles.voucherIcon}
-        />
-        <View style={styles.cardTitleWrap}>
-          <Text style={styles.cardTitle}>{voucher.content}</Text>
-          <Text style={styles.cardSubtitle}>Add it before pay</Text>
-        </View>
-      </TouchableOpacity>
-    );
+    if (!voucher.isApplied) {
+      return (
+        <TouchableOpacity
+          style={styles.voucherCard}
+          onPress={() => handleVoucher(voucher.id)}
+        >
+          <Image
+            source={require('../../../assets/img/voucherIcon.png')}
+            style={styles.voucherIcon}
+          />
+          <View style={styles.cardTitleWrap}>
+            <Text style={styles.cardTitle}>{voucher.content}</Text>
+            <Text style={styles.cardSubtitle}>Add it before pay</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+    return null; // Do not render anything if `isApplied` is true
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -279,7 +424,7 @@ const ReviewOrder = ({ navigation, route }) => {
         <View style={styles.divider} />
         <View style={styles.voucherMain}>
           <FlatList
-            data={user.vouchers}
+            data={vouchers}
             renderItem={renderVouchers}
             keyExtractor={item => item.key}
             horizontal
@@ -288,6 +433,10 @@ const ReviewOrder = ({ navigation, route }) => {
         </View>
         <View style={styles.divider} />
 
+        <View style={styles.totalContainer}>
+          <Text style={styles.itemDetails}>Total before promotion:</Text>
+          <Text style={styles.originalPrice}>{order.totalBeforePromotion ? order.totalBeforePromotion.toLocaleString() : order.total.toLocaleString()} VND</Text>
+        </View>
         <View style={styles.totalContainer}>
           <Text style={styles.orderTotalLabel}>Order total:</Text>
           <Text style={styles.orderTotalValue}>{order.total.toLocaleString()} VND</Text>
@@ -368,6 +517,12 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
+  },
+  priceContainer:{
+    alignItems: 'flex-end'
+  },
+  originalPrice:{
+    textDecorationLine:'line-through',
   },
   itemName: {
     fontSize: scale(14),
@@ -485,9 +640,11 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: colorTheme.black,
     fontWeight: '600',
+    fontSize: scale(13)
   },
   cardSubtitle: {
     color: colorTheme.grayText,
+    fontSize: scale(10)
   },
 });
 

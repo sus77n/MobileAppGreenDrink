@@ -139,7 +139,9 @@ const ReviewOrder = ({ navigation, route }) => {
     try {
       let starOnOrder = user.stars + order.total / 25000;
       let addVoucher = false;
-  
+      
+      console.log("star on order: " + starOnOrder);
+      
       if (starOnOrder >= 20) {
         starOnOrder -= 20; // Reset stars after reaching 20
         addVoucher = true; // Indicate that a new voucher should be added
@@ -152,24 +154,39 @@ const ReviewOrder = ({ navigation, route }) => {
       };
   
       const customerRef = firestore().collection('customers').doc(user.key);
+      
+      // Fetch the existing customer data to get the vouchers array
+      const doc = await customerRef.get();
+      const customerData = doc.data();
+      const existingVouchers = customerData.vouchers || []; // Ensure vouchers is an array, defaulting to an empty array
   
+      // Add a new voucher if addVoucher is true
       if (addVoucher) {
+        console.log('Running add voucher...');
+        
         const newVoucher = {
           id: 'FreeDrink',
           content: 'You have 1 drink free',
+          isApplied: false,
         };
   
-        // Update vouchers array
+        // Push the new voucher into the existing vouchers array
+        existingVouchers.push(newVoucher);
+  
+        // Update the customer document with the new vouchers array and other updated data
         await customerRef.update({
           ...updatedData,
-          vouchers: firestore.FieldValue.arrayUnion(newVoucher),
+          vouchers: existingVouchers, // Update the vouchers array with the new voucher
         });
+  
+        console.log('Voucher added successfully');
       } else {
-        // Update without adding a voucher
+        // Just update user data without adding a voucher
         await customerRef.update(updatedData);
+        console.log('Updated without adding voucher');
       }
   
-      console.log('Update successful');
+      // Proceed with any other actions (like resetting user data, etc.)
       await resetUserAfterChange(user.key);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -177,6 +194,8 @@ const ReviewOrder = ({ navigation, route }) => {
       throw error;
     }
   };
+  
+  
   
   
 
@@ -293,11 +312,12 @@ const ReviewOrder = ({ navigation, route }) => {
       await updateBalance();
       await addTransaction();
   
-      // Update Firestore with the local vouchers array
+      const updatedVouchers = vouchers.filter(voucher => !voucher.isApplied);
+
       await firestore()
         .collection("customers")
         .doc(user.key)
-        .update({ vouchers });
+         .update({ vouchers: updatedVouchers });
   
       console.log("Vouchers updated in Firestore:", vouchers);
   

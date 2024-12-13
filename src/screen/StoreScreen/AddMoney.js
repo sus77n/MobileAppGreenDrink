@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -19,14 +19,16 @@ import {
   resetUserAfterChange,
   TopGoBack,
 } from '../../component/store';
-import { getFirestore } from '@react-native-firebase/firestore';
+import {getFirestore} from '@react-native-firebase/firestore';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import {RNCamera} from 'react-native-camera';
 
-const AddMoney = ({ navigation, route }) => {
+const AddMoney = ({navigation, route}) => {
   const [amount, setAmount] = useState('');
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [selectedUserKey, setSelectedUserKey] = useState(null);
+  const [selectedUserKey, setSelectedUserKey] = useState('');
   const [backPressCount, setBackPressCount] = useState(0);
 
   useEffect(() => {
@@ -41,36 +43,40 @@ const AddMoney = ({ navigation, route }) => {
       }
     };
 
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
 
     return () => backHandler.remove();
   }, [backPressCount]);
-  
+
   useEffect(() => {
     setLoading(true);
     const unsubscribeUsers = getFirestore()
-      .collection("customers")
-      .onSnapshot((querySnapShort) => {
-        const list = querySnapShort.docs.map((doc) => ({
+      .collection('customers')
+      .onSnapshot(querySnapShort => {
+        const list = querySnapShort.docs.map(doc => ({
           ...doc.data(),
-          key: doc.id
+          key: doc.id,
         }));
 
-        const filterList = list.filter((user) => user.key !== adminId);
+        const filterList = list.filter(user => user.key !== adminId);
         setUsers(filterList);
-        setLoading(false)
+        setLoading(false);
 
-        console.log("users: ", users);
-
-      })
+        console.log('users: ', users);
+      });
 
     return () => unsubscribeUsers();
-  }, [])
+  }, []);
 
   const handleAdd = async () => {
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 1000) {
-      Alert.alert('Please enter a valid positive number and more than 1,000 VND');
+      Alert.alert(
+        'Please enter a valid positive number and more than 1,000 VND',
+      );
       return;
     }
 
@@ -80,7 +86,7 @@ const AddMoney = ({ navigation, route }) => {
       getFirestore()
         .collection('customers')
         .doc(user.key)
-        .update({ balance: addedMoney })
+        .update({balance: addedMoney})
         .then(() => {
           Alert.alert('Successfully');
           setAmount(0);
@@ -91,13 +97,15 @@ const AddMoney = ({ navigation, route }) => {
     }
   };
 
-  const renderUser = ({ item: user }) => {
+  const renderUser = ({item: user}) => {
     const isSelected = user.key === selectedUserKey;
     return (
-      <TouchableOpacity style={[styles.user, isSelected && styles.selectedUser]} onPress={() => {
-        setSelectedUserKey(user.key);
-        setUser(user);
-      }}>
+      <TouchableOpacity
+        style={[styles.user, isSelected && styles.selectedUser]}
+        onPress={() => {
+          setSelectedUserKey(user.key);
+          setUser(user);
+        }}>
         <View style={styles.row}>
           <Text style={styles.label}>User id:</Text>
           <Text>{user.key}</Text>
@@ -111,9 +119,20 @@ const AddMoney = ({ navigation, route }) => {
           <Text>{user.balance}</Text>
         </View>
       </TouchableOpacity>
-    )
+    );
   };
 
+  onSuccess = e => {
+    setLoading(true)
+    try {
+      console.log(e.data);
+      setSelectedUserKey(user.key);
+    } catch (error) {
+      Alert.alert('error when scan' + error);
+    } finally {
+      setLoading(false)
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <LoadingScreen visible={loading} />
@@ -132,17 +151,24 @@ const AddMoney = ({ navigation, route }) => {
       </View>
       <View style={styles.listWraper}>
         <Text style={styles.title}>List of account:</Text>
-        <FlatList
-          data={users}
-          renderItem={renderUser}
-          keyExtractor={(item) => item.key}>
-        </FlatList>
+        <View>
+          <QRCodeScanner
+            onRead={this.onSuccess}
+            // flashMode={RNCamera.Constants.FlashMode.torch}
+            bottomContent={
+              <TouchableOpacity style={styles.buttonTouchable}>
+                <Text style={styles.buttonText}>OK. Got it!</Text>
+              </TouchableOpacity>
+            }
+            cameraStyle={styles.qrContainer}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
 };
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 const styles = StyleSheet.create({
   container: {
@@ -183,7 +209,7 @@ const styles = StyleSheet.create({
   },
   listWraper: {
     flex: 1,
-    padding: scale(10)
+    padding: scale(10),
   },
   user: {
     backgroundColor: colorTheme.grayBackground,
@@ -192,20 +218,26 @@ const styles = StyleSheet.create({
     marginVertical: scale(2),
   },
   selectedUser: {
-    backgroundColor: colorTheme.greenBackgroundDrink
+    backgroundColor: colorTheme.greenBackgroundDrink,
   },
   title: {
     fontSize: scale(20),
-    fontWeight: "600",
-    color: colorTheme.greenText
+    fontWeight: '600',
+    color: colorTheme.greenText,
   },
   label: {
-    fontWeight: "500",
-    color: colorTheme.greenText
+    fontWeight: '500',
+    color: colorTheme.greenText,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "space-between"
-  }
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  qrContainer: {
+    marginTop: scale(40),
+    marginLeft: scale(20),
+    width: scale(320),
+    height: scale(350),
+  },
 });
 export default AddMoney;

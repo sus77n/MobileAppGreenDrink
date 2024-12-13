@@ -28,7 +28,8 @@ const ManagerTab = () => {
           if (route.name === 'Home') iconName = 'home';
           else if (route.name === 'Product') iconName = 'coffee';
           else if (route.name === 'Store') iconName = 'map-marker';
-          else iconName = 'money';
+          else if (route.name === 'Add Money') iconName = 'money';
+          else iconName = 'history';
           return <Icon name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#7ec479',

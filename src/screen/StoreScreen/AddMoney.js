@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   BackHandler,
@@ -19,11 +19,11 @@ import {
   resetUserAfterChange,
   TopGoBack,
 } from '../../component/store';
-import {getFirestore} from '@react-native-firebase/firestore';
+import { getFirestore } from '@react-native-firebase/firestore';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import {RNCamera} from 'react-native-camera';
+import { RNCamera } from 'react-native-camera';
 
-const AddMoney = ({navigation, route}) => {
+const AddMoney = ({ navigation, route }) => {
   const [amount, setAmount] = useState('');
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState(null);
@@ -61,17 +61,16 @@ const AddMoney = ({navigation, route}) => {
           key: doc.id,
         }));
 
-        const filterList = list.filter(user => user.key !== adminId);
+        const filterList = list.filter(user => user.key === selectedUserKey);
         setUsers(filterList);
         setLoading(false);
-
-        console.log('users: ', users);
       });
 
     return () => unsubscribeUsers();
-  }, []);
+  }, [selectedUserKey]);
 
   const handleAdd = async () => {
+
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 1000) {
       Alert.alert(
@@ -86,7 +85,7 @@ const AddMoney = ({navigation, route}) => {
       getFirestore()
         .collection('customers')
         .doc(user.key)
-        .update({balance: addedMoney})
+        .update({ balance: addedMoney })
         .then(() => {
           Alert.alert('Successfully');
           setAmount(0);
@@ -97,15 +96,11 @@ const AddMoney = ({navigation, route}) => {
     }
   };
 
-  const renderUser = ({item: user}) => {
+  const renderUser = ({ item: user }) => {
     const isSelected = user.key === selectedUserKey;
+    setUser(user)
     return (
-      <TouchableOpacity
-        style={[styles.user, isSelected && styles.selectedUser]}
-        onPress={() => {
-          setSelectedUserKey(user.key);
-          setUser(user);
-        }}>
+      <View style={[styles.user, isSelected && styles.selectedUser]}>
         <View style={styles.row}>
           <Text style={styles.label}>User id:</Text>
           <Text>{user.key}</Text>
@@ -118,39 +113,62 @@ const AddMoney = ({navigation, route}) => {
           <Text style={styles.label}>Balance:</Text>
           <Text>{user.balance}</Text>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
   onSuccess = e => {
     setLoading(true)
     try {
-      console.log(e.data);
-      setSelectedUserKey(user.key);
+      setSelectedUserKey(e.data);
     } catch (error) {
       Alert.alert('error when scan' + error);
     } finally {
       setLoading(false)
     }
   };
+
+  if (users.length > 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <LoadingScreen visible={loading} />
+        <TopGoBack navigation={navigation} text={'Add Money'} />
+        <View style={styles.main}>
+          <Text style={styles.text}>How much you want to add?</Text>
+          <TextInput
+            value={amount}
+            onChangeText={setAmount}
+            style={styles.input}
+            inputMode="numeric"
+          />
+          <TouchableOpacity style={styles.addButton} onPress={() => handleAdd()}>
+            <Text style={styles.addButtonText}>Add money</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.listWraper}>
+          <FlatList
+            data={users}
+            renderItem={renderUser}
+            keyExtractor={item => item.key}
+          />
+        </View>
+        <TouchableOpacity style={styles.goBackBtn} onPress={() => {
+          setUsers([])
+          setUser(null)
+          setSelectedUserKey("")
+        }}>
+          <Text style={styles.addButtonText}>Go back to scan</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <LoadingScreen visible={loading} />
       <TopGoBack navigation={navigation} text={'Add Money'} />
-      <View style={styles.main}>
-        <Text style={styles.text}>How much you want to add?</Text>
-        <TextInput
-          value={amount}
-          onChangeText={setAmount}
-          style={styles.input}
-          inputMode="numeric"
-        />
-        <TouchableOpacity style={styles.addButton} onPress={() => handleAdd()}>
-          <Text style={styles.addButtonText}>Add money</Text>
-        </TouchableOpacity>
-      </View>
       <View style={styles.listWraper}>
-        <Text style={styles.title}>List of account:</Text>
+        <Text style={styles.title}>Scan Customer QR</Text>
         <View>
           <QRCodeScanner
             onRead={this.onSuccess}
@@ -168,7 +186,7 @@ const AddMoney = ({navigation, route}) => {
   );
 };
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const scale = size => (width / 375) * size;
 const styles = StyleSheet.create({
   container: {
@@ -239,5 +257,16 @@ const styles = StyleSheet.create({
     width: scale(320),
     height: scale(350),
   },
+  goBackBtn: {
+    backgroundColor: '#7ec479',
+    paddingVertical: scale(13),
+    width: scale(220),
+    borderRadius: scale(25),
+    borderWidth: scale(2),
+    borderColor: 'white',
+    alignItems: 'center',
+    marginHorizontal: "auto",
+    marginBottom: scale(20)
+  }
 });
 export default AddMoney;

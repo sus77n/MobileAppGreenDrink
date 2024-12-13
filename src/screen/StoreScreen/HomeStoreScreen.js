@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import { Dimensions, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, BackHandler } from 'react-native';
 import { colorTheme, LoadingScreen, resetUserStorage } from '../../component/store';
 import { getFirestore } from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';

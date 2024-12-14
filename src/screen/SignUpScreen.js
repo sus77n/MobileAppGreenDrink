@@ -65,6 +65,7 @@ const SignUpScreen = ({ navigation }) => {
         stars: 0,
         totalStars: 0,
         createAt: date,
+        vouchers: [],
       })
       Alert.alert("Successful", "Sign up successfully")
       navigation.pop();

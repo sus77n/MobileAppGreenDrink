@@ -135,7 +135,6 @@ const LoginScreen = ({ navigation, route }) => {
         userData = doc.data();
         userKey = doc.id;
         console.log("user: ", userData);
-
       });
 
       if (!userData || password !== userData.password) {

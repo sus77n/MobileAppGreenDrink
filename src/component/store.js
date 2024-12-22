@@ -20,7 +20,6 @@ export const colorTheme = {
   silver: '#9d9d9d',
   gold: '#fabe11',
   diamond: '#3ea8ff',
-
 };
 
 export const TopNoIcon = ({ navigation, text }) => {

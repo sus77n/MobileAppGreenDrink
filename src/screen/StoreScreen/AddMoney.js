@@ -82,17 +82,20 @@ const AddMoney = ({ navigation, route }) => {
     const addedMoney = parseFloat(user.balance) + numericAmount;
 
     try {
+      setLoading(true);
       getFirestore()
         .collection('customers')
         .doc(user.key)
         .update({ balance: addedMoney })
         .then(() => {
-          Alert.alert('Successfully');
+          Alert.alert('Successfully', "Add money successfully!");
           setAmount(0);
         });
     } catch (error) {
       Alert.alert('Something wrong');
       console.log('Error when add money: ' + error);
+    } finally {
+      setLoading(false);
     }
   };
 

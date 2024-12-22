@@ -9,7 +9,7 @@ Here’s a video demo of our application:
 </video>
 
 ## Option 2: Hosted on YouTube
-[![Watch the video](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+[![Watch the video](https://youtu.be/SiAuAJBZuGs?si=jtl_ZZXIFS6sHrvv)
 
 ## Option 3: Direct Link
 [Click here to watch the video demo](https://example.com/demo.mp4)

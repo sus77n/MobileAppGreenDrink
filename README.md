@@ -4,7 +4,7 @@
 Here’s a video demo of our application:
 
 <video width="640" height="360" controls>
-    <source src="[Videos/GD1.mp4](https://github.com/sus77n/MobileAppGreenDrink/blob/main/Videos/GD1.mp4)" type="video/mp4">
+    <source src="https://github.com/sus77n/MobileAppGreenDrink/blob/main/Videos/GD1.mp4" type="video/mp4">
     Your browser does not support the video tag.
 </video>
 

@@ -78,12 +78,12 @@ const AddProduct = ({ navigation }) => {
   }, []);
 
   const handleSubmit = () => {
-    setLoading(true);
     if (!name || !price || !img || !description || !category) {
       Alert.alert('Error', 'Please fill in all the fields');
       return;
     }
-
+    
+    setLoading(true);
     firestore()
       .collection('drinks')
       .add({

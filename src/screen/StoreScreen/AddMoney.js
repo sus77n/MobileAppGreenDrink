@@ -178,13 +178,14 @@ const AddMoney = ({ navigation, route }) => {
             // flashMode={RNCamera.Constants.FlashMode.torch}
             bottomContent={
               <TouchableOpacity style={styles.buttonTouchable}>
-                <Text style={styles.buttonText}>OK. Got it!</Text>
+                <Text>OK. Got it!</Text>
               </TouchableOpacity>
             }
             cameraStyle={styles.qrContainer}
           />
         </View>
       </View>
+      
     </SafeAreaView>
   );
 };
